@@ -1,0 +1,12 @@
+micronaut:
+   application:
+      name: illumi-code-ddd
+   server:
+      port: 8040
+      cors:
+         enabled: true
+neo4j:
+   uri: bolt://localhost
+   embedded:
+      ephemeral: true
+    

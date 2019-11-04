@@ -1,0 +1,73 @@
+plugins {
+    id "io.spring.dependency-management" version "1.0.6.RELEASE"
+    id "java"
+    id "net.ltgt.apt-eclipse" version "0.21"
+    id "net.ltgt.apt-idea" version "0.21"
+    id "com.github.johnrengelman.shadow" version "4.0.2"
+    id "application"
+    id "jacoco"
+    id "org.sonarqube" version "2.7"
+}
+
+
+
+version "0.1"
+group "illumi.code.ddd"
+
+repositories {
+    mavenCentral()
+    maven { url "https://jcenter.bintray.com" }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom 'io.micronaut:micronaut-bom:1.1.4'
+    }
+}
+
+configurations {
+    // for dependencies that are needed for development only
+    developmentOnly 
+}
+
+dependencies {
+    annotationProcessor "io.micronaut:micronaut-inject-java"
+    annotationProcessor "io.micronaut:micronaut-validation"
+    compile "io.micronaut:micronaut-inject"
+    compile "io.micronaut:micronaut-validation"
+    compile "io.micronaut:micronaut-runtime"
+    compile "io.micronaut:micronaut-http-client"
+    compile "io.micronaut:micronaut-http-server-netty"
+	compile group: 'io.micronaut.configuration', name: 'micronaut-neo4j-bolt', version: '1.1.0'
+	compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+    compile group: 'org.json', name: 'json', version: '20180813'
+    runtime "ch.qos.logback:logback-classic:1.2.3"
+    testAnnotationProcessor "io.micronaut:micronaut-inject-java"
+    testCompile "io.micronaut.test:micronaut-test-junit5"
+    testCompile "org.mockito:mockito-junit-jupiter:2.22.0"
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:5.1.0"
+    testCompile "org.junit.jupiter:junit-jupiter-api"
+    testCompile group: 'org.neo4j.test', name: 'neo4j-harness', version: '3.5.8'
+}
+
+test.classpath += configurations.developmentOnly
+
+mainClassName = "illumi.code.ddd.Application"
+
+// use JUnit 5 platform
+test {
+    useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile){
+    options.encoding = "UTF-8"
+    options.compilerArgs.add('-parameters')
+}
+
+
+shadowJar {
+    mergeServiceFiles()
+}
+
+run.classpath += configurations.developmentOnly
+run.jvmArgs('-noverify', '-XX:TieredStopAtLevel=1', '-Dcom.sun.management.jmxremote')

@@ -1,0 +1,5 @@
+profile: service
+defaultPackage: illumi.code.ddd
+---
+testFramework: junit
+sourceLanguage: java
