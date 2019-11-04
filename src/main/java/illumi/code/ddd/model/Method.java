@@ -1,8 +1,5 @@
 package illumi.code.ddd.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.neo4j.driver.v1.Record;
 
 /**
@@ -10,13 +7,11 @@ import org.neo4j.driver.v1.Record;
  * @author Daniel Kraft
  */
 public class Method {
-	
+			
 	private String visibility;
 	private String name;
 	private String signature;
 	
-	private ArrayList<Field> variables;
-
 	public Method( Record record ) {
 		this.visibility = record.get( "visibility" ).asString();
 		this.name = record.get( "name" ).asString();
@@ -33,13 +28,5 @@ public class Method {
 
 	public String getSignature() {
 		return signature;
-	}
-	
-	public List<Field> getVariables() {
-		return variables;
-	}
-
-	public void addVariables(Field variable) {
-		this.variables.add(variable);
 	}
 }

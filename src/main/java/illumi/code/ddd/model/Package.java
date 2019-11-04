@@ -22,6 +22,10 @@ public class Package extends Artifact {
 		return conataints;
 	}
 
+	public void setConataints(ArrayList<Artifact> conataints) {
+		this.conataints = conataints;
+	}
+
 	public void addConataints(Artifact artifact) {
 		this.conataints.add(artifact);
 	}

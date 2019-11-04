@@ -11,9 +11,16 @@ public class Field {
 	public Field( Record record) {
 		this.visibility = record.get( "visibility" ).asString();
 		this.name = record.get( "name" ).asString();
-		this.type = record.get( "type" ).asString();
+		this.type = record.get( "type" ).asString().split(" ")[0];
 	}
 	
+	public Field(String visibility, String name, String type) {
+		super();
+		this.visibility = visibility;
+		this.name = name;
+		this.type = type;
+	}
+
 	public String getVisibility() {
 		return visibility;
 	}
