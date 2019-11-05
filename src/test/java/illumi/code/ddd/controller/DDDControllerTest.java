@@ -21,7 +21,7 @@ import io.micronaut.test.annotation.MicronautTest;
 import io.micronaut.test.annotation.MockBean;
 
 @MicronautTest
-public class AnalyseControllerTest {
+public class DDDControllerTest {
 
 	@Inject
 	AnalyseService analyseService; 

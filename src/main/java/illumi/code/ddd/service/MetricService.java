@@ -2,9 +2,9 @@ package illumi.code.ddd.service;
 
 import org.json.JSONArray;
 
-public interface AnalyseService {
+public interface MetricService {
 	
 	void setStructureService(StructureService structureService);
 	
-	JSONArray analyzeStructure(String path);
+	JSONArray getMetrics();
 }

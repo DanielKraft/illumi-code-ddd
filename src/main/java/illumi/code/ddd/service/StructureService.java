@@ -2,6 +2,7 @@ package illumi.code.ddd.service;
 
 import java.util.ArrayList;
 
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -13,9 +14,7 @@ import illumi.code.ddd.model.Interface;
 import illumi.code.ddd.model.Package;
 
 public class StructureService {
-	
-	private static StructureService instance;
-	
+		
 	private String path;   
 	
 	private ArrayList<Artifact> structure; 
@@ -25,7 +24,7 @@ public class StructureService {
     private ArrayList<Enum> enums;
     private ArrayList<Annotation> annotations;
 	
-	private StructureService () {
+	public StructureService () {
 		this.structure = new ArrayList<>();
 		this.classes = new ArrayList<>();
 		this.interfaces = new ArrayList<>();
@@ -33,19 +32,13 @@ public class StructureService {
 		this.annotations = new ArrayList<>();
 	}
 	
-	public static StructureService getInstance () {
-		if (StructureService.instance == null) {
-			StructureService.instance = new StructureService ();
-		}
-		return StructureService.instance;
-	}
-
 	public String getPath() {
 		return path;
 	}
 
 	public void setPath(String path) {
-		this.path = path;
+		String[] split = path.split("[.]");
+		this.path = split[split.length-1] + ".";
 	}
 
 	public ArrayList<Artifact> getStructure() {

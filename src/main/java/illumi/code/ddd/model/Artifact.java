@@ -9,6 +9,7 @@ public abstract class Artifact {
 	private String path;
 	
 	private DDDType type;
+	private DDDFitness fitness;
 	
 	public Artifact(Record record, DDDType type) {
 		this.name = record.get( "name" ).asString();
@@ -77,7 +78,15 @@ public abstract class Artifact {
 		this.type = type;
 	}
 	
+	public void setFitness(DDDFitness fitness) {
+		this.fitness = fitness;
+	}
+	
+	public double getFitness() {
+		return fitness.calculateFitness();
+	}
+
 	public JSONObject toJSON() {
-		return new JSONObject() .put("name", name) .put("DDD", type);
+		return new JSONObject() .put("name", name).put("DDD", type).put("fitness", fitness != null ? getFitness() : null);
 	}
 }

@@ -34,10 +34,14 @@ public class AnalyseServiceImpl implements AnalyseService {
     
     public @Inject AnalyseServiceImpl(Driver driver) { 
     	this.driver = driver;
-    	this.structureService = StructureService.getInstance();
+    	this.structureService = new StructureService();
     }
 	
-    public JSONArray analyzeStructure(String path) {
+    public void setStructureService(StructureService structureService) {
+    	this.structureService = structureService;
+    }
+
+	public JSONArray analyzeStructure(String path) {
     	structureService.setPath(path);
     	structureService.setStructure(getArtifacts(path));
     	analyzeClasses();

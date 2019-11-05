@@ -3,7 +3,7 @@ package illumi.code.ddd.model;
 public enum DDDType {
 	ENTITY, 
 	VALUE_OBJECT, 
-	AGGREGATE, 
+	AGGREGATE_ROOT, 
 	FACTORY, 
 	REPOSITORY, 
 	SERVICE, 
