@@ -36,17 +36,11 @@ public class Interface extends Artifact {
 	public Interface(Record record) {
 		super(record, null);
 		
-		if (getName().toUpperCase().contains("FACTORY")) {
-			setType(DDDType.FACTORY);
-		}
-		
-		if (getName().toUpperCase().contains("REPOSITORY")) {
-			setType(DDDType.REPOSITORY);
-		}
-		
-		if (getName().toUpperCase().contains("SERVICE")) {
-			setType(DDDType.SERVICE);
-		}
+		if (getName().toUpperCase().contains("FACTORY")) 		setType(DDDType.FACTORY);
+		if (getName().toUpperCase().contains("REPOSITORY")) 	setType(DDDType.REPOSITORY);
+		if (getName().toUpperCase().contains("SERVICE")) 		setType(DDDType.SERVICE);
+		if (getName().toUpperCase().contains("APPLICATION"))	setType(DDDType.APPLICATION_SERVICE);
+		if (getName().toUpperCase().contains("CONTROLLER"))		setType(DDDType.CONTROLLER);
 		
 		this.fields = new ArrayList<>();
 		this.methods = new ArrayList<>();

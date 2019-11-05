@@ -16,6 +16,8 @@ public class StructureService {
 	
 	private static StructureService instance;
 	
+	private String path;   
+	
 	private ArrayList<Artifact> structure; 
     
     private ArrayList<Class> classes;
@@ -36,6 +38,14 @@ public class StructureService {
 			StructureService.instance = new StructureService ();
 		}
 		return StructureService.instance;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 
 	public ArrayList<Artifact> getStructure() {

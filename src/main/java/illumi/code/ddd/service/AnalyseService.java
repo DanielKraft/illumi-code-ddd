@@ -16,8 +16,10 @@ import org.slf4j.LoggerFactory;
 import illumi.code.ddd.model.Artifact;
 import illumi.code.ddd.model.Package;
 import illumi.code.ddd.model.Class;
+import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.Interface;
 import illumi.code.ddd.model.Enum;
+import illumi.code.ddd.model.Field;
 import illumi.code.ddd.model.Annotation;
 
 public class AnalyseService {
@@ -36,6 +38,7 @@ public class AnalyseService {
     }
 	
     public JSONArray analyzeStructure(String path) {
+    	structureService.setPath(path);
     	structureService.setStructure(getArtifacts(path));
     	analyzeClasses();
     	analyzeInterfaces();
@@ -94,7 +97,59 @@ public class AnalyseService {
 				item.setSuperClass(driver, structureService.getClasses());
 				item.setImplInterfaces(driver, structureService.getInterfaces());
 				item.setAnnotations(driver, structureService.getAnnotations());
+				
+				if (item.getSuperClass() != null) {
+					item.setType(DDDType.ENTITY);
+					item.getSuperClass().setType(DDDType.ENTITY);
+				}
 			});
+		
+		structureService.getClasses().stream()
+			.parallel()
+			.forEach(item -> {
+				if (item.getType() == null) {
+					if (isEntity(item)) {
+						item.setType(DDDType.ENTITY);
+					} else if (isValueObject(item)) {
+						item.setType(DDDType.VALUE_OBJECT);
+					} else if (isService(item)) {
+						item.setType(DDDType.SERVICE);
+					} else {
+						item.setType(DDDType.INFRASTRUCTUR);
+					}
+				} 
+			});
+	}
+	
+	private boolean isEntity(Class item) {
+		for (Field field : item.getFields()) {
+			for (Class type: structureService.getClasses()) {
+				if (type.getType() == DDDType.ENTITY && field.getType().contains(type.getPath())) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean isValueObject(Class artifact) {
+		int counter = 0;
+		for (Field field : artifact.getFields()) {
+			if (field.getType().contains("java.") || field.getType().contains(structureService.getPath())) {
+				counter++;
+			}
+		}
+		
+		return artifact.getFields().size() != 0 && counter == artifact.getFields().size();
+	}
+	
+	private boolean isService(Class item) {
+		for (Class artifact : structureService.getClasses()) {
+			if (item != artifact && item.getName().contains(artifact.getName())) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	private void analyzeInterfaces() {
