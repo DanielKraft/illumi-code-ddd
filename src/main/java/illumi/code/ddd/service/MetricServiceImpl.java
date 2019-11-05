@@ -55,12 +55,12 @@ public class MetricServiceImpl implements MetricService {
 	
 	private void evaluateEntity(Class item) {
 		DDDFitness fitness = new DDDFitness();
+		
 		// Must have criteria of Entity: ID, equals() and hashCode()
 		fitness.addNumberOfCriteria(3);
 		
 		for (Field field : item.getFields()) {
-			// Is field an ID? 
-			if (field.getName().toUpperCase().endsWith("ID")) {
+			if (isFieldAnId(field)) {
 				fitness.incNumberOfFulfilledCriteria();
 			}
 			
@@ -72,14 +72,43 @@ public class MetricServiceImpl implements MetricService {
 		}
 		
 		for (Method method : item.getMethods()) {
-			// equals() or hashCode()? 
-			if (method.getName().equals("equals")) {
+			if (isNeededMethod(method)) {
 				fitness.incNumberOfFulfilledCriteria();
-			} else if (method.getName().equals("hashCode")) {
-				fitness.incNumberOfFulfilledCriteria();
-			}
+			} 
 		}
+		
+		evaluateSuperClass(item.getSuperClass(), fitness);
+		
 		item.setFitness(fitness);
+	}
+
+	private void evaluateSuperClass(Class item, DDDFitness fitness) {
+		if (item != null) {
+			for (Field field : item.getFields()) {
+				if (isFieldAnId(field)) {
+					fitness.incNumberOfFulfilledCriteria();
+					break;
+				}
+			}
+			
+			for (Method method : item.getMethods()) {
+				if (isNeededMethod(method)) {
+					fitness.incNumberOfFulfilledCriteria();
+				} 
+			}
+			
+			evaluateSuperClass(item.getSuperClass(), fitness);
+		}
+		
+	}
+	
+	private boolean isFieldAnId(Field field) {
+		return field.getName().toUpperCase().endsWith("ID");
+	}
+	
+	private boolean isNeededMethod(Method method) {
+		// equals() or hashCode()? 
+		return method.getName().equals("equals") || method.getName().equals("hashCode");
 	}
 	
 	private void evaluateInterfaces() {
