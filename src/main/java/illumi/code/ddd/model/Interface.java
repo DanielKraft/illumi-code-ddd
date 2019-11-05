@@ -19,9 +19,11 @@ public class Interface extends Artifact {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(Class.class);
 	
-	public static final String QUERY_FIELDS =	"MATCH (i:Interface)-[:DECLARES]->(f:Field) WHERE i.fqn= {path} RETURN DISTINCT f.name as name, f.signature as signature, f.visibility as visibility";
-	public static final String QUERY_METHODS =	"MATCH (i:Interface)-[:DECLARES]->(m:Method) WHERE i.fqn = {path} RETURN DISTINCT m.visibility as visibility, m.name as name, m.signature as signature";
-	public static final String QUERY_IMPL = "MATCH (i1:Interface)-[:IMPLEMENTS]->(i2:Interface) WHERE i1.fqn= {path} RETURN i2.fqn as interface";
+	private static final String QUERY_FIELDS 				= "MATCH (i:Interface)-[:DECLARES]->(f:Field) WHERE i.fqn= {path} RETURN DISTINCT f.name as name, f.signature as signature, f.visibility as visibility";
+	private static final String QUERY_METHODS				= "MATCH (i:Interface)-[:DECLARES]->(m:Method) WHERE i.fqn = {path} RETURN DISTINCT m.visibility as visibility, m.name as name, m.signature as signature";
+	private static final String QUERY_IMPL 					= "MATCH (i1:Interface)-[:IMPLEMENTS]->(i2:Interface) WHERE i1.fqn= {path} RETURN i2.fqn as interface";
+	private static final String QUERY_PARENT_ANNOTATIONS	= "MATCH (parent:Interface)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} RETURN DISTINCT type.fqn as annotation";
+	private static final String QUERY_CHILD_ANNOTATIONS 	= "MATCH (parent:Interface)-[:DECLARES]->(child:Java)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} AND (child:Field OR child:Method) RETURN DISTINCT type.fqn as annotation";
 	
 	private ArrayList<Field> fields;
 	
@@ -33,6 +35,18 @@ public class Interface extends Artifact {
 		
 	public Interface(Record record) {
 		super(record, null);
+		
+		if (getName().toUpperCase().contains("FACTORY")) {
+			setType(DDDType.FACTORY);
+		}
+		
+		if (getName().toUpperCase().contains("REPOSITORY")) {
+			setType(DDDType.REPOSITORY);
+		}
+		
+		if (getName().toUpperCase().contains("SERVICE")) {
+			setType(DDDType.SERVICE);
+		}
 		
 		this.fields = new ArrayList<>();
 		this.methods = new ArrayList<>();
@@ -117,5 +131,29 @@ public class Interface extends Artifact {
 	
 	public List<Annotation> getAnnotations() {
 		return annotations;
+	}
+	
+	public void setAnnotations(Driver driver, ArrayList<Annotation> annotations) {
+		try ( Session session = driver.session() ) {
+			setAnnotations(annotations, session, QUERY_PARENT_ANNOTATIONS);
+    		
+			setAnnotations(annotations, session, QUERY_CHILD_ANNOTATIONS);
+    	} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+	}
+
+	private void setAnnotations(ArrayList<Annotation> annotations, Session session, String Query) {
+		session.run( Query, Values.parameters( "path", getPath()) )
+			.stream()
+			.parallel()
+			.forEach(item -> {
+				for (Annotation a : annotations) {
+					if (a.getPath().contains(item.get("annotation").asString())) {
+						this.annotations.add(a);
+						break;
+					}
+				}
+			});
 	}
 }

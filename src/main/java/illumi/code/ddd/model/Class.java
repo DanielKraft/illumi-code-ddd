@@ -19,10 +19,13 @@ public class Class extends Artifact {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(Class.class);
 	
-	public static final String QUERY_FIELDS 	= "MATCH (c:Class)-[:DECLARES]->(f:Field) WHERE c.fqn={path} RETURN DISTINCT f.name as name, f.signature as type, f.visibility as visibility";
-	public static final String QUERY_METHODS 	= "MATCH (c:Class)-[:DECLARES]->(m:Method) WHERE c.fqn = {path} RETURN DISTINCT m.visibility as visibility, m.name as name, m.signature as signature";
-	public static final String QUERY_SUPER 		= "MATCH (c1:Class)-[:EXTENDS]->(c2:Class) WHERE c1.fqn={path} RETURN DISTINCT c2.fqn as superClass";
-	public static final String QUERY_IMPL 		= "MATCH (c:Class)-[:IMPLEMENTS]->(i:Interface) WHERE c.fqn={path} RETURN DISTINCT i.fqn as interface";
+	private static final String QUERY_FIELDS 				= "MATCH (c:Class)-[:DECLARES]->(f:Field) WHERE c.fqn={path} RETURN DISTINCT f.name as name, f.signature as type, f.visibility as visibility";
+	private static final String QUERY_METHODS 				= "MATCH (c:Class)-[:DECLARES]->(m:Method) WHERE c.fqn = {path} RETURN DISTINCT m.visibility as visibility, m.name as name, m.signature as signature";
+	private static final String QUERY_SUPER 				= "MATCH (c1:Class)-[:EXTENDS]->(c2:Class) WHERE c1.fqn={path} RETURN DISTINCT c2.fqn as superClass";
+	private static final String QUERY_IMPL 					= "MATCH (c:Class)-[:IMPLEMENTS]->(i:Interface) WHERE c.fqn={path} RETURN DISTINCT i.fqn as interface";
+	private static final String QUERY_PARENT_ANNOTATIONS 	= "MATCH (parent:Class)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} RETURN DISTINCT type.fqn as annotation";
+	private static final String QUERY_CHILD_ANNOTATIONS		= "MATCH (parent:Class)-[:DECLARES]->(child:Java)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} AND (child:Field OR child:Method) RETURN DISTINCT type.fqn as annotation";
+	
 	
 	private ArrayList<Field> fields;
 	
@@ -36,10 +39,26 @@ public class Class extends Artifact {
 	public Class(Record record) {
 		super(record, null);
 		
+		if (getName().toUpperCase().contains("FACTORY")) {
+			setType(DDDType.FACTORY);
+		}
+		
+		if (getName().toUpperCase().contains("REPOSITORY")) {
+			setType(DDDType.REPOSITORY);
+		}
+		
+		if (getName().toUpperCase().contains("SERVICE")) {
+			setType(DDDType.SERVICE);
+		}
+		
 		this.fields = new ArrayList<>();
 		this.methods = new ArrayList<>();
 		this.implInterfaces = new ArrayList<>();
 		this.annotations = new ArrayList<>();
+	}
+	
+	public List<Field> getFields() {
+		return fields;
 	}
 	
 	public void setFields(Driver driver) {
@@ -60,7 +79,11 @@ public class Class extends Artifact {
 		        }
 			});
 	}
-	
+
+	public List<Method> getMethods() {
+		return methods;
+	}
+
 	public void setMethods(Driver driver) {
     	try ( Session session = driver.session() ) {
     		StatementResult result = session.run( QUERY_METHODS, Values.parameters( "path", getPath() ) );
@@ -81,14 +104,6 @@ public class Class extends Artifact {
 			});
 	}
 	
-	public List<Field> getFields() {
-		return fields;
-	}
-
-	public List<Method> getMethods() {
-		return methods;
-	}
-
 	public List<Interface> getInterfaces() {
 		return implInterfaces;
 	}
@@ -143,5 +158,29 @@ public class Class extends Artifact {
 	
 	public List<Annotation> getAnnotations() {
 		return annotations;
+	}
+	
+	public void setAnnotations(Driver driver, ArrayList<Annotation> annotations) {
+		try ( Session session = driver.session() ) {
+			setAnnotations(annotations, session, QUERY_PARENT_ANNOTATIONS);
+    		
+			setAnnotations(annotations, session, QUERY_CHILD_ANNOTATIONS);
+    	} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+	}
+
+	private void setAnnotations(ArrayList<Annotation> annotations, Session session, String Query) {
+		session.run( Query, Values.parameters( "path", getPath()) )
+			.stream()
+			.parallel()
+			.forEach(item -> {
+				for (Annotation a : annotations) {
+					if (a.getPath().contains(item.get("annotation").asString())) {
+						this.annotations.add(a);
+						break;
+					}
+				}
+			});
 	}
 }

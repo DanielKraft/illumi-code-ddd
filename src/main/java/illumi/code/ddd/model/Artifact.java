@@ -1,5 +1,6 @@
 package illumi.code.ddd.model;
 
+import org.json.JSONObject;
 import org.neo4j.driver.v1.Record;
 
 public abstract class Artifact {
@@ -68,5 +69,9 @@ public abstract class Artifact {
 
 	public void setType(DDDType type) {
 		this.type = type;
+	}
+	
+	public JSONObject toJSON() {
+		return new JSONObject() .put("name", name) .put("DDD", type);
 	}
 }
