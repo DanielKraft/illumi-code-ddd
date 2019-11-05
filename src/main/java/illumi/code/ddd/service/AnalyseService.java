@@ -98,6 +98,7 @@ public class AnalyseService {
 				item.setFields(driver);
 				item.setMethods(driver);
 				item.setSuperClass(driver, classes);
+				item.setImplInterfaces(driver, interfaces);
 			});
 	}
 	
@@ -107,6 +108,7 @@ public class AnalyseService {
 			.forEach(item -> {
 				item.setFields(driver);
 				item.setMethods(driver);
+				item.setImplInterfaces(driver, interfaces);
 			});
 	}
 }

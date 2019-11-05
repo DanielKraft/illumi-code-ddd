@@ -21,12 +21,13 @@ public class Interface extends Artifact {
 	
 	public static final String QUERY_FIELDS =	"MATCH (i:Interface)-[:DECLARES]->(f:Field) WHERE i.fqn= {path} RETURN DISTINCT f.name as name, f.signature as signature, f.visibility as visibility";
 	public static final String QUERY_METHODS =	"MATCH (i:Interface)-[:DECLARES]->(m:Method) WHERE i.fqn = {path} RETURN DISTINCT m.visibility as visibility, m.name as name, m.signature as signature";
-
+	public static final String QUERY_IMPL = "MATCH (i1:Interface)-[:IMPLEMENTS]->(i2:Interface) WHERE i1.fqn= {path} RETURN i2.fqn as interface";
+	
 	private ArrayList<Field> fields;
 	
 	private ArrayList<Method> methods;
 	
-	private ArrayList<Interface> interfaces;
+	private ArrayList<Interface> implInterfaces;
 	
 	private ArrayList<Annotation> annotations;
 		
@@ -35,7 +36,7 @@ public class Interface extends Artifact {
 		
 		this.fields = new ArrayList<>();
 		this.methods = new ArrayList<>();
-		this.interfaces = new ArrayList<>();
+		this.implInterfaces = new ArrayList<>();
 		this.annotations = new ArrayList<>();
 	}
 	
@@ -87,7 +88,31 @@ public class Interface extends Artifact {
 	}
 
 	public List<Interface> getInterfaces() {
-		return interfaces;
+		return implInterfaces;
+	}
+	
+	public void setImplInterfaces(Driver driver, ArrayList<Interface> interfaces) {
+    	try ( Session session = driver.session() ) {
+    		StatementResult result = session.run( QUERY_IMPL, Values.parameters( "path", getPath() ) );
+    		convertResultToInterface(result, interfaces);
+    	} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+    }
+	
+	private void convertResultToInterface(StatementResult result, ArrayList<Interface> interfaces) {		
+		result.stream()
+			.parallel()
+			.forEach(item -> {
+				for (Interface i : interfaces) {
+					if (i.getPath().contains(item.get( "interface" ).asString())) {
+						this.implInterfaces.add(i);
+						
+						break;
+					}
+				}
+				item.get( "interface" ).asString();
+			});
 	}
 	
 	public List<Annotation> getAnnotations() {
