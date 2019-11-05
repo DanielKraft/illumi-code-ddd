@@ -29,6 +29,13 @@ public class Enum extends Artifact {
 		this.annotations = new ArrayList<>();
 	}
 
+	public Enum(String name, String path, DDDType type, ArrayList<Field> fields, ArrayList<Annotation> annotations) {
+		super(name, path, type);
+		
+		this.fields = fields;
+		this.annotations = annotations;
+	}
+
 	public List<Field> getFields() {
 		return fields;
 	}

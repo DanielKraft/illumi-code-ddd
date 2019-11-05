@@ -31,7 +31,6 @@ public class AnalyseService {
     
     private StructureService structureService; 
     
-    
     public @Inject AnalyseService(Driver driver) { 
     	this.driver = driver;
     	this.structureService = StructureService.getInstance();

@@ -51,6 +51,17 @@ public class Class extends Artifact {
 		this.annotations = new ArrayList<>();
 	}
 	
+	public Class(String name, String path, DDDType type, ArrayList<Field> fields, ArrayList<Method> methods,
+			ArrayList<Interface> implInterfaces, Class superClass, ArrayList<Annotation> annotations) {
+		super(name, path, type);
+		
+		this.fields = fields;
+		this.methods = methods;
+		this.implInterfaces = implInterfaces;
+		this.superClass = superClass;
+		this.annotations = annotations;
+	}
+
 	public List<Field> getFields() {
 		return fields;
 	}

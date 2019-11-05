@@ -15,7 +15,6 @@ public class Field {
 	}
 	
 	public Field(String visibility, String name, String type) {
-		super();
 		this.visibility = visibility;
 		this.name = name;
 		this.type = type;

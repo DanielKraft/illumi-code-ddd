@@ -18,6 +18,11 @@ public class Package extends Artifact {
 		this.conataints = new ArrayList<>();
 	}
 
+	public Package(Record record, DDDType type, ArrayList<Artifact> conataints) {
+		super(record, type);
+		this.conataints = conataints;
+	}
+
 	public ArrayList<Artifact> getConataints() {
 		return conataints;
 	}

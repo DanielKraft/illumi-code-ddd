@@ -18,6 +18,12 @@ public class Method {
 		this.signature = record.get( "signature" ).asString();
 	}
 	
+	public Method(String visibility, String name, String signature) {
+		this.visibility = visibility;
+		this.name = name;
+		this.signature = signature;
+	}
+
 	public String getVisibility() {
 		return visibility;
 	}

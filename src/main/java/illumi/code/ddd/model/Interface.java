@@ -48,6 +48,16 @@ public class Interface extends Artifact {
 		this.annotations = new ArrayList<>();
 	}
 	
+	public Interface(String name, String path, DDDType type, ArrayList<Field> fields, ArrayList<Method> methods,
+			ArrayList<Interface> implInterfaces, ArrayList<Annotation> annotations) {
+		super(name, path, type);
+		
+		this.fields = fields;
+		this.methods = methods;
+		this.implInterfaces = implInterfaces;
+		this.annotations = annotations;
+	}
+
 	public void setFields(Driver driver) {
     	try ( Session session = driver.session() ) {
     		StatementResult result = session.run( QUERY_FIELDS, Values.parameters( "path", getPath() ) );
