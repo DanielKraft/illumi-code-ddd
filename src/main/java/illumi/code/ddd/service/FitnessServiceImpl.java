@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.Package;
+import illumi.code.ddd.model.Artifact;
 import illumi.code.ddd.model.Class;
 import illumi.code.ddd.model.DDDFitness;
 import illumi.code.ddd.model.Interface;
@@ -40,10 +41,45 @@ public class FitnessServiceImpl implements FitnessService {
 		structureService.getPackages().stream()
 			.parallel()
 			.forEach(item -> {
-				// TODO
+				LOGGER.info("DDD:MODULE:" + item.getName());
+				DDDFitness fitness = new DDDFitness();
+				
+				if (structureService.getDomains().contains(item.getName())) {
+					fitness = new DDDFitness(2, item.getPath().contains(structureService.getPath() + "domain." + item.getName()) ? 2 : 1);
+				} else if (containsInfrastructure(item)) {
+					fitness = new DDDFitness(2, item.getPath().contains(structureService.getPath() + "infrastructur") ? 2 : 1);
+				} else if (containsApplication(item)) {
+					fitness = new DDDFitness(2, item.getPath().contains(structureService.getPath() + "application") ? 2 : 1);
+				} else if (item.getName().contains(structureService.getPath() + "domain") 
+							|| item.getName().contains(structureService.getPath() + "infrastructur") 
+							|| item.getName().contains(structureService.getPath() + "application")) {
+					fitness = new DDDFitness(1, 1);
+				} else {
+					fitness = new DDDFitness(1, 0);
+				}
+				item.setFitness(fitness);
 			});
 	}
+
+	private boolean containsInfrastructure(Package module) {
+		for (Artifact artifact : module.getConataints()) {
+			if (artifact.getType() != DDDType.MODULE 
+				&& (artifact.getType() != DDDType.INFRASTRUCTUR || artifact.getType() != DDDType.CONTROLLER)) {
+				return false;
+			}
+		}
+		return true;
+	}
 	
+	private boolean containsApplication(Package module) {
+		for (Artifact artifact : module.getConataints()) {
+			if (artifact.getType() != DDDType.MODULE && artifact.getType() != DDDType.APPLICATION_SERVICE) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	private void evaluateClasses() {
 		LOGGER.info("Evaluation of Classes");
 		structureService.getClasses().stream()
