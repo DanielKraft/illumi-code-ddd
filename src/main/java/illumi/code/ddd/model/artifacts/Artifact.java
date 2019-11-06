@@ -1,7 +1,10 @@
-package illumi.code.ddd.model;
+package illumi.code.ddd.model.artifacts;
 
 import org.json.JSONObject;
 import org.neo4j.driver.v1.Record;
+
+import illumi.code.ddd.model.DDDFitness;
+import illumi.code.ddd.model.DDDType;
 
 public abstract class Artifact {
 

@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import illumi.code.ddd.model.Annotation;
-import illumi.code.ddd.model.Artifact;
-import illumi.code.ddd.model.Class;
-import illumi.code.ddd.model.Enum;
-import illumi.code.ddd.model.Interface;
-import illumi.code.ddd.model.Package;
+import illumi.code.ddd.model.artifacts.Annotation;
+import illumi.code.ddd.model.artifacts.Artifact;
+import illumi.code.ddd.model.artifacts.Class;
+import illumi.code.ddd.model.artifacts.Enum;
+import illumi.code.ddd.model.artifacts.Interface;
+import illumi.code.ddd.model.artifacts.Package;
 
 public class StructureService {
 		
@@ -28,6 +28,11 @@ public class StructureService {
     private ArrayList<Annotation> annotations;
 	
 	public StructureService () {
+		init();
+	}
+	
+	public void init() {
+		this.path = "";
 		this.structure = new ArrayList<>();
 		this.domains = new ArrayList<>();
 		this.packages = new ArrayList<>();

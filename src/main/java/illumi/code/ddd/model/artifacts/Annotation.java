@@ -1,4 +1,4 @@
-package illumi.code.ddd.model;
+package illumi.code.ddd.model.artifacts;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +10,8 @@ import org.neo4j.driver.v1.StatementResult;
 import org.neo4j.driver.v1.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import illumi.code.ddd.model.DDDType;
 
 public class Annotation extends Artifact {
 	

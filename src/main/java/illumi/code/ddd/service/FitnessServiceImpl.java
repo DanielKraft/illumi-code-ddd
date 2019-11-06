@@ -9,13 +9,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import illumi.code.ddd.model.DDDType;
-import illumi.code.ddd.model.Package;
-import illumi.code.ddd.model.Artifact;
-import illumi.code.ddd.model.Class;
+import illumi.code.ddd.model.artifacts.Artifact;
+import illumi.code.ddd.model.artifacts.Class;
+import illumi.code.ddd.model.artifacts.Field;
+import illumi.code.ddd.model.artifacts.Interface;
+import illumi.code.ddd.model.artifacts.Method;
+import illumi.code.ddd.model.artifacts.Package;
 import illumi.code.ddd.model.DDDFitness;
-import illumi.code.ddd.model.Interface;
-import illumi.code.ddd.model.Method;
-import illumi.code.ddd.model.Field;
 
 public class FitnessServiceImpl implements FitnessService {
 	
@@ -25,6 +25,7 @@ public class FitnessServiceImpl implements FitnessService {
     
     public @Inject FitnessServiceImpl() { }
     
+    @Override
     public void setStructureService(StructureService structureService) {
     	this.structureService = structureService;
     }

@@ -13,14 +13,14 @@ import org.neo4j.driver.v1.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import illumi.code.ddd.model.Artifact;
-import illumi.code.ddd.model.Package;
-import illumi.code.ddd.model.Class;
 import illumi.code.ddd.model.DDDType;
-import illumi.code.ddd.model.Interface;
-import illumi.code.ddd.model.Enum;
-import illumi.code.ddd.model.Field;
-import illumi.code.ddd.model.Annotation;
+import illumi.code.ddd.model.artifacts.Annotation;
+import illumi.code.ddd.model.artifacts.Artifact;
+import illumi.code.ddd.model.artifacts.Class;
+import illumi.code.ddd.model.artifacts.Enum;
+import illumi.code.ddd.model.artifacts.Field;
+import illumi.code.ddd.model.artifacts.Interface;
+import illumi.code.ddd.model.artifacts.Package;
 
 public class AnalyseServiceImpl implements AnalyseService {
 	
@@ -37,10 +37,12 @@ public class AnalyseServiceImpl implements AnalyseService {
     	this.structureService = new StructureService();
     }
 	
+    @Override
     public void setStructureService(StructureService structureService) {
     	this.structureService = structureService;
     }
 
+    @Override
 	public JSONArray analyzeStructure(String path) {
     	structureService.setPath(path);
     	structureService.setStructure(getArtifacts(path));

@@ -1,8 +1,10 @@
-package illumi.code.ddd.model;
+package illumi.code.ddd.model.artifacts;
 
 import java.util.ArrayList;
 
 import org.neo4j.driver.v1.Record;
+
+import illumi.code.ddd.model.DDDType;
 
 /**
  * Entity-Class: Package
