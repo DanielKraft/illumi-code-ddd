@@ -31,7 +31,7 @@ public class FitnessServiceImpl implements FitnessService {
     }
     
 	@Override
-	public JSONArray getMetrics() {
+	public JSONArray getStructureWithFitness() {
 		evaluateModules();
 		evaluateClasses();
 		evaluateInterfaces();

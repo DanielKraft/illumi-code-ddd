@@ -35,11 +35,11 @@ public class Annotation extends Artifact {
 		this.annotations = new ArrayList<>();
 	}
 	
-	public Annotation(String name, String path, ArrayList<Field> fields, ArrayList<Method> methods, ArrayList<Annotation> annotations) {
+	public Annotation(String name, String path) {
 		super(name, path, DDDType.INFRASTRUCTUR);
-		this.fields = fields;
-		this.methods = methods;
-		this.annotations = annotations;
+		this.fields = new ArrayList<>();
+		this.methods = new ArrayList<>();
+		this.annotations = new ArrayList<>();
 	}
 
 	public List<Annotation> getAnnotations() {

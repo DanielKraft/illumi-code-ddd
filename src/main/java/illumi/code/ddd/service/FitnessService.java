@@ -6,5 +6,5 @@ public interface FitnessService {
 	
 	void setStructureService(StructureService structureService);
 	
-	JSONArray getMetrics();
+	JSONArray getStructureWithFitness();
 }

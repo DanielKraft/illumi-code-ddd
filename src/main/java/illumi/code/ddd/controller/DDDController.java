@@ -36,7 +36,7 @@ public class DDDController {
 		analyseService.setStructureService(structureService);
 		fitnessService.setStructureService(structureService);
     	analyseService.analyzeStructure(path);
-    	return HttpResponse.ok(fitnessService.getMetrics().toString());
+    	return HttpResponse.ok(fitnessService.getStructureWithFitness().toString());
     }
     
     @Get("/metric") 

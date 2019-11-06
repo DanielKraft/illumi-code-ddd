@@ -33,11 +33,12 @@ public class Enum extends Artifact {
 		this.annotations = new ArrayList<>();
 	}
 
-	public Enum(String name, String path, ArrayList<Field> fields, ArrayList<Annotation> annotations) {
+	public Enum(String name, String path) {
 		super(name, path, DDDType.VALUE_OBJECT);
 		setFitness(new DDDFitness());
-		this.fields = fields;
-		this.annotations = annotations;
+		
+		this.fields = new ArrayList<>();
+		this.annotations = new ArrayList<>();
 	}
 
 	public List<Field> getFields() {
@@ -65,12 +66,6 @@ public class Enum extends Artifact {
 	
 	public List<Annotation> getAnnotations() {
 		return annotations;
-	}
-
-	public void addAnnotations(Annotation annotation) {
-		if (!this.annotations.contains(annotation)) {
-			this.annotations.add(annotation);
-		}
 	}
 	
 	public void setAnnotations(Driver driver, ArrayList<Annotation> annotations) {
