@@ -19,6 +19,9 @@ public class StructureService {
 	
 	private ArrayList<Artifact> structure; 
     
+	private ArrayList<String> domains;
+	
+	private ArrayList<Package> packages;
     private ArrayList<Class> classes;
     private ArrayList<Interface> interfaces;
     private ArrayList<Enum> enums;
@@ -47,6 +50,22 @@ public class StructureService {
 
 	public void setStructure(ArrayList<Artifact> artifacts) {
 		this.structure = artifacts;
+	}
+	
+	public ArrayList<String> getDomains() {
+		return domains;
+	}
+
+	public void addDomain(String domain) {
+		this.domains.add(domain);
+	}
+	
+	public ArrayList<Package> getPackages() {
+		return packages;
+	}
+
+	public void addPackage(Package module) {
+		this.packages.add(module);
 	}
 
 	public ArrayList<Class> getClasses() {

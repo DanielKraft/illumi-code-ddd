@@ -24,6 +24,7 @@ public class Enum extends Artifact {
 	
 	public Enum(Record record) {
 		super(record, DDDType.VALUE_OBJECT);
+		setFitness(new DDDFitness());
 		
 		this.fields = new ArrayList<>();
 		this.annotations = new ArrayList<>();
@@ -31,7 +32,7 @@ public class Enum extends Artifact {
 
 	public Enum(String name, String path, DDDType type, ArrayList<Field> fields, ArrayList<Annotation> annotations) {
 		super(name, path, type);
-		
+		setFitness(new DDDFitness());
 		this.fields = fields;
 		this.annotations = annotations;
 	}

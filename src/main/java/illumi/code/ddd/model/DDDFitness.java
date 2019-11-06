@@ -27,9 +27,16 @@ public class DDDFitness {
 		numberOfFulfilledCriteria++;
 	}
 	
+	public void decNumberOfFulfilledCriteria() {
+		numberOfFulfilledCriteria--;
+	}
+	
 	public double calculateFitness() {
-		double fitness = (double) (numberOfFulfilledCriteria * 100) / numberOfCriteria;
-		
-		return Math.round(fitness * 100.0) / 100.0;
+		if (numberOfCriteria != 0) {
+			double fitness = (double) (numberOfFulfilledCriteria * 100) / numberOfCriteria;
+			
+			return Math.round(fitness * 100.0) / 100.0;
+		}
+		return 100.0;
 	}
 }

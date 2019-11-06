@@ -70,6 +70,7 @@ public class AnalyseServiceImpl implements AnalyseService {
 				if (types.contains("Package")) {
 					Package newPackage = new Package(item);
 					newPackage.setConataints(getArtifacts(newPackage.getPath()));
+					structureService.addPackage(newPackage);
 					artifacts.add(newPackage);
 				} else if (types.contains("Class")) {
 					Class newClass = new Class(item);
@@ -114,10 +115,10 @@ public class AnalyseServiceImpl implements AnalyseService {
 				if (item.getType() == null) {
 					if (isEntity(item)) {
 						item.setType(DDDType.ENTITY);
-					} else if (isValueObject(item)) {
-						item.setType(DDDType.VALUE_OBJECT);
 					} else if (isService(item)) {
 						item.setType(DDDType.SERVICE);
+					} else if (isValueObject(item)) {
+						item.setType(DDDType.VALUE_OBJECT);
 					} else {
 						item.setType(DDDType.INFRASTRUCTUR);
 					}
@@ -148,6 +149,12 @@ public class AnalyseServiceImpl implements AnalyseService {
 	}
 	
 	private boolean isService(Class item) {
+		for (Field field : item.getFields()) {
+			if (field.getType().contains("Repository")) {
+				return true;
+			}
+		}
+		
 		for (Class artifact : structureService.getClasses()) {
 			if (item != artifact && item.getName().contains(artifact.getName())) {
 				return true;
