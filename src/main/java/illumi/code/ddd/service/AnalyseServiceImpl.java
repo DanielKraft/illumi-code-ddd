@@ -50,6 +50,7 @@ public class AnalyseServiceImpl implements AnalyseService {
     	analyzeAnnotations();
     	
     	setupDomains();
+    	analyseDomains();
     	return structureService.getJOSN();
     }
 	
@@ -238,6 +239,25 @@ public class AnalyseServiceImpl implements AnalyseService {
 					item.setDomain(domain);
 				}
 			});
+	}
+    
+    public void analyseDomains() {
+    	structureService.getPackages().stream()
+    		.parallel()
+    		.forEach(item -> {
+    			if (isDomain(item)) {
+    				for (Artifact artifact : item.getConataints()) {
+						if (artifact.getDomain() != null && artifact.getDomain().contains(artifact.getName().toLowerCase())) {
+							artifact.setType(DDDType.AGGREGATE_ROOT);
+							break;
+						}
+					}
+    			}
+    		});
+    }
+
+	private boolean isDomain(Package module) {
+		return structureService.getDomains().contains(module.getName());
 	}
 
 }
