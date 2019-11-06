@@ -37,7 +37,15 @@ public class Interface extends Artifact {
 		
 	public Interface(Record record) {
 		super(record, null);
-		
+		init();
+	}
+	
+	public Interface(String name, String path) {
+		super(name, path, null);
+		init();
+	}
+	
+	private void init() {
 		if (getName().toUpperCase().contains("FACTORY")) 		setType(DDDType.FACTORY);
 		if (getName().toUpperCase().contains("REPOSITORY")) 	setType(DDDType.REPOSITORY);
 		if (getName().toUpperCase().contains("SERVICE")) 		setType(DDDType.SERVICE);
@@ -48,16 +56,6 @@ public class Interface extends Artifact {
 		this.methods = new ArrayList<>();
 		this.implInterfaces = new ArrayList<>();
 		this.annotations = new ArrayList<>();
-	}
-	
-	public Interface(String name, String path, DDDType type, ArrayList<Field> fields, ArrayList<Method> methods,
-			ArrayList<Interface> implInterfaces, ArrayList<Annotation> annotations) {
-		super(name, path, type);
-		
-		this.fields = fields;
-		this.methods = methods;
-		this.implInterfaces = implInterfaces;
-		this.annotations = annotations;
 	}
 
 	public void setFields(Driver driver) {

@@ -19,7 +19,7 @@ public class EnumTest {
 	private ServerControls embeddedDatabaseServer;
 		
 	@BeforeAll
-    void initializeNeo4j() {
+	public void initializeNeo4j() {
 		this.embeddedDatabaseServer = TestServerBuilders
 	        .newInProcessBuilder()
 	        .withFixture( "CREATE(e:Java:Enum{fqn: 'de.test.Type', name: 'Type'})"
@@ -37,7 +37,7 @@ public class EnumTest {
     }
 	
 	@Test
-	void testSetFields() {
+	public void testSetFields() {
 		Enum artifact = new Enum("Type", "de.test.Type");
 	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
 	    	artifact.setFields(driver);
@@ -57,7 +57,7 @@ public class EnumTest {
 	}
 	
 	@Test
-	void testSetFieldsFailed() {
+	public void testSetFieldsFailed() {
 		Enum artifact = new Enum("Type", "de.test.Type");
     	
 		artifact.setFields(null);
@@ -67,8 +67,8 @@ public class EnumTest {
     	assertEquals(0, result.size());
 	}
 
-@Test
-	void testSetAnnotations() {
+	@Test
+	public void testSetAnnotations() {
 		Enum artifact = new Enum("Type", "de.test.Type");
 	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
 	    	ArrayList<Annotation> annotations = new ArrayList<>();
@@ -88,7 +88,7 @@ public class EnumTest {
 	}
 	
 	@Test
-	void testSetNoAnnotations() {
+	public void testSetNoAnnotations() {
 		Enum artifact = new Enum("Type", "de.test.Type");
 	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
 	    	ArrayList<Annotation> annotations = new ArrayList<>();
@@ -102,7 +102,7 @@ public class EnumTest {
 	}
 	
 	@Test
-	void testSetNoAnnotationsFailed() {
+	public void testSetNoAnnotationsFailed() {
 		Enum artifact = new Enum("Type", "de.test.Type");
     	
 		artifact.setAnnotations(null, null);

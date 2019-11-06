@@ -40,7 +40,15 @@ public class Class extends Artifact {
 		
 	public Class(Record record) {
 		super(record, null);
-		
+		init();
+	}
+	
+	public Class(String name, String path) {
+		super(name, path, null);
+		init();
+	}
+	
+	private void init() {
 		if (getName().toUpperCase().contains("FACTORY")) 		setType(DDDType.FACTORY);
 		if (getName().toUpperCase().contains("REPOSITORY")) 	setType(DDDType.REPOSITORY);
 		if (getName().toUpperCase().contains("SERVICE")) 		setType(DDDType.SERVICE);
@@ -51,17 +59,6 @@ public class Class extends Artifact {
 		this.methods = new ArrayList<>();
 		this.implInterfaces = new ArrayList<>();
 		this.annotations = new ArrayList<>();
-	}
-	
-	public Class(String name, String path, DDDType type, ArrayList<Field> fields, ArrayList<Method> methods,
-			ArrayList<Interface> implInterfaces, Class superClass, ArrayList<Annotation> annotations) {
-		super(name, path, type);
-		
-		this.fields = fields;
-		this.methods = methods;
-		this.implInterfaces = implInterfaces;
-		this.superClass = superClass;
-		this.annotations = annotations;
 	}
 
 	public List<Field> getFields() {
