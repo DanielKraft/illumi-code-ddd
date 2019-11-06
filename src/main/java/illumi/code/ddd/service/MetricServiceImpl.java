@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import org.json.JSONObject;
 
 import illumi.code.ddd.model.DDDFitness;
+import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.artifacts.Artifact;
 import illumi.code.ddd.model.artifacts.Package;
 
@@ -29,9 +30,13 @@ public class MetricServiceImpl implements MetricService {
 				
 		calcFitness(fitness, structureService.getStructure());
 		
+		JSONObject metric = fitness.toJSON();
+		ArrayList<JSONObject> rating = getRating();
+				
 		return new JSONObject()
-				.put("metric", fitness.toJSON())
-				.put("rating", getRating());
+				.put("metric", metric)
+				.put("DDD", calcArtifactMetric(rating))
+				.put("rating", rating);
 	}
 
 	private void calcFitness(DDDFitness fitness, ArrayList<Artifact> artifacts) {
@@ -62,5 +67,29 @@ public class MetricServiceImpl implements MetricService {
 					getContainingArtifacts(result, ((Package) artifact).getConataints());
 				}
 			});
+	}
+
+	private JSONObject calcArtifactMetric(ArrayList<JSONObject> rating) {
+		return new JSONObject()
+				.put("#MODULE", countArtifact(DDDType.MODULE, rating))
+				.put("#ENTITY", countArtifact(DDDType.ENTITY, rating))
+				.put("#VALUE_OBJECT", countArtifact(DDDType.VALUE_OBJECT, rating))
+				.put("#AGGREGATE_ROOT", countArtifact(DDDType.AGGREGATE_ROOT, rating))
+				.put("#FACTORY", countArtifact(DDDType.FACTORY, rating))
+				.put("#REPOSITORY", countArtifact(DDDType.REPOSITORY, rating))
+				.put("#SERVICE", countArtifact(DDDType.SERVICE, rating))
+				.put("#APPLICATION_SERVICE", countArtifact(DDDType.APPLICATION_SERVICE, rating))
+				.put("#CONTROLLER", countArtifact(DDDType.CONTROLLER, rating))
+				.put("#INFRASTRUCTUR", countArtifact(DDDType.INFRASTRUCTUR, rating));
+	}
+	
+	private int countArtifact(DDDType type, ArrayList<JSONObject> rating) {
+		int ctr = 0;
+		for (JSONObject jsonObject : rating) {
+			if (jsonObject.get("DDD") == type) {
+				ctr++;
+			}
+		}
+		return ctr;
 	}
 }

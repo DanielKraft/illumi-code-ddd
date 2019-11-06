@@ -26,6 +26,7 @@ public abstract class Artifact {
 		this.name = name;
 		this.path = path;
 		this.type = type;
+		this.fitness = new DDDFitness();
 	}
 
 	@Override
