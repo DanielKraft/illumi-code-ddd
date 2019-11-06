@@ -92,6 +92,10 @@ public abstract class Artifact {
 		this.fitness = fitness;
 	}
 	
+	public DDDFitness getDDDFitness() {
+		return fitness;
+	}
+	
 	public double getFitness() {
 		return fitness.calculateFitness();
 	}

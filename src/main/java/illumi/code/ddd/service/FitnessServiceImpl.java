@@ -1,5 +1,7 @@
 package illumi.code.ddd.service;
 
+import java.util.ArrayList;
+
 import javax.inject.Inject;
 
 import org.json.JSONArray;
@@ -45,7 +47,14 @@ public class FitnessServiceImpl implements FitnessService {
 				DDDFitness fitness = new DDDFitness();
 				
 				if (structureService.getDomains().contains(item.getName())) {
-					fitness = new DDDFitness(2, item.getPath().contains(structureService.getPath() + "domain." + item.getName()) ? 2 : 1);
+					fitness = new DDDFitness(3, 1);
+					if (item.getPath().contains(structureService.getPath() + "domain." + item.getName())) {
+						fitness.incNumberOfFulfilledCriteria();
+					}
+					
+					if (containsAggregateRoot(item)) {
+						fitness.incNumberOfFulfilledCriteria();
+					}
 				} else if (containsInfrastructure(item)) {
 					fitness = new DDDFitness(2, item.getPath().contains(structureService.getPath() + "infrastructur") ? 2 : 1);
 				} else if (containsApplication(item)) {
@@ -59,6 +68,15 @@ public class FitnessServiceImpl implements FitnessService {
 				}
 				item.setFitness(fitness);
 			});
+	}
+
+	private boolean containsAggregateRoot(Package module) {
+		for (Artifact artifact : module.getConataints()) {
+			if (artifact.getType() == DDDType.AGGREGATE_ROOT) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private boolean containsInfrastructure(Package module) {
@@ -93,7 +111,7 @@ public class FitnessServiceImpl implements FitnessService {
 					evaluateValueObject(item);
 				} else if (item.getType() == DDDType.AGGREGATE_ROOT) {
 					LOGGER.info("DDD:AGGREGATE_ROOT:" + item.getName());
-					// TODO evaluateAggregateRoot(item);
+					evaluateAggregateRoot(item);
 				} else if (item.getType() == DDDType.FACTORY) {
 					LOGGER.info("DDD:FACTORY:" + item.getName());
 					evaluateFactory(item);
@@ -113,6 +131,32 @@ public class FitnessServiceImpl implements FitnessService {
 					item.setFitness(new DDDFitness());
 				}
 			});
+	}
+	
+	private void evaluateAggregateRoot(Class aggregate) {
+		evaluateEntity(aggregate);
+		DDDFitness fitness = aggregate.getDDDFitness();
+		
+		fitness.addNumberOfCriteria(6);
+		for (Artifact artifact : getDomainModule(aggregate.getDomain())) {
+			if (artifact.getType() == DDDType.REPOSITORY && artifact.getName().contains(aggregate.getName() + "Repository")) {
+				fitness.incNumberOfFulfilledCriteria();
+			} else if (artifact.getType() == DDDType.FACTORY && artifact.getName().contains(aggregate.getName() + "Factory")) {
+				fitness.incNumberOfFulfilledCriteria();
+			} else if (artifact.getType() == DDDType.SERVICE && artifact.getName().contains(aggregate.getName())) {
+				fitness.incNumberOfFulfilledCriteria();
+			}
+		}
+		
+	}
+
+	private ArrayList<Artifact> getDomainModule(String domain) {
+		for (Package module : structureService.getPackages()) {
+			if (module.getName().contains(domain)) {
+				return module.getConataints();
+			}
+		}
+		return new ArrayList<>();
 	}
 
 	private void evaluateEntity(Class entity) {
