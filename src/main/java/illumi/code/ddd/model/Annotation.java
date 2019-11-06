@@ -27,16 +27,14 @@ public class Annotation extends Artifact {
 	private ArrayList<Annotation> annotations;
 
 	public Annotation(Record record) {
-		super(record, null);
-		setFitness(new DDDFitness());
+		super(record, DDDType.INFRASTRUCTUR);
 		this.fields = new ArrayList<>();
 		this.methods = new ArrayList<>();
 		this.annotations = new ArrayList<>();
 	}
 	
-	public Annotation(String name, String path, DDDType type, ArrayList<Field> fields, ArrayList<Method> methods, ArrayList<Annotation> annotations) {
-		super(name, path, type);
-		setFitness(new DDDFitness());
+	public Annotation(String name, String path, ArrayList<Field> fields, ArrayList<Method> methods, ArrayList<Annotation> annotations) {
+		super(name, path, DDDType.INFRASTRUCTUR);
 		this.fields = fields;
 		this.methods = methods;
 		this.annotations = annotations;

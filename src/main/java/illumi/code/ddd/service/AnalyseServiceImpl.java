@@ -48,10 +48,12 @@ public class AnalyseServiceImpl implements AnalyseService {
     	analyzeInterfaces();
     	analyzeEnums();
     	analyzeAnnotations();
+    	
+    	setupDomains();
     	return structureService.getJOSN();
     }
-    
-    private ArrayList<Artifact> getArtifacts(String path) {
+	
+	private ArrayList<Artifact> getArtifacts(String path) {
     	try ( Session session = driver.session() ) {
     		StatementResult result = session.run( QUERY_ARTIFACT, Values.parameters( "path", path ));
         	return convertResultToArtifacts(result);
@@ -192,4 +194,50 @@ public class AnalyseServiceImpl implements AnalyseService {
 				item.setAnnotations(driver, structureService.getAnnotations());
 			});
 	}
+
+    private void setupDomains() {
+		structureService.getClasses().stream()
+			.parallel()
+			.forEach(item -> {
+				if (item.getType() == DDDType.ENTITY 
+					|| item.getType() == DDDType.VALUE_OBJECT 
+					|| item.getType() == DDDType.SERVICE 
+					|| item.getType() == DDDType.REPOSITORY 
+					|| item.getType() == DDDType.FACTORY) {
+					String[] split = item.getPath().split("[.]");
+					if (split.length >= 2) {
+						String domain = split[split.length-2];
+						structureService.addDomain(domain);
+						item.setDomain(domain);
+					}
+				}
+			});
+		
+		structureService.getInterfaces().stream()
+			.parallel()
+			.forEach(item -> {
+				if (item.getType() == DDDType.SERVICE 
+					|| item.getType() == DDDType.REPOSITORY 
+					|| item.getType() == DDDType.FACTORY) {
+					String[] split = item.getPath().split("[.]");
+					if (split.length >= 2) {
+						String domain = split[split.length-2];
+						structureService.addDomain(domain);
+						item.setDomain(domain);
+					}
+				}
+			});
+		
+		structureService.getEnums().stream()
+			.parallel()
+			.forEach(item -> {
+				String[] split = item.getPath().split("[.]");
+				if (split.length >= 2) {
+					String domain = split[split.length-2];
+					structureService.addDomain(domain);
+					item.setDomain(domain);
+				}
+			});
+	}
+
 }

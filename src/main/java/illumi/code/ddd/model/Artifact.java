@@ -8,6 +8,8 @@ public abstract class Artifact {
 	private String name;
 	private String path;
 	
+	private String domain;
+	
 	private DDDType type;
 	private DDDFitness fitness;
 	
@@ -66,6 +68,14 @@ public abstract class Artifact {
 		return this.path;
 	}
 	
+	public String getDomain() {
+		return domain;
+	}
+
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+
 	public void setPath(String path) {
 		this.path = path;
 	}
@@ -87,6 +97,10 @@ public abstract class Artifact {
 	}
 
 	public JSONObject toJSON() {
-		return new JSONObject() .put("name", name).put("DDD", type).put("fitness", fitness != null ? getFitness() : null);
+		return new JSONObject()
+				.put("name", name)
+				.put("DDD", type)
+				.put("domain", domain)
+				.put("fitness", fitness != null ? getFitness() : null);
 	}
 }

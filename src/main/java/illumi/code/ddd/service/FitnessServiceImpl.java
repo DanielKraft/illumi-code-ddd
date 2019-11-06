@@ -31,6 +31,7 @@ public class FitnessServiceImpl implements FitnessService {
 		evaluateModules();
 		evaluateClasses();
 		evaluateInterfaces();
+		evaluateAnnotations();
 		return structureService.getJOSN();
 	}
 	
@@ -326,5 +327,15 @@ public class FitnessServiceImpl implements FitnessService {
 		}
 		
 		factory.setFitness(fitness);
+	}
+
+	private void evaluateAnnotations() {
+		LOGGER.info("Evaluation of Annotations");
+		structureService.getInterfaces().stream()
+			.parallel()
+			.forEach(item -> {
+				LOGGER.info("DDD:INFRASTRUCTUR:" + item.getName());
+				item.setFitness(new DDDFitness(1, item.getPath().contains("infrastructure.") ? 1 : 0));
+			});
 	}
 }

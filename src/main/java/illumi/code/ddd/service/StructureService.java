@@ -29,6 +29,8 @@ public class StructureService {
 	
 	public StructureService () {
 		this.structure = new ArrayList<>();
+		this.domains = new ArrayList<>();
+		this.packages = new ArrayList<>();
 		this.classes = new ArrayList<>();
 		this.interfaces = new ArrayList<>();
 		this.enums = new ArrayList<>();
@@ -57,7 +59,9 @@ public class StructureService {
 	}
 
 	public void addDomain(String domain) {
-		this.domains.add(domain);
+		if (!this.domains.contains(domain)) {
+			this.domains.add(domain);
+		}
 	}
 	
 	public ArrayList<Package> getPackages() {

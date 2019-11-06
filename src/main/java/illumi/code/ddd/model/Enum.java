@@ -30,8 +30,8 @@ public class Enum extends Artifact {
 		this.annotations = new ArrayList<>();
 	}
 
-	public Enum(String name, String path, DDDType type, ArrayList<Field> fields, ArrayList<Annotation> annotations) {
-		super(name, path, type);
+	public Enum(String name, String path, ArrayList<Field> fields, ArrayList<Annotation> annotations) {
+		super(name, path, DDDType.VALUE_OBJECT);
 		setFitness(new DDDFitness());
 		this.fields = fields;
 		this.annotations = annotations;
