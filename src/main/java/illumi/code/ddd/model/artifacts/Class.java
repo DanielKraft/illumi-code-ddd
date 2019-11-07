@@ -148,7 +148,7 @@ public class Class extends Artifact {
 		    
 		    if (superPath != null) {
 		    	for (Class c : classes) {
-					if (c.getPath().contains(superPath)) {
+					if (c.getPath().equals(superPath)) {
 						this.superClass = c;
 						
 						break;

@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.Session;
@@ -20,6 +21,7 @@ import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Enum;
 import illumi.code.ddd.model.artifacts.Field;
 import illumi.code.ddd.model.artifacts.Interface;
+import illumi.code.ddd.model.artifacts.Method;
 import illumi.code.ddd.model.artifacts.Package;
 
 public class AnalyseServiceImpl implements AnalyseService {
@@ -89,7 +91,7 @@ public class AnalyseServiceImpl implements AnalyseService {
 					Enum newEnum = new Enum(item);
 					structureService.addEnums(newEnum);
 					artifacts.add(newEnum);
-				} else if (types.contains("Annotation")) {
+				} else {
 					Annotation newAnnotation = new Annotation(item);
 					structureService.addAnnotations(newAnnotation);
 					artifacts.add(newAnnotation);
@@ -118,39 +120,46 @@ public class AnalyseServiceImpl implements AnalyseService {
 			.parallel()
 			.forEach(item -> {
 				if (item.getType() == null) {
-					if (isEntity(item)) {
-						item.setType(DDDType.ENTITY);
-					} else if (isService(item)) {
-						item.setType(DDDType.SERVICE);
-					} else if (isValueObject(item)) {
+					
+					if (isValueObject(item)) {
 						item.setType(DDDType.VALUE_OBJECT);
+					} else if (isEntity(item)) {
+						item.setType(DDDType.ENTITY);
+					} else if (isService(item)) { 
+						item.setType(DDDType.SERVICE);
 					} else {
 						item.setType(DDDType.INFRASTRUCTUR);
 					}
 				} 
 			});
+
 	}
 	
-	private boolean isEntity(Class item) {
-		for (Field field : item.getFields()) {
-			for (Class type: structureService.getClasses()) {
-				if (type.getType() == DDDType.ENTITY && field.getType().contains(type.getPath())) {
-					return true;
-				}
+	private boolean isEntity(Class artifact) {
+		
+		for (Field field : artifact.getFields()) {
+			if (isConstant(field)) {
+				return false;
 			}
 		}
-		return false;
+		return artifact.getFields().size() > 0 && !containsEntityName(artifact) && conatiansGetterSetter(artifact);
 	}
 
 	private boolean isValueObject(Class artifact) {
-		int counter = 0;
+		int ctr = 0;
 		for (Field field : artifact.getFields()) {
-			if (field.getType().contains("java.") || field.getType().contains(structureService.getPath())) {
-				counter++;
+			if (isConstant(field)) {
+				return false;
+			} else if (field.getType().contains("java.lang.") || field.getType().contains(structureService.getPath())) {
+				ctr++;
 			}
 		}
 		
-		return artifact.getFields().size() != 0 && counter == artifact.getFields().size();
+		return artifact.getFields().size() != 0 && ctr == artifact.getFields().size() && conatiansGetterSetter(artifact);
+	}
+
+	private boolean isConstant(Field field) {
+		return StringUtils.isAllUpperCase(field.getName());
 	}
 	
 	private boolean isService(Class item) {
@@ -159,9 +168,21 @@ public class AnalyseServiceImpl implements AnalyseService {
 				return true;
 			}
 		}
-		
+		return containsEntityName(item);
+	}
+	
+	private boolean conatiansGetterSetter(Class item) {
+		for (Method method : item.getMethods()) {
+			if (method.getName().startsWith("get") || method.getName().startsWith("set")) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean containsEntityName(Class item) {
 		for (Class artifact : structureService.getClasses()) {
-			if (item != artifact && item.getName().contains(artifact.getName())) {
+			if (item != artifact && item.getName().contains(artifact.getName()) && !item.getName().equals(artifact.getName() + "s")) {
 				return true;
 			}
 		}
@@ -207,12 +228,7 @@ public class AnalyseServiceImpl implements AnalyseService {
 					|| item.getType() == DDDType.SERVICE 
 					|| item.getType() == DDDType.REPOSITORY 
 					|| item.getType() == DDDType.FACTORY) {
-					String[] split = item.getPath().split("[.]");
-					if (split.length >= 2) {
-						String domain = split[split.length-2];
-						structureService.addDomain(domain);
-						item.setDomain(domain);
-					}
+					addDomain(item);
 				}
 			});
 		
@@ -222,25 +238,22 @@ public class AnalyseServiceImpl implements AnalyseService {
 				if (item.getType() == DDDType.SERVICE 
 					|| item.getType() == DDDType.REPOSITORY 
 					|| item.getType() == DDDType.FACTORY) {
-					String[] split = item.getPath().split("[.]");
-					if (split.length >= 2) {
-						String domain = split[split.length-2];
-						structureService.addDomain(domain);
-						item.setDomain(domain);
-					}
+					addDomain(item);
 				}
 			});
 		
 		structureService.getEnums().stream()
 			.parallel()
 			.forEach(item -> {
-				String[] split = item.getPath().split("[.]");
-				if (split.length >= 2) {
-					String domain = split[split.length-2];
-					structureService.addDomain(domain);
-					item.setDomain(domain);
-				}
+				addDomain(item);
 			});
+	}
+
+	private void addDomain(Artifact item) {
+		String[] split = item.getPath().split("[.]");
+		String domain = split[split.length-2];
+		structureService.addDomain(domain);
+		item.setDomain(domain);
 	}
     
     public void analyseDomains() {

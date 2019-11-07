@@ -46,9 +46,15 @@ public class Interface extends Artifact {
 	}
 	
 	private void init() {
-		if (getName().toUpperCase().contains("FACTORY")) 		setType(DDDType.FACTORY);
-		if (getName().toUpperCase().contains("REPOSITORY")) 	setType(DDDType.REPOSITORY);
-		if (getName().toUpperCase().contains("SERVICE")) 		setType(DDDType.SERVICE);
+		if (getName().toUpperCase().contains("FACTORY")) {
+			setType(DDDType.FACTORY);
+		}
+		else if (getName().toUpperCase().contains("REPOSITORY")) {
+			setType(DDDType.REPOSITORY);
+		}
+		else {
+			setType(DDDType.SERVICE);
+		}
 		
 		this.fields = new ArrayList<>();
 		this.methods = new ArrayList<>();
