@@ -21,7 +21,7 @@ public class Interface extends Artifact {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(Class.class);
 	
-	private static final String QUERY_FIELDS 				= "MATCH (i:Interface)-[:DECLARES]->(f:Field) WHERE i.fqn= {path} RETURN DISTINCT f.name as name, f.signature as signature, f.visibility as visibility";
+	private static final String QUERY_FIELDS 				= "MATCH (i:Interface)-[:DECLARES]->(f:Field) WHERE i.fqn= {path} RETURN DISTINCT f.name as name, f.signature as type, f.visibility as visibility";
 	private static final String QUERY_METHODS				= "MATCH (i:Interface)-[:DECLARES]->(m:Method) WHERE i.fqn = {path} RETURN DISTINCT m.visibility as visibility, m.name as name, m.signature as signature";
 	private static final String QUERY_IMPL 					= "MATCH (i1:Interface)-[:IMPLEMENTS]->(i2:Interface) WHERE i1.fqn= {path} RETURN i2.fqn as interface";
 	private static final String QUERY_PARENT_ANNOTATIONS	= "MATCH (parent:Interface)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} RETURN DISTINCT type.fqn as annotation";
@@ -49,8 +49,6 @@ public class Interface extends Artifact {
 		if (getName().toUpperCase().contains("FACTORY")) 		setType(DDDType.FACTORY);
 		if (getName().toUpperCase().contains("REPOSITORY")) 	setType(DDDType.REPOSITORY);
 		if (getName().toUpperCase().contains("SERVICE")) 		setType(DDDType.SERVICE);
-		if (getName().toUpperCase().contains("APPLICATION"))	setType(DDDType.APPLICATION_SERVICE);
-		if (getName().toUpperCase().contains("CONTROLLER"))		setType(DDDType.CONTROLLER);
 		
 		this.fields = new ArrayList<>();
 		this.methods = new ArrayList<>();
@@ -58,6 +56,10 @@ public class Interface extends Artifact {
 		this.annotations = new ArrayList<>();
 	}
 
+	public List<Field> getFields() {
+		return fields;
+	}
+	
 	public void setFields(Driver driver) {
     	try ( Session session = driver.session() ) {
     		StatementResult result = session.run( QUERY_FIELDS, Values.parameters( "path", getPath() ) );
@@ -75,6 +77,10 @@ public class Interface extends Artifact {
 					fields.add(new Field( item ));
 		        }
 			});
+	}
+	
+	public List<Method> getMethods() {
+		return methods;
 	}
 	
 	public void setMethods(Driver driver) {
@@ -95,14 +101,6 @@ public class Interface extends Artifact {
 			        methods.add(newMethod);
 		        }
 			});
-	}
-	
-	public List<Field> getFields() {
-		return fields;
-	}
-
-	public List<Method> getMethods() {
-		return methods;
 	}
 
 	public List<Interface> getInterfaces() {

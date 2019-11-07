@@ -15,37 +15,34 @@ import org.neo4j.harness.TestServerBuilders;
 import illumi.code.ddd.model.DDDType;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class ClassTest {
+public class InterfaceTest {
 	private ServerControls embeddedDatabaseServer;
 	
 	@BeforeAll
 	public void initializeNeo4j() {
 		this.embeddedDatabaseServer = TestServerBuilders
 	        .newInProcessBuilder()
-	        .withFixture( "CREATE(c:Java:Class{fqn: 'de.test.Class', name: 'Class'})"
+	        .withFixture( "CREATE(i:Java:Interface{fqn: 'de.test.Interface', name: 'Interface'})"
 		        		// Field setup
 		        			+ "CREATE(f1:Java:Field{name: 'name', signature: 'java.lang.String name', visibility: 'public'})"
-		        			+ "CREATE(c)-[:DECLARES]->(f1)"
-		        			+ "CREATE(f2:Java:Field{name: 'classId', signature: 'java.lang.Integer classId', visibility: 'private'})"
-		        			+ "CREATE(c)-[:DECLARES]->(f2)"
+		        			+ "CREATE(i)-[:DECLARES]->(f1)"
+		        			+ "CREATE(f2:Java:Field{name: 'interfaceId', signature: 'java.lang.Integer interfaceId', visibility: 'public'})"
+		        			+ "CREATE(i)-[:DECLARES]->(f2)"
 		        			+ "CREATE(f3:Java:Field{})"
-		        			+ "CREATE(c)-[:DECLARES]->(f3)"
+		        			+ "CREATE(i)-[:DECLARES]->(f3)"
 		        		// Method setup
-		        			+ "CREATE(m1:Java:Method{name: 'init', signature: 'void init()', visibility: 'private'})"
-				        	+ "CREATE(c)-[:DECLARES]->(m1)"
+		        			+ "CREATE(m1:Java:Method{name: 'init', signature: 'void init()', visibility: 'public'})"
+				        	+ "CREATE(i)-[:DECLARES]->(m1)"
 				        	+ "CREATE(m2:Java:Method{name: 'exec', signature: 'void exec(java.lang.Integer)', visibility: 'public'})"
-				        	+ "CREATE(c)-[:DECLARES]->(m2)"
+				        	+ "CREATE(i)-[:DECLARES]->(m2)"
 		        			+ "CREATE(m3:Java:Method{})"
-		        			+ "CREATE(c)-[:DECLARES]->(m3)"
+		        			+ "CREATE(i)-[:DECLARES]->(m3)"
 		        		// Interface setup
-		        			+ "CREATE(i:Java:Interface{fqn: 'de.test.Interface', name: 'Interface'})"
-		        			+ "CREATE(c)-[:IMPLEMENTS]->(i)"
-		        		// Superclass setup
-		        			+ "CREATE(e:Java:Class{fqn: 'de.test.SuperClass', name: 'SuperClass'})"
-		        			+ "CREATE(c)-[:EXTENDS]->(e)"
+		        			+ "CREATE(impl:Java:Interface{fqn: 'de.test.ImplInterface', name: 'ImplInterface'})"
+		        			+ "CREATE(i)-[:IMPLEMENTS]->(impl)"
 		        		// Annotation setup
 							+ "CREATE(a:Java:Annotation{name: 'Anno'})"
-							+ "CREATE(c)-[:ANNOTATED_BY]->(a)"
+							+ "CREATE(i)-[:ANNOTATED_BY]->(a)"
 							+ "CREATE(t:Type{fqn: 'de.test.Anno'})"
 							+ "CREATE(a)-[:OF_TYPE]->(t)"
 	        ).newServer(); 
@@ -53,42 +50,28 @@ public class ClassTest {
 	
 	@Test
 	public void testInitFactory() {
-		Class artifact = new Class("ClassFactory", "de.test.ClassFactory");
+		Interface artifact = new Interface("InterfaceFactory", "de.test.InterfaceFactory");
 		
 		assertEquals(DDDType.FACTORY, artifact.getType());
 	}
 	
 	@Test
 	public void testInitRepository() {
-		Class artifact = new Class("ClassRepository", "de.test.ClassRepository");
+		Interface artifact = new Interface("InterfaceRepository", "de.test.InterfaceRepository");
 		
 		assertEquals(DDDType.REPOSITORY, artifact.getType());
 	}
 	
 	@Test
 	public void testInitService() {
-		Class artifact = new Class("ClassService", "de.test.ClassService");
+		Interface artifact = new Interface("InterfaceService", "de.test.InterfaceService");
 		
 		assertEquals(DDDType.SERVICE, artifact.getType());
 	}
 	
 	@Test
-	public void testInitApplicationService() {
-		Class artifact = new Class("ClassApplicationService", "de.test.ClassApplicationService");
-		
-		assertEquals(DDDType.APPLICATION_SERVICE, artifact.getType());
-	}
-	
-	@Test
-	public void testInitController() {
-		Class artifact = new Class("ClassController", "de.test.ClassController");
-		
-		assertEquals(DDDType.CONTROLLER, artifact.getType());
-	}
-	
-	@Test
 	public void testSetFields() {
-		Class artifact = new Class("Class", "de.test.Class");
+		Interface artifact = new Interface("Interface", "de.test.Interface");
 		try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
 			artifact.setFields(driver);
 			
@@ -96,9 +79,9 @@ public class ClassTest {
 			
 			assertEquals(2, result.size());
 	    	
-	    	assertEquals("classId", result.get(0).getName());
+	    	assertEquals("interfaceId", result.get(0).getName());
 	    	assertEquals("java.lang.Integer", result.get(0).getType());
-	    	assertEquals("private", result.get(0).getVisibility());
+	    	assertEquals("public", result.get(0).getVisibility());
 	    	
 	    	assertEquals("name", result.get(1).getName());
 	    	assertEquals("java.lang.String", result.get(1).getType());
@@ -109,7 +92,7 @@ public class ClassTest {
 	
 	@Test
 	public void testSetFieldsFailed() {
-		Class artifact = new Class("Class", "de.test.Class");
+		Interface artifact = new Interface("Interface", "de.test.Interface");
     	
 		artifact.setFields(null);
     	
@@ -117,10 +100,10 @@ public class ClassTest {
     	
     	assertEquals(0, result.size());
 	}
-
+	
 	@Test
 	public void testSetMethods() {
-		Class artifact = new Class("Class", "de.test.Class");
+		Interface artifact = new Interface("Interface", "de.test.Interface");
 		try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
 			artifact.setMethods(driver);
 			
@@ -134,13 +117,13 @@ public class ClassTest {
 	    	
 	    	assertEquals("init", result.get(1).getName());
 	    	assertEquals("void init()", result.get(1).getSignature());
-	    	assertEquals("private", result.get(1).getVisibility());
+	    	assertEquals("public", result.get(1).getVisibility());
 		}
 	}
 	
 	@Test
 	public void testSetMethodsFailed() {
-		Class artifact = new Class("Class", "de.test.Class");
+		Interface artifact = new Interface("Interface", "de.test.Interface");
     	
 		artifact.setMethods(null);
     	
@@ -151,11 +134,11 @@ public class ClassTest {
 	
 	@Test
 	public void testSetImplInterfaces() {
-		Class artifact = new Class("Class", "de.test.Class");
+		Interface artifact = new Interface("Interface", "de.test.Interface");
 	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
 	    	ArrayList<Interface> interfaces = new ArrayList<>();
 	    	interfaces.add(new Interface("OtherInterface", "de.other.OtherInterface"));
-	    	interfaces.add(new Interface("Interface", "de.test.Interface"));
+	    	interfaces.add(new Interface("ImplInterface", "de.test.ImplInterface"));
 	    	
 	    	artifact.setImplInterfaces(driver, interfaces);
 	    	
@@ -163,14 +146,14 @@ public class ClassTest {
 	    	
 			assertEquals(1, result.size());
 			
-	    	assertEquals("Interface", result.get(0).getName());
-	    	assertEquals("de.test.Interface", result.get(0).getPath());
+	    	assertEquals("ImplInterface", result.get(0).getName());
+	    	assertEquals("de.test.ImplInterface", result.get(0).getPath());
 	    }
 	}
 	
 	@Test
 	public void testSetNoImplInterfaces() {
-		Class artifact = new Class("Class", "de.test.Class");
+		Interface artifact = new Interface("Interface", "de.test.Interface");
 	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
 	    	ArrayList<Interface> interfaces = new ArrayList<>();
 	    	
@@ -184,7 +167,7 @@ public class ClassTest {
 	
 	@Test
 	public void testSetImplInterfacesFailed() {
-		Class artifact = new Class("Class", "de.test.Class");
+		Interface artifact = new Interface("Interface", "de.test.Interface");
 		
 		artifact.setImplInterfaces(null, null);
 		
@@ -194,64 +177,8 @@ public class ClassTest {
 	}
 	
 	@Test
-	public void testSetSuperClass() {
-		Class artifact = new Class("Class", "de.test.Class");
-	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
-	    	ArrayList<Class> classes = new ArrayList<>();
-	    	classes.add(new Class("OtherClass", "de.test.OtherClass"));
-	    	classes.add(new Class("SuperClass", "de.test.SuperClass"));
-	    	
-	    	artifact.setSuperClass(driver, classes);
-	    	
-	    	Class result = artifact.getSuperClass();
-	    	
-	    	assertEquals("SuperClass", result.getName());
-	    	assertEquals("de.test.SuperClass", result.getPath());
-	    }
-	}
-	
-	@Test
-	public void testSetNoSuperClass() {
-		Class artifact = new Class("OtherClass", "de.test.OtherClass");
-	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
-	    	ArrayList<Class> classes = new ArrayList<>();
-	    	
-	    	artifact.setSuperClass(driver, classes);
-	    	
-	    	Class result = artifact.getSuperClass();
-	    	
-	    	assertEquals(null, result);
-	    }
-	}
-	
-	@Test
-	public void testSetNoAvalibleSuperClass() {
-		Class artifact = new Class("Class", "de.test.Class");
-	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
-	    	ArrayList<Class> classes = new ArrayList<>();
-	    	
-	    	artifact.setSuperClass(driver, classes);
-	    	
-	    	Class result = artifact.getSuperClass();
-	    	
-	    	assertEquals(null, result);
-	    }
-	}
-	
-	@Test
-	public void testSetSuperClassFailed() {
-		Class artifact = new Class("Class", "de.test.Class");
-    	
-		artifact.setSuperClass(null, null);
-		
-		Class result = artifact.getSuperClass();
-    	
-    	assertEquals(null, result);
-	}
-	
-	@Test
 	public void testSetAnnotations() {
-		Class artifact = new Class("Class", "de.test.Class");
+		Interface artifact = new Interface("Interface", "de.test.Interface");
 	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
 	    	ArrayList<Annotation> annotations = new ArrayList<>();
 	    	annotations.add(new Annotation("NoAnno", "de.test.NoAnno"));
@@ -271,7 +198,7 @@ public class ClassTest {
 	
 	@Test
 	public void testSetNoAnnotations() {
-		Class artifact = new Class("Class", "de.test.Class");
+		Interface artifact = new Interface("Interface", "de.test.Interface");
 	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
 	    	ArrayList<Annotation> annotations = new ArrayList<>();
 	    	
@@ -285,7 +212,7 @@ public class ClassTest {
 	
 	@Test
 	public void testSetAnnotationsFailed() {
-		Class artifact = new Class("Class", "de.test.Class");
+		Interface artifact = new Interface("Interface", "de.test.Interface");
     	
 		artifact.setAnnotations(null, null);
 		
