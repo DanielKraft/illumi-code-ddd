@@ -63,6 +63,6 @@ public class DDDFitness {
 				.put("criteria", new JSONObject()
 						.put("total", numberOfCriteria)
 						.put("fulfilled", numberOfFulfilledCriteria))
-				.put("fitness (%)", calculateFitness());
+				.put("fitness", calculateFitness());
 	}
 }
