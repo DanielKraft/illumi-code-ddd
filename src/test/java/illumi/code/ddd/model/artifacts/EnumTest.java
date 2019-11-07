@@ -72,7 +72,7 @@ public class EnumTest {
 		Enum artifact = new Enum("Type", "de.test.Type");
 	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
 	    	ArrayList<Annotation> annotations = new ArrayList<>();
-	    	annotations.add(new Annotation("NoAnno", "de.test.NoAnno"));
+	    	annotations.add(new Annotation("NoAnno", "de.other.NoAnno"));
 	    	annotations.add(new Annotation("Anno", "de.test.Anno"));
 	    	
 	    	artifact.setAnnotations(driver, annotations);

@@ -254,7 +254,7 @@ public class ClassTest {
 		Class artifact = new Class("Class", "de.test.Class");
 	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
 	    	ArrayList<Annotation> annotations = new ArrayList<>();
-	    	annotations.add(new Annotation("NoAnno", "de.test.NoAnno"));
+	    	annotations.add(new Annotation("NoAnno", "de.other.NoAnno"));
 	    	annotations.add(new Annotation("Anno", "de.test.Anno"));
 	    	
 	    	artifact.setAnnotations(driver, annotations);

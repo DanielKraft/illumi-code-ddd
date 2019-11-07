@@ -20,9 +20,9 @@ public class Package extends Artifact {
 		this.conataints = new ArrayList<>();
 	}
 
-	public Package(Record record, DDDType type, ArrayList<Artifact> conataints) {
-		super(record, type);
-		this.conataints = conataints;
+	public Package(String name, String path) {
+		super(name, path, DDDType.MODULE);
+		this.conataints = new ArrayList<>();
 	}
 
 	public ArrayList<Artifact> getConataints() {

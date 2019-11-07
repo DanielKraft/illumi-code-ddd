@@ -30,26 +30,18 @@ public class Annotation extends Artifact {
 
 	public Annotation(Record record) {
 		super(record, DDDType.INFRASTRUCTUR);
-		this.fields = new ArrayList<>();
-		this.methods = new ArrayList<>();
-		this.annotations = new ArrayList<>();
+		init();
 	}
 	
 	public Annotation(String name, String path) {
 		super(name, path, DDDType.INFRASTRUCTUR);
+		init();
+	}
+	
+	private void init() {
 		this.fields = new ArrayList<>();
 		this.methods = new ArrayList<>();
 		this.annotations = new ArrayList<>();
-	}
-
-	public List<Annotation> getAnnotations() {
-		return annotations;
-	}
-
-	public void addAnnotations(Annotation annotation) {
-		if (!this.annotations.contains(annotation)) {
-			this.annotations.add(annotation);
-		}
 	}
 	
 	public List<Field> getFields() {
@@ -97,6 +89,10 @@ public class Annotation extends Artifact {
 			        methods.add(newMethod);
 		        }
 			});
+	}
+	
+	public List<Annotation> getAnnotations() {
+		return annotations;
 	}
 	
 	public void setAnnotations(Driver driver, ArrayList<Annotation> annotations) {
