@@ -19,7 +19,7 @@ import illumi.code.ddd.model.DDDType;
  */
 public class Interface extends Artifact {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(Class.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Interface.class);
 	
 	private static final String QUERY_FIELDS 				= "MATCH (i:Interface)-[:DECLARES]->(f:Field) WHERE i.fqn= {path} RETURN DISTINCT f.name as name, f.signature as type, f.visibility as visibility";
 	private static final String QUERY_METHODS				= "MATCH (i:Interface)-[:DECLARES]->(m:Method) WHERE i.fqn = {path} RETURN DISTINCT m.visibility as visibility, m.name as name, m.signature as signature";
@@ -92,13 +92,13 @@ public class Interface extends Artifact {
 	public void setMethods(Driver driver) {
     	try ( Session session = driver.session() ) {
     		StatementResult result = session.run( QUERY_METHODS, Values.parameters( "path", getPath() ) );
-    		convertResultToMethods(result, driver);
+    		convertResultToMethods(result);
     	} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 		}
     }
 	
-	private void convertResultToMethods(StatementResult result, Driver driver) {
+	private void convertResultToMethods(StatementResult result) {
 		result.stream()
 			.parallel()
 			.forEach(item -> {
@@ -113,7 +113,7 @@ public class Interface extends Artifact {
 		return implInterfaces;
 	}
 	
-	public void setImplInterfaces(Driver driver, ArrayList<Interface> interfaces) {
+	public void setImplInterfaces(Driver driver, List<Interface> interfaces) {
     	try ( Session session = driver.session() ) {
     		StatementResult result = session.run( QUERY_IMPL, Values.parameters( "path", getPath() ) );
     		convertResultToInterface(result, interfaces);
@@ -122,7 +122,7 @@ public class Interface extends Artifact {
 		}
     }
 	
-	private void convertResultToInterface(StatementResult result, ArrayList<Interface> interfaces) {		
+	private void convertResultToInterface(StatementResult result, List<Interface> interfaces) {		
 		result.stream()
 			.parallel()
 			.forEach(item -> {
@@ -141,7 +141,7 @@ public class Interface extends Artifact {
 		return annotations;
 	}
 	
-	public void setAnnotations(Driver driver, ArrayList<Annotation> annotations) {
+	public void setAnnotations(Driver driver, List<Annotation> annotations) {
 		try ( Session session = driver.session() ) {
 			setAnnotations(annotations, session, QUERY_PARENT_ANNOTATIONS);
     		
@@ -151,8 +151,8 @@ public class Interface extends Artifact {
 		}
 	}
 
-	private void setAnnotations(ArrayList<Annotation> annotations, Session session, String Query) {
-		session.run( Query, Values.parameters( "path", getPath()) )
+	private void setAnnotations(List<Annotation> annotations, Session session, String query) {
+		session.run( query, Values.parameters( "path", getPath()) )
 			.stream()
 			.parallel()
 			.forEach(item -> {

@@ -19,11 +19,13 @@ import illumi.code.ddd.model.DDDFitness;
 
 public class FitnessServiceImpl implements FitnessService {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(AnalyseServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(FitnessServiceImpl.class);
 	        
     private StructureService structureService;
     
-    public @Inject FitnessServiceImpl() { }
+    public @Inject FitnessServiceImpl() {
+    	// @Inject is needed
+    }
     
     @Override
     public void setStructureService(StructureService structureService) {
@@ -44,31 +46,57 @@ public class FitnessServiceImpl implements FitnessService {
 		structureService.getPackages().stream()
 			.parallel()
 			.forEach(item -> {
-				LOGGER.info("DDD:MODULE:" + item.getName());
+				LOGGER.info("DDD:MODULE:{}", item.getName());
 				DDDFitness fitness = new DDDFitness();
 				
-				if (structureService.getDomains().contains(item.getName())) {
-					fitness = new DDDFitness(3, 1);
-					if (item.getPath().contains(structureService.getPath() + "domain." + item.getName())) {
-						fitness.incNumberOfFulfilledCriteria();
-					}
-					
-					if (containsAggregateRoot(item)) {
-						fitness.incNumberOfFulfilledCriteria();
-					}
+				if (isDomainModule(item)) {
+					fitness = evaluateDomainModule(item);
 				} else if (containsInfrastructure(item)) {
-					fitness = new DDDFitness(2, item.getPath().contains(structureService.getPath() + "infrastructur") ? 2 : 1);
+					fitness = evaluateInfrastructureModule(item);
 				} else if (containsApplication(item)) {
-					fitness = new DDDFitness(2, item.getPath().contains(structureService.getPath() + "application") ? 2 : 1);
-				} else if (item.getName().contains(structureService.getPath() + "domain") 
-							|| item.getName().contains(structureService.getPath() + "infrastructur") 
-							|| item.getName().contains(structureService.getPath() + "application")) {
+					fitness = evaluateApplicationModule(item);
+				} else if (isDDDRootStructure(item)) {
 					fitness = new DDDFitness(1, 1);
 				} else {
 					fitness = new DDDFitness(1, 0);
 				}
 				item.setFitness(fitness);
 			});
+	}
+
+	private DDDFitness evaluateInfrastructureModule(Package item) {
+		DDDFitness fitness;
+		fitness = new DDDFitness(2, item.getPath().contains(structureService.getPath() + "infrastructur") ? 2 : 1);
+		return fitness;
+	}
+
+	private DDDFitness evaluateApplicationModule(Package item) {
+		DDDFitness fitness;
+		fitness = new DDDFitness(2, item.getPath().contains(structureService.getPath() + "application") ? 2 : 1);
+		return fitness;
+	}
+
+	private boolean isDDDRootStructure(Package item) {
+		return item.getName().contains(structureService.getPath() + "domain") 
+					|| item.getName().contains(structureService.getPath() + "infrastructur") 
+					|| item.getName().contains(structureService.getPath() + "application");
+	}
+
+	private DDDFitness evaluateDomainModule(Package item) {
+		DDDFitness fitness;
+		fitness = new DDDFitness(3, 1);
+		if (item.getPath().contains(structureService.getPath() + "domain." + item.getName())) {
+			fitness.incNumberOfFulfilledCriteria();
+		}
+		
+		if (containsAggregateRoot(item)) {
+			fitness.incNumberOfFulfilledCriteria();
+		}
+		return fitness;
+	}
+
+	private boolean isDomainModule(Package item) {
+		return structureService.getDomains().contains(item.getName());
 	}
 
 	private boolean containsAggregateRoot(Package module) {
@@ -104,68 +132,105 @@ public class FitnessServiceImpl implements FitnessService {
 		structureService.getClasses().stream()
 			.parallel()
 			.forEach(item -> {
-				if (item.getType() == DDDType.ENTITY) {
-					LOGGER.info("DDD:ENTITY:" + item.getName());
-					evaluateEntity(item);
-				} else if (item.getType() == DDDType.VALUE_OBJECT) {
-					LOGGER.info("DDD:VALUE_OBJECT:" + item.getName());
-					evaluateValueObject(item);
-				} else if (item.getType() == DDDType.AGGREGATE_ROOT) {
-					LOGGER.info("DDD:AGGREGATE_ROOT:" + item.getName());
-					evaluateAggregateRoot(item);
-				} else if (item.getType() == DDDType.FACTORY) {
-					LOGGER.info("DDD:FACTORY:" + item.getName());
-					evaluateFactory(item);
-				} else if (item.getType() == DDDType.REPOSITORY) {
-					LOGGER.info("DDD:REPOSITORY:" + item.getName());
-					evaluateRepository(item); 
-				} else if (item.getType() == DDDType.SERVICE) {
-					LOGGER.info("DDD:SERVICE:" + item.getName());
-					evaluateService(item);
-				} else if (item.getType() == DDDType.APPLICATION_SERVICE) {
-					LOGGER.info("DDD:APPLICATION_SERVICE:" + item.getName());
-					item.setFitness(new DDDFitness(1, item.getPath().contains("application.") ? 1 : 0));
-				} else if (item.getType() == DDDType.CONTROLLER || item.getType() == DDDType.INFRASTRUCTUR) {
-					LOGGER.info("DDD:INFRASTRUCTUR:" + item.getName());
-					item.setFitness(new DDDFitness(1, item.getPath().contains("infrastructure.") ? 1 : 0));  
-				} else {
-					item.setFitness(new DDDFitness());
+				switch(item.getType()) {
+					case ENTITY:
+						evaluateEntity(item);
+						break;
+					case VALUE_OBJECT:
+						evaluateValueObject(item);
+						break;
+					case AGGREGATE_ROOT:
+						evaluateAggregateRoot(item);
+						break;
+					case FACTORY:
+						evaluateFactory(item);
+						break;
+					case REPOSITORY:
+						evaluateRepository(item); 
+						break;
+					case SERVICE:
+						evaluateService(item);
+						break;
+					case APPLICATION_SERVICE:
+						evaluateApplicationService(item);
+						break;
+					case CONTROLLER:
+					case INFRASTRUCTUR:
+						evaluateInfrastructure(item);  
+						break;
+					default:
+						item.setFitness(new DDDFitness());
 				}
+				
 			});
 	}
 	
 	private void evaluateAggregateRoot(Class aggregate) {
+		LOGGER.info("DDD:AGGREGATE_ROOT:{}", aggregate.getName());
 		evaluateEntity(aggregate);
 		DDDFitness fitness = aggregate.getDDDFitness();
 		
 		fitness.addNumberOfCriteria(6);
+		evaluateDomainStructure(aggregate, fitness);
+		
+	}
+
+	private void evaluateDomainStructure(Class aggregate, DDDFitness fitness) {
 		for (Artifact artifact : getDomainModule(aggregate.getDomain())) {
-			if (artifact.getType() == DDDType.REPOSITORY && artifact.getName().contains(aggregate.getName() + "Repository")) {
-				fitness.incNumberOfFulfilledCriteria();
-			} else if (artifact.getType() == DDDType.FACTORY && artifact.getName().contains(aggregate.getName() + "Factory")) {
-				fitness.incNumberOfFulfilledCriteria();
-			} else if (artifact.getType() == DDDType.SERVICE && artifact.getName().contains(aggregate.getName())) {
+			if (isAggregateRootRepository(aggregate, artifact) 
+				|| isAggregateRootFactory(aggregate, artifact) 
+				|| isAggregateRootService(aggregate, artifact)) {
 				fitness.incNumberOfFulfilledCriteria();
 			}
 		}
-		
+	}
+
+	private boolean isAggregateRootRepository(Class aggregate, Artifact artifact) {
+		return artifact.getType() == DDDType.REPOSITORY && artifact.getName().contains(aggregate.getName() + "Repository");
+	}
+
+	private boolean isAggregateRootFactory(Class aggregate, Artifact artifact) {
+		return artifact.getType() == DDDType.FACTORY && artifact.getName().contains(aggregate.getName() + "Factory");
+	}
+
+	private boolean isAggregateRootService(Class aggregate, Artifact artifact) {
+		return artifact.getType() == DDDType.SERVICE && artifact.getName().contains(aggregate.getName());
 	}
 
 	private ArrayList<Artifact> getDomainModule(String domain) {
 		for (Package module : structureService.getPackages()) {
 			if (module.getName().contains(domain)) {
-				return module.getConataints();
+				return (ArrayList<Artifact>) module.getConataints();
 			}
 		}
 		return new ArrayList<>();
 	}
 
 	private void evaluateEntity(Class entity) {
+		LOGGER.info("DDD:ENTITY:{}", entity.getName());
 		DDDFitness fitness = new DDDFitness();
 		
 		// Must have criteria of Entity: ID, equals() and hashCode()
 		fitness.addNumberOfCriteria(3);
 		
+		evaluateEntityFields(entity, fitness);
+		
+		evaluateEntityMethods(entity, fitness);
+		
+		evaluateSuperClass(entity.getSuperClass(), fitness);
+		
+		entity.setFitness(fitness);
+	}
+
+	private void evaluateEntityMethods(Class entity, DDDFitness fitness) {
+		for (Method method : entity.getMethods()) {
+			if (isNeededMethod(method)) {
+				fitness.incNumberOfFulfilledCriteria();
+			} 
+		}
+	}
+
+	private void evaluateEntityFields(Class entity, DDDFitness fitness) {
 		for (Field field : entity.getFields()) {
 			if (isFieldAnId(field)) {
 				fitness.incNumberOfFulfilledCriteria();
@@ -177,16 +242,6 @@ public class FitnessServiceImpl implements FitnessService {
 				fitness.incNumberOfFulfilledCriteria();
 			}
 		}
-		
-		for (Method method : entity.getMethods()) {
-			if (isNeededMethod(method)) {
-				fitness.incNumberOfFulfilledCriteria();
-			} 
-		}
-		
-		evaluateSuperClass(entity.getSuperClass(), fitness);
-		
-		entity.setFitness(fitness);
 	}
 
 	private void evaluateSuperClass(Class item, DDDFitness fitness) {
@@ -198,11 +253,7 @@ public class FitnessServiceImpl implements FitnessService {
 				}
 			}
 			
-			for (Method method : item.getMethods()) {
-				if (isNeededMethod(method)) {
-					fitness.incNumberOfFulfilledCriteria();
-				} 
-			}
+			evaluateEntityMethods(item, fitness);
 			
 			evaluateSuperClass(item.getSuperClass(), fitness);
 		}
@@ -219,9 +270,33 @@ public class FitnessServiceImpl implements FitnessService {
 	}
 	
 	private void evaluateValueObject(Class valueObject) {
+		LOGGER.info("DDD:VALUE_OBJECT:{}", valueObject.getName());
 		// Must have criteria of Entity: no ID
 		DDDFitness fitness = new DDDFitness(1, 1);
 		
+		evaluateValueObjectFields(valueObject, fitness);
+		
+		evaluateValueObjectMethods(valueObject, fitness);
+		
+		evaluateSuperClass(valueObject.getSuperClass(), fitness);
+		
+		valueObject.setFitness(fitness);
+	}
+
+	private void evaluateValueObjectMethods(Class valueObject, DDDFitness fitness) {
+		for (Method method : valueObject.getMethods()) {
+			if (method.getName().startsWith("set")) {
+				fitness.incNumberOfFulfilledCriteria();
+				if (isMethodImmutable(method, valueObject)) {
+					fitness.incNumberOfFulfilledCriteria();
+				} 
+			} else if (method.getName().startsWith("get")) {
+				fitness.incNumberOfFulfilledCriteria();
+			}
+		}
+	}
+
+	private void evaluateValueObjectFields(Class valueObject, DDDFitness fitness) {
 		for (Field field : valueObject.getFields()) {
 			if (isFieldAnId(field)) {
 				fitness.decNumberOfFulfilledCriteria();
@@ -233,26 +308,6 @@ public class FitnessServiceImpl implements FitnessService {
 				fitness.incNumberOfFulfilledCriteria();
 			}
 		}
-		
-		for (Method method : valueObject.getMethods()) {
-			for (Field field : valueObject.getFields()) {
-				if (method.getName().toUpperCase().contains(field.getName().toUpperCase())) {
-					if (method.getName().startsWith("set")) {
-						fitness.incNumberOfFulfilledCriteria();
-						if (isMethodImmutable(method, valueObject)) {
-							fitness.incNumberOfFulfilledCriteria();
-						} 
-					} else if (method.getName().startsWith("get")) {
-						fitness.incNumberOfFulfilledCriteria();
-					}
-					break;
-				}
-			}
-		}
-		
-		evaluateSuperClass(valueObject.getSuperClass(), fitness);
-		
-		valueObject.setFitness(fitness);
 	}
 	
 	private boolean isMethodImmutable(Method method, Class artifact) {
@@ -260,6 +315,7 @@ public class FitnessServiceImpl implements FitnessService {
 	}
 
 	private void evaluateRepository(Class repository) {
+		LOGGER.info("DDD:REPOSITORY:{}", repository.getName());
 		DDDFitness fitness = new DDDFitness(7, 0);
 		
 		if (repository.getName().endsWith("RepositoryImpl")) {
@@ -274,6 +330,16 @@ public class FitnessServiceImpl implements FitnessService {
 		
 		int findCounter = 0;
 		
+		findCounter = evaluateRepositoryMethods(repository, fitness, findCounter);
+		
+		if (findCounter > 1) {
+			fitness.addNumberOfCriteria(findCounter-1);
+		}
+		
+		repository.setFitness(fitness);
+	}
+
+	private int evaluateRepositoryMethods(Class repository, DDDFitness fitness, int findCounter) {
 		for (Method method : repository.getMethods()) {
 			if (method.getName().startsWith("findBy") || method.getName().startsWith("get")) {
 				findCounter++;
@@ -288,15 +354,11 @@ public class FitnessServiceImpl implements FitnessService {
 				fitness.incNumberOfFulfilledCriteria();
 			}
 		}
-		
-		if (findCounter > 1) {
-			fitness.addNumberOfCriteria(findCounter-1);
-		}
-		
-		repository.setFitness(fitness);
+		return findCounter;
 	}
 	
 	private void evaluateFactory(Class factory) {
+		LOGGER.info("DDD:FACTORY:{}", factory.getName());
 		DDDFitness fitness = new DDDFitness(4, 0);
 		
 		if (factory.getName().endsWith("FactoryImpl")) {
@@ -325,6 +387,7 @@ public class FitnessServiceImpl implements FitnessService {
 	}
 	
 	private void evaluateService(Class service) {
+		LOGGER.info("DDD:SERVICE:{}", service.getName());
 		DDDFitness fitness = new DDDFitness(2, 0);
 		
 		if (service.getName().endsWith("Impl")) {
@@ -338,6 +401,16 @@ public class FitnessServiceImpl implements FitnessService {
 		}
 		service.setFitness(fitness);
 	}
+
+	private void evaluateApplicationService(Class appService) {
+		LOGGER.info("DDD:APPLICATION_SERVICE:{}", appService.getName());
+		appService.setFitness(new DDDFitness(1, appService.getPath().contains("application.") ? 1 : 0));
+	}
+
+	private void evaluateInfrastructure(Class infra) {
+		LOGGER.info("DDD:INFRASTRUCTUR:{}", infra.getName());
+		infra.setFitness(new DDDFitness(1, infra.getPath().contains("infrastructure.") ? 1 : 0));
+	}
 	
 	private void evaluateInterfaces() {
 		LOGGER.info("Evaluation of Interfaces");
@@ -345,13 +418,13 @@ public class FitnessServiceImpl implements FitnessService {
 			.parallel()
 			.forEach(item -> {
 				if (item.getType() == DDDType.FACTORY) {
-					LOGGER.info("DDD:FACTORY:" + item.getName());
+					LOGGER.info("DDD:FACTORY:{}", item.getName());
 					evaluateFactory(item);
 				} else if (item.getType() == DDDType.REPOSITORY) {
-					LOGGER.info("DDD:REPOSITORY:" + item.getName());
+					LOGGER.info("DDD:REPOSITORY:{}", item.getName());
 					evaluateRepository(item);
 				} else  {
-					LOGGER.info("DDD:SERVICE:" + item.getName());
+					LOGGER.info("DDD:SERVICE:{}", item.getName());
 					item.setFitness(new DDDFitness());
 				}
 			});
@@ -366,6 +439,16 @@ public class FitnessServiceImpl implements FitnessService {
 		
 		int findCounter = 0;
 		
+		findCounter = evaluateRepositoryMethods(repository, fitness, findCounter);
+		
+		if (findCounter > 1) {
+			fitness.addNumberOfCriteria(findCounter-1);
+		}
+		
+		repository.setFitness(fitness);
+	}
+
+	private int evaluateRepositoryMethods(Interface repository, DDDFitness fitness, int findCounter) {
 		for (Method method : repository.getMethods()) {
 			if (method.getName().startsWith("findBy") || method.getName().startsWith("get")) {
 				findCounter++;
@@ -380,12 +463,7 @@ public class FitnessServiceImpl implements FitnessService {
 				fitness.incNumberOfFulfilledCriteria();
 			}
 		}
-		
-		if (findCounter > 1) {
-			fitness.addNumberOfCriteria(findCounter-1);
-		}
-		
-		repository.setFitness(fitness);
+		return findCounter;
 	}
 
 	private void evaluateFactory(Interface factory) {
@@ -415,7 +493,7 @@ public class FitnessServiceImpl implements FitnessService {
 		structureService.getInterfaces().stream()
 			.parallel()
 			.forEach(item -> {
-				LOGGER.info("DDD:INFRASTRUCTUR:" + item.getName());
+				LOGGER.info("DDD:INFRASTRUCTUR:{}", item.getName());
 				item.setFitness(new DDDFitness(1, item.getPath().contains("infrastructure.") ? 1 : 0));
 			});
 	}

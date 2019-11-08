@@ -142,7 +142,7 @@ public class AnalyseServiceImpl implements AnalyseService {
 				return false;
 			}
 		}
-		return artifact.getFields().size() > 0 && !containsEntityName(artifact) && conatiansGetterSetter(artifact);
+		return !artifact.getFields().isEmpty() && !containsEntityName(artifact) && conatiansGetterSetter(artifact);
 	}
 
 	private boolean isValueObject(Class artifact) {
@@ -155,7 +155,7 @@ public class AnalyseServiceImpl implements AnalyseService {
 			}
 		}
 		
-		return artifact.getFields().size() != 0 && ctr == artifact.getFields().size() && conatiansGetterSetter(artifact);
+		return !artifact.getFields().isEmpty() && ctr == artifact.getFields().size() && conatiansGetterSetter(artifact);
 	}
 
 	private boolean isConstant(Field field) {
@@ -244,9 +244,7 @@ public class AnalyseServiceImpl implements AnalyseService {
 		
 		structureService.getEnums().stream()
 			.parallel()
-			.forEach(item -> {
-				addDomain(item);
-			});
+			.forEach(item -> addDomain(item));
 	}
 
 	private void addDomain(Artifact item) {

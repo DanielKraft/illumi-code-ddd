@@ -1,7 +1,7 @@
 package illumi.code.ddd.service;
 
 import java.util.ArrayList;
-
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -51,15 +51,15 @@ public class StructureService {
 		this.path = split[split.length-1] + ".";
 	}
 
-	public ArrayList<Artifact> getStructure() {
+	public List<Artifact> getStructure() {
 		return structure;
 	}
 
-	public void setStructure(ArrayList<Artifact> artifacts) {
-		this.structure = artifacts;
+	public void setStructure(List<Artifact> artifacts) {
+		this.structure = (ArrayList<Artifact>) artifacts;
 	}
 	
-	public ArrayList<String> getDomains() {
+	public List<String> getDomains() {
 		return domains;
 	}
 
@@ -69,7 +69,7 @@ public class StructureService {
 		}
 	}
 	
-	public ArrayList<Package> getPackages() {
+	public List<Package> getPackages() {
 		return packages;
 	}
 
@@ -77,7 +77,7 @@ public class StructureService {
 		this.packages.add(module);
 	}
 
-	public ArrayList<Class> getClasses() {
+	public List<Class> getClasses() {
 		return classes;
 	}
 
@@ -85,7 +85,7 @@ public class StructureService {
 		this.classes.add(c);
 	}
 
-	public ArrayList<Interface> getInterfaces() {
+	public List<Interface> getInterfaces() {
 		return interfaces;
 	}
 
@@ -93,7 +93,7 @@ public class StructureService {
 		this.interfaces.add(i);
 	}
 
-	public ArrayList<Enum> getEnums() {
+	public List<Enum> getEnums() {
 		return enums;
 	}
 
@@ -101,7 +101,7 @@ public class StructureService {
 		this.enums.add(e);
 	}
 
-	public ArrayList<Annotation> getAnnotations() {
+	public List<Annotation> getAnnotations() {
 		return annotations;
 	}
 
@@ -118,7 +118,7 @@ public class StructureService {
 		for (Artifact artifact : artifacts) {
 			JSONObject json = artifact.toJSON();
 			if (artifact instanceof Package) {
-				json.put("contains", convertPackage(((Package) artifact).getConataints()));
+				json.put("contains", convertPackage((ArrayList<Artifact>) ((Package) artifact).getConataints()));
 			}
 			array.put(json);
 		}

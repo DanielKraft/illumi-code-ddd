@@ -31,7 +31,7 @@ public class DDDController {
     @Get("/analyse/{path}") 
     @Produces(MediaType.APPLICATION_JSON) 
     public HttpResponse<String> getArtifacts(String path) {
-    	LOGGER.info("HTTP GET: analyse/" + path);
+    	LOGGER.info("HTTP GET: analyse/{}", path);
     	structureService = new StructureService();
 		analyseService.setStructureService(structureService);
 		fitnessService.setStructureService(structureService);

@@ -16,7 +16,9 @@ public class MetricServiceImpl implements MetricService {
 	    
     private StructureService structureService;
     
-    public @Inject MetricServiceImpl() { }
+    public @Inject MetricServiceImpl() {
+    	// @Inject is needed
+    }
     
     @Override
     public void setStructureService(StructureService structureService) {
@@ -28,7 +30,7 @@ public class MetricServiceImpl implements MetricService {
 		
 		DDDFitness fitness = new DDDFitness();
 				
-		calcFitness(fitness, structureService.getStructure());
+		calcFitness(fitness, (ArrayList<Artifact>) structureService.getStructure());
 		
 		JSONObject metric = fitness.toJSON();
 		ArrayList<JSONObject> rating = getRating();
@@ -45,15 +47,15 @@ public class MetricServiceImpl implements MetricService {
 			.forEach(artifact -> {
 				fitness.add(artifact.getDDDFitness());
 				if (artifact instanceof Package) {
-					calcFitness(fitness, ((Package) artifact).getConataints());
+					calcFitness(fitness, (ArrayList<Artifact>) ((Package) artifact).getConataints());
 				}
 			});
 	}
 
 	private ArrayList<JSONObject> getRating() {
-		ArrayList<JSONObject> result = new ArrayList<JSONObject>();
+		ArrayList<JSONObject> result = new ArrayList<>();
 		
-		getContainingArtifacts(result, structureService.getStructure());
+		getContainingArtifacts(result, (ArrayList<Artifact>) structureService.getStructure());
 		result.sort((JSONObject a1, JSONObject a2) -> ((Double) a2.get("fitness")).compareTo((Double) a1.get("fitness")));
 		return result;
 	}
@@ -64,7 +66,7 @@ public class MetricServiceImpl implements MetricService {
 			.forEach(artifact -> {
 				result.add(artifact.toJSON());
 				if (artifact instanceof Package) {
-					getContainingArtifacts(result, ((Package) artifact).getConataints());
+					getContainingArtifacts(result, (ArrayList<Artifact>) ((Package) artifact).getConataints());
 				}
 			});
 	}

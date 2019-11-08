@@ -16,7 +16,7 @@ import illumi.code.ddd.model.DDDType;
 
 public class Enum extends Artifact {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Class.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Enum.class);
 	
 	private static final String QUERY_FIELDS 				= "MATCH (e:Enum)-[:DECLARES]->(f:Field) WHERE e.fqn={path} RETURN DISTINCT f.name as name, f.signature as type, f.visibility as visibility";
 	private static final String QUERY_PARENT_ANNOTATIONS 	= "MATCH (parent:Enum)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} RETURN DISTINCT type.fqn as annotation";
@@ -68,7 +68,7 @@ public class Enum extends Artifact {
 		return annotations;
 	}
 	
-	public void setAnnotations(Driver driver, ArrayList<Annotation> annotations) {
+	public void setAnnotations(Driver driver, List<Annotation> annotations) {
 		try ( Session session = driver.session() ) {
 			setAnnotations(annotations, session, QUERY_PARENT_ANNOTATIONS);
     		
@@ -78,8 +78,8 @@ public class Enum extends Artifact {
 		}
 	}
 
-	private void setAnnotations(ArrayList<Annotation> annotations, Session session, String Query) {
-		session.run( Query, Values.parameters( "path", getPath()) )
+	private void setAnnotations(List<Annotation> annotations, Session session, String query) {
+		session.run( query, Values.parameters( "path", getPath()) )
 			.stream()
 			.parallel()
 			.forEach(item -> {

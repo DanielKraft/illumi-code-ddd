@@ -112,7 +112,7 @@ public class Class extends Artifact {
 		return implInterfaces;
 	}
 	
-	public void setImplInterfaces(Driver driver, ArrayList<Interface> interfaces) {
+	public void setImplInterfaces(Driver driver, List<Interface> interfaces) {
     	try ( Session session = driver.session() ) {
     		StatementResult result = session.run( QUERY_IMPL, Values.parameters( "path", getPath() ) );
     		convertResultToInterface(result, interfaces);
@@ -121,7 +121,7 @@ public class Class extends Artifact {
 		}
     }
 	
-	private void convertResultToInterface(StatementResult result, ArrayList<Interface> interfaces) {		
+	private void convertResultToInterface(StatementResult result, List<Interface> interfaces) {		
 		result.stream()
 			.parallel()
 			.forEach(item -> {
@@ -140,7 +140,7 @@ public class Class extends Artifact {
 		return superClass;
 	}
 
-	public void setSuperClass(Driver driver, ArrayList<Class> classes) {
+	public void setSuperClass(Driver driver, List<Class> classes) {
 		try ( Session session = driver.session() ) {
     		StatementResult result = session.run( QUERY_SUPER, Values.parameters( "path", getPath() ));
 							    		
@@ -164,7 +164,7 @@ public class Class extends Artifact {
 		return annotations;
 	}
 	
-	public void setAnnotations(Driver driver, ArrayList<Annotation> annotations) {
+	public void setAnnotations(Driver driver, List<Annotation> annotations) {
 		try ( Session session = driver.session() ) {
 			setAnnotations(annotations, session, QUERY_PARENT_ANNOTATIONS);
     		
@@ -174,8 +174,8 @@ public class Class extends Artifact {
 		}
 	}
 
-	private void setAnnotations(ArrayList<Annotation> annotations, Session session, String Query) {
-		session.run( Query, Values.parameters( "path", getPath()) )
+	private void setAnnotations(List<Annotation> annotations, Session session, String query) {
+		session.run( query, Values.parameters( "path", getPath()) )
 			.stream()
 			.parallel()
 			.forEach(item -> {

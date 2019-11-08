@@ -15,7 +15,7 @@ import illumi.code.ddd.model.DDDType;
 
 public class Annotation extends Artifact {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(Class.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Annotation.class);
 	
 	private static final String QUERY_FIELDS 				= "MATCH (a:Annotation)-[:DECLARES]->(f:Field) WHERE a.fqn={path} RETURN DISTINCT f.name as name, f.signature as type, f.visibility as visibility";
 	private static final String QUERY_METHODS 				= "MATCH (a:Annotation)-[:DECLARES]->(m:Method) WHERE a.fqn = {path} RETURN DISTINCT m.visibility as visibility, m.name as name, m.signature as signature";
@@ -95,7 +95,7 @@ public class Annotation extends Artifact {
 		return annotations;
 	}
 	
-	public void setAnnotations(Driver driver, ArrayList<Annotation> annotations) {
+	public void setAnnotations(Driver driver, List<Annotation> annotations) {
 		try ( Session session = driver.session() ) {
 			setAnnotations(annotations, session, QUERY_PARENT_ANNOTATIONS);
     		
@@ -105,8 +105,8 @@ public class Annotation extends Artifact {
 		}
 	}
 
-	private void setAnnotations(ArrayList<Annotation> annotations, Session session, String Query) {
-		session.run( Query, Values.parameters( "path", getPath()) )
+	private void setAnnotations(List<Annotation> annotations, Session session, String query) {
+		session.run( query, Values.parameters( "path", getPath()) )
 			.stream()
 			.parallel()
 			.forEach(item -> {
