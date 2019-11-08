@@ -341,18 +341,23 @@ public class FitnessServiceImpl implements FitnessService {
 
 	private int evaluateRepositoryMethods(Class repository, DDDFitness fitness, int findCounter) {
 		for (Method method : repository.getMethods()) {
-			if (method.getName().startsWith("findBy") || method.getName().startsWith("get")) {
-				findCounter++;
-				fitness.incNumberOfFulfilledCriteria();
-			} else if (method.getName().startsWith("save") || method.getName().startsWith("add") || method.getName().startsWith("insert")) {
-				fitness.incNumberOfFulfilledCriteria();
-			} else if (method.getName().startsWith("delete") || method.getName().startsWith("remove")) {
-				fitness.incNumberOfFulfilledCriteria();
-			} else if (method.getName().startsWith("contains") || method.getName().startsWith("exists")) {
-				fitness.incNumberOfFulfilledCriteria();
-			} else if (method.getName().startsWith("update")) {
-				fitness.incNumberOfFulfilledCriteria();
-			}
+			findCounter = evaluateRepositoryMethod(fitness, findCounter, method);
+		}
+		return findCounter;
+	}
+
+	private int evaluateRepositoryMethod(DDDFitness fitness, int findCounter, Method method) {
+		if (method.getName().startsWith("findBy") || method.getName().startsWith("get")) {
+			findCounter++;
+			fitness.incNumberOfFulfilledCriteria();
+		} else if (method.getName().startsWith("save") || method.getName().startsWith("add") || method.getName().startsWith("insert")) {
+			fitness.incNumberOfFulfilledCriteria();
+		} else if (method.getName().startsWith("delete") || method.getName().startsWith("remove")) {
+			fitness.incNumberOfFulfilledCriteria();
+		} else if (method.getName().startsWith("contains") || method.getName().startsWith("exists")) {
+			fitness.incNumberOfFulfilledCriteria();
+		} else if (method.getName().startsWith("update")) {
+			fitness.incNumberOfFulfilledCriteria();
 		}
 		return findCounter;
 	}
@@ -450,18 +455,7 @@ public class FitnessServiceImpl implements FitnessService {
 
 	private int evaluateRepositoryMethods(Interface repository, DDDFitness fitness, int findCounter) {
 		for (Method method : repository.getMethods()) {
-			if (method.getName().startsWith("findBy") || method.getName().startsWith("get")) {
-				findCounter++;
-				fitness.incNumberOfFulfilledCriteria();
-			} else if (method.getName().startsWith("save") || method.getName().startsWith("add") || method.getName().startsWith("insert")) {
-				fitness.incNumberOfFulfilledCriteria();
-			} else if (method.getName().startsWith("delete") || method.getName().startsWith("remove")) {
-				fitness.incNumberOfFulfilledCriteria();
-			} else if (method.getName().startsWith("contains") || method.getName().startsWith("exists")) {
-				fitness.incNumberOfFulfilledCriteria();
-			} else if (method.getName().startsWith("update")) {
-				fitness.incNumberOfFulfilledCriteria();
-			}
+			findCounter = evaluateRepositoryMethod(fitness, findCounter, method);
 		}
 		return findCounter;
 	}

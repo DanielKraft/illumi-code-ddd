@@ -5,18 +5,12 @@ import java.util.List;
 
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.Record;
-import org.neo4j.driver.v1.Session;
-import org.neo4j.driver.v1.StatementResult;
-import org.neo4j.driver.v1.Values;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import illumi.code.ddd.model.DDDFitness;
 import illumi.code.ddd.model.DDDType;
+import illumi.code.ddd.service.JavaArtifactService;
 
 public class Enum extends Artifact {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(Enum.class);
 	
 	private static final String QUERY_FIELDS 				= "MATCH (e:Enum)-[:DECLARES]->(f:Field) WHERE e.fqn={path} RETURN DISTINCT f.name as name, f.signature as type, f.visibility as visibility";
 	private static final String QUERY_PARENT_ANNOTATIONS 	= "MATCH (parent:Enum)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} RETURN DISTINCT type.fqn as annotation";
@@ -46,22 +40,7 @@ public class Enum extends Artifact {
 	}
 	
 	public void setFields(Driver driver) {
-    	try ( Session session = driver.session() ) {
-    		StatementResult result = session.run( QUERY_FIELDS, Values.parameters( "path", getPath() ) );
-        	convertResultToFields(result);
-    	} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
-		}
-    }
-
-	private void convertResultToFields(StatementResult result) {
-		result.stream()
-			.parallel()
-			.forEach(item -> {
-				if (!item.get( "name" ).isNull()) {
-					fields.add(new Field( item ));
-		        }
-			});
+		this.fields = JavaArtifactService.getFields(getPath(), driver, QUERY_FIELDS);
 	}
 	
 	public List<Annotation> getAnnotations() {
@@ -69,26 +48,6 @@ public class Enum extends Artifact {
 	}
 	
 	public void setAnnotations(Driver driver, List<Annotation> annotations) {
-		try ( Session session = driver.session() ) {
-			setAnnotations(annotations, session, QUERY_PARENT_ANNOTATIONS);
-    		
-			setAnnotations(annotations, session, QUERY_CHILD_ANNOTATIONS);
-    	} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
-		}
-	}
-
-	private void setAnnotations(List<Annotation> annotations, Session session, String query) {
-		session.run( query, Values.parameters( "path", getPath()) )
-			.stream()
-			.parallel()
-			.forEach(item -> {
-				for (Annotation a : annotations) {
-					if (a.getPath().contains(item.get("annotation").asString())) {
-						this.annotations.add(a);
-						break;
-					}
-				}
-			});
+		this.annotations = JavaArtifactService.getAnnotations(getPath(), driver, QUERY_PARENT_ANNOTATIONS, QUERY_CHILD_ANNOTATIONS, annotations);
 	}
 }
