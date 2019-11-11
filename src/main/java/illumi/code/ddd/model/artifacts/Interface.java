@@ -61,7 +61,7 @@ public class Interface extends Artifact {
 	}
 	
 	public void setFields(Driver driver) {
-		this.fields = JavaArtifactService.getFields(getPath(), driver, QUERY_FIELDS);
+		this.fields = (ArrayList<Field>) JavaArtifactService.getFields(getPath(), driver, QUERY_FIELDS);
     }
 	
 	public List<Method> getMethods() {
@@ -69,7 +69,7 @@ public class Interface extends Artifact {
 	}
 	
 	public void setMethods(Driver driver) {
-		this.methods = JavaArtifactService.getMethods(getPath(), driver, QUERY_METHODS);
+		this.methods = (ArrayList<Method>) JavaArtifactService.getMethods(getPath(), driver, QUERY_METHODS);
     }
 
 	public List<Interface> getInterfaces() {
@@ -77,7 +77,7 @@ public class Interface extends Artifact {
 	}
 	
 	public void setImplInterfaces(Driver driver, List<Interface> interfaces) {
-		this.implInterfaces =  JavaArtifactService.getImplInterfaces(getPath(), driver, QUERY_IMPL, interfaces);
+		this.implInterfaces =  (ArrayList<Interface>) JavaArtifactService.getImplInterfaces(getPath(), driver, QUERY_IMPL, interfaces);
 	}
 	
 	public List<Annotation> getAnnotations() {
@@ -85,6 +85,6 @@ public class Interface extends Artifact {
 	}
 	
 	public void setAnnotations(Driver driver, List<Annotation> annotations) {
-		this.annotations = JavaArtifactService.getAnnotations(getPath(), driver, QUERY_PARENT_ANNOTATIONS, QUERY_CHILD_ANNOTATIONS, annotations);
+		this.annotations = (ArrayList<Annotation>) JavaArtifactService.getAnnotations(getPath(), driver, QUERY_PARENT_ANNOTATIONS, QUERY_CHILD_ANNOTATIONS, annotations);
 	}
 }

@@ -43,7 +43,7 @@ public class Annotation extends Artifact {
 	}
 
 	public void setFields(Driver driver) {
-		this.fields = JavaArtifactService.getFields(getPath(), driver, QUERY_FIELDS);
+		this.fields = (ArrayList<Field>) JavaArtifactService.getFields(getPath(), driver, QUERY_FIELDS);
 	}
 
 	public List<Method> getMethods() {
@@ -51,7 +51,7 @@ public class Annotation extends Artifact {
 	}
 
 	public void setMethods(Driver driver) {
-		this.methods = JavaArtifactService.getMethods(getPath(), driver, QUERY_METHODS);
+		this.methods = (ArrayList<Method>) JavaArtifactService.getMethods(getPath(), driver, QUERY_METHODS);
 	}
 	
 	public List<Annotation> getAnnotations() {
@@ -59,6 +59,6 @@ public class Annotation extends Artifact {
 	}
 	
 	public void setAnnotations(Driver driver, List<Annotation> annotations) {
-		this.annotations = JavaArtifactService.getAnnotations(getPath(), driver, QUERY_PARENT_ANNOTATIONS, QUERY_CHILD_ANNOTATIONS, annotations);
+		this.annotations = (ArrayList<Annotation>) JavaArtifactService.getAnnotations(getPath(), driver, QUERY_PARENT_ANNOTATIONS, QUERY_CHILD_ANNOTATIONS, annotations);
 	}
 }

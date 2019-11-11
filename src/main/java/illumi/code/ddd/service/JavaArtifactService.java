@@ -20,7 +20,11 @@ public class JavaArtifactService {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(JavaArtifactService.class);
 	
-	public static ArrayList<Field> getFields(String path, Driver driver, String query) {
+	private JavaArtifactService() {
+		throw new IllegalStateException("JavaArtifactService class");
+	}
+	
+	public static List<Field> getFields(String path, Driver driver, String query) {
     	try ( Session session = driver.session() ) {
     		StatementResult result = session.run( query, Values.parameters( "path", path ) );
         	return convertResultToFields(result);
@@ -42,7 +46,7 @@ public class JavaArtifactService {
 		return fields;
 	}
 	
-	public static ArrayList<Method> getMethods(String path, Driver driver, String query) {
+	public static List<Method> getMethods(String path, Driver driver, String query) {
     	try ( Session session = driver.session() ) {
     		StatementResult result = session.run( query, Values.parameters( "path", path ) );
     		return convertResultToMethods(result);
@@ -65,7 +69,7 @@ public class JavaArtifactService {
 		return methods;
 	}
 	
-	public static ArrayList<Interface> getImplInterfaces(String path, Driver driver, String query, List<Interface> interfaces) {
+	public static List<Interface> getImplInterfaces(String path, Driver driver, String query, List<Interface> interfaces) {
     	try ( Session session = driver.session() ) {
     		StatementResult result = session.run( query, Values.parameters( "path", path ) );
     		return convertResultToInterface(result, interfaces);
@@ -110,7 +114,7 @@ public class JavaArtifactService {
 		return null;
 	}
 	
-	public static ArrayList<Annotation> getAnnotations(String path, Driver driver, String queryParent, String queryChild, List<Annotation> annotations) {
+	public static List<Annotation> getAnnotations(String path, Driver driver, String queryParent, String queryChild, List<Annotation> annotations) {
 		ArrayList<Annotation> result = new ArrayList<>();
 		try ( Session session = driver.session() ) {
 			getAnnotations(path, result, annotations, session, queryParent);

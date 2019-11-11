@@ -245,7 +245,7 @@ public class AnalyseServiceImpl implements AnalyseService {
 		
 		structureService.getEnums().stream()
 			.parallel()
-			.forEach(item -> addDomain(item));
+			.forEach(this::addDomain);
 	}
 
 	private void addDomain(Artifact item) {
