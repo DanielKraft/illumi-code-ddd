@@ -55,9 +55,10 @@ public class AnalyseServiceImpl implements AnalyseService {
     	
     	setupDomains();
     	analyseDomains();
+    	findEvents();
     	return structureService.getJOSN();
     }
-	
+
 	private ArrayList<Artifact> getArtifacts(String path) {
     	try ( Session session = driver.session() ) {
     		StatementResult result = session.run( QUERY_ARTIFACT, Values.parameters( "path", path ));
@@ -271,6 +272,32 @@ public class AnalyseServiceImpl implements AnalyseService {
 
 	private boolean isDomain(Package module) {
 		return structureService.getDomains().contains(module.getName());
+	}
+	
+	private void findEvents() {
+		structureService.getClasses().stream()
+		.parallel()
+		.forEach(item -> {
+			if (isDomainEvent(item)) {
+				item.setType(DDDType.DOMAIN_EVENT);
+			}
+		});
+	}
+	
+	private boolean isDomainEvent(Class artifact) {
+		int criteriaCounter = 0;
+		
+		for (Field field : artifact.getFields()) {
+			if (field.getName().contains("time") 
+				|| field.getName().contains("date") 
+				|| field.getType().contains("java.time.") 
+				|| field.getName().toUpperCase().endsWith("ID")
+				|| field.getType().contains(structureService.getPath())) {
+				criteriaCounter++;
+			} 
+		}
+		
+		return criteriaCounter == 2;
 	}
 
 }

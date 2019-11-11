@@ -48,10 +48,10 @@ public class AnalyseServiceImplTest {
 										+ "CREATE(value)-[:DECLARES]->(id)"
 					        			+ "CREATE(toString:Java:Method{name: 'toString', signature: 'java.lang.String toString()', visibility: 'public'})"
 							        	+ "CREATE(value)-[:DECLARES]->(toString)"
-					        			+ "CREATE(set:Java:Method{name: 'setPersonId', signature: 'void setPersonId(java.lang.Integer)', visibility: 'public'})"
-							        	+ "CREATE(value)-[:DECLARES]->(set)"
 							        	+ "CREATE(get:Java:Method{name: 'getPersonId', signature: 'java.lang.Integer getPersonId()', visibility: 'public'})"
 							        	+ "CREATE(value)-[:DECLARES]->(get)"
+					        			+ "CREATE(set:Java:Method{name: 'setPersonId', signature: 'void setPersonId(java.lang.Integer)', visibility: 'public'})"
+							        	+ "CREATE(value)-[:DECLARES]->(set)"
 										
 				        			
 					        		+ "CREATE(entity:Java:Class{fqn: 'de.test.domain.person.Entity', name: 'Entity'})"
@@ -98,7 +98,25 @@ public class AnalyseServiceImplTest {
 					        			
 				        			+ "CREATE(enum:Java:Enum{fqn: 'de.test.domain.person.CustomerType', name: 'CustomerType'})"
 				        			+ "CREATE(person)-[:CONTAINS]->(enum)"
-
+				        			
+									+ "CREATE(event1:Java:Class{fqn: 'de.test.domain.person.Order', name: 'Order'})"
+									+ "CREATE(person)-[:CONTAINS]->(event1)"
+										+ "CREATE(time1:Java:Field{name: 'timestamp', signature: 'java.lang.Long timestamp', visibility: 'private'})"
+										+ "CREATE(event1)-[:DECLARES]->(time1)"
+										+ "CREATE(identity1:Java:Field{name: 'customer', signature: 'de.test.domain.person.Customer customer', visibility: 'private'})"
+										+ "CREATE(event1)-[:DECLARES]->(identity1)"
+										+ "CREATE(m3:Java:Method{name: 'getTimestamp', signature: 'java.lang.Long getTimestamp()', visibility: 'public'})"
+							        	+ "CREATE(event1)-[:DECLARES]->(m3)"
+										
+									+ "CREATE(event2:Java:Class{fqn: 'de.test.domain.person.OrderDelivered', name: 'OrderDelivered'})"
+									+ "CREATE(person)-[:CONTAINS]->(event2)"
+										+ "CREATE(time2:Java:Field{name: 'start', signature: 'java.time.Date start', visibility: 'private'})"
+										+ "CREATE(event2)-[:DECLARES]->(time2)"
+										+ "CREATE(identity2:Java:Field{name: 'customerId', signature: 'java.lang.Long customerId', visibility: 'private'})"
+										+ "CREATE(event2)-[:DECLARES]->(identity2)"
+										+ "CREATE(m4:Java:Method{name: 'getStart', signature: 'java.lang.Long getStart()', visibility: 'public'})"
+							        	+ "CREATE(event2)-[:DECLARES]->(m4)"
+			        			
 			        			+ "CREATE(product:Java:Package{fqn: 'de.test.domain.product', name: 'product'})"
 			        			+ "CREATE(domain)-[:CONTAINS]->(product)"	
 			        			
@@ -146,20 +164,24 @@ public class AnalyseServiceImplTest {
 			
 			JSONArray personDomain = domain.getJSONObject(1).getJSONArray("contains");
 			
+			System.out.println(personDomain.toString());
+			
 			assertAll("Should return DDD-Types of domain",
-			    () -> assertEquals(DDDType.VALUE_OBJECT, (DDDType) personDomain.getJSONObject(0).get("DDD")),
-			    () -> assertEquals(DDDType.SERVICE, (DDDType) personDomain.getJSONObject(1).get("DDD")),
-			    () -> assertEquals(DDDType.SERVICE, (DDDType) personDomain.getJSONObject(2).get("DDD")),
-			    () -> assertEquals(DDDType.SERVICE, (DDDType) personDomain.getJSONObject(3).get("DDD")),
-			    () -> assertEquals(DDDType.INFRASTRUCTUR, (DDDType) personDomain.getJSONObject(4).get("DDD")),
-			    () -> assertEquals(DDDType.REPOSITORY, (DDDType) personDomain.getJSONObject(5).get("DDD")),
-			    () -> assertEquals(DDDType.REPOSITORY, (DDDType) personDomain.getJSONObject(6).get("DDD")),
-			    () -> assertEquals(DDDType.FACTORY, (DDDType) personDomain.getJSONObject(7).get("DDD")),
-			    () -> assertEquals(DDDType.FACTORY, (DDDType) personDomain.getJSONObject(8).get("DDD")),
-			    () -> assertEquals(DDDType.ENTITY, (DDDType) personDomain.getJSONObject(9).get("DDD")),
-			    () -> assertEquals(DDDType.VALUE_OBJECT, (DDDType) personDomain.getJSONObject(10).get("DDD")),
-			    () -> assertEquals(DDDType.ENTITY, (DDDType) personDomain.getJSONObject(11).get("DDD")),
-			    () -> assertEquals(DDDType.AGGREGATE_ROOT, (DDDType) personDomain.getJSONObject(12).get("DDD")));
+			    () -> assertEquals(DDDType.DOMAIN_EVENT, 	(DDDType) personDomain.getJSONObject(0).get("DDD"), 	personDomain.getJSONObject(0).getString("name")),
+			    () -> assertEquals(DDDType.DOMAIN_EVENT, 	(DDDType) personDomain.getJSONObject(1).get("DDD"), 	personDomain.getJSONObject(1).getString("name")),
+			    () -> assertEquals(DDDType.VALUE_OBJECT, 	(DDDType) personDomain.getJSONObject(2).get("DDD"), 	personDomain.getJSONObject(2).getString("name")),
+			    () -> assertEquals(DDDType.SERVICE, 		(DDDType) personDomain.getJSONObject(3).get("DDD"), 	personDomain.getJSONObject(3).getString("name")),
+			    () -> assertEquals(DDDType.SERVICE, 		(DDDType) personDomain.getJSONObject(4).get("DDD"), 	personDomain.getJSONObject(4).getString("name")),
+			    () -> assertEquals(DDDType.SERVICE, 		(DDDType) personDomain.getJSONObject(5).get("DDD"), 	personDomain.getJSONObject(5).getString("name")),
+			    () -> assertEquals(DDDType.INFRASTRUCTUR,	(DDDType) personDomain.getJSONObject(6).get("DDD"), 	personDomain.getJSONObject(6).getString("name")),
+			    () -> assertEquals(DDDType.REPOSITORY, 		(DDDType) personDomain.getJSONObject(7).get("DDD"), 	personDomain.getJSONObject(7).getString("name")),
+			    () -> assertEquals(DDDType.REPOSITORY, 		(DDDType) personDomain.getJSONObject(8).get("DDD"), 	personDomain.getJSONObject(8).getString("name")),
+			    () -> assertEquals(DDDType.FACTORY, 		(DDDType) personDomain.getJSONObject(9).get("DDD"), 	personDomain.getJSONObject(9).getString("name")),
+			    () -> assertEquals(DDDType.FACTORY, 		(DDDType) personDomain.getJSONObject(10).get("DDD"), 	personDomain.getJSONObject(10).getString("name")),
+			    () -> assertEquals(DDDType.ENTITY, 			(DDDType) personDomain.getJSONObject(11).get("DDD"), 	personDomain.getJSONObject(11).getString("name")),
+			    () -> assertEquals(DDDType.VALUE_OBJECT, 	(DDDType) personDomain.getJSONObject(12).get("DDD"), 	personDomain.getJSONObject(12).getString("name")),
+			    () -> assertEquals(DDDType.ENTITY, 			(DDDType) personDomain.getJSONObject(13).get("DDD"), 	personDomain.getJSONObject(13).getString("name")),
+			    () -> assertEquals(DDDType.AGGREGATE_ROOT, 	(DDDType) personDomain.getJSONObject(14).get("DDD"),	personDomain.getJSONObject(14).getString("name")));
 			
 		}
 	}
