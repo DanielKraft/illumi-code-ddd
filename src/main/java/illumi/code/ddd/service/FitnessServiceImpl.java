@@ -55,8 +55,6 @@ public class FitnessServiceImpl implements FitnessService {
 					fitness = evaluateInfrastructureModule(item);
 				} else if (containsApplication(item)) {
 					fitness = evaluateApplicationModule(item);
-				} else if (isDDDRootStructure(item)) {
-					fitness = new DDDFitness(1, 1);
 				} else {
 					fitness = new DDDFitness(1, 0);
 				}
@@ -65,26 +63,15 @@ public class FitnessServiceImpl implements FitnessService {
 	}
 
 	private DDDFitness evaluateInfrastructureModule(Package item) {
-		DDDFitness fitness;
-		fitness = new DDDFitness(2, item.getPath().contains(structureService.getPath() + "infrastructur") ? 2 : 1);
-		return fitness;
+		return new DDDFitness(2, item.getPath().contains(structureService.getPath() + "infrastructur") ? 2 : 1);
 	}
 
 	private DDDFitness evaluateApplicationModule(Package item) {
-		DDDFitness fitness;
-		fitness = new DDDFitness(2, item.getPath().contains(structureService.getPath() + "application") ? 2 : 1);
-		return fitness;
-	}
-
-	private boolean isDDDRootStructure(Package item) {
-		return item.getName().contains(structureService.getPath() + "domain") 
-					|| item.getName().contains(structureService.getPath() + "infrastructur") 
-					|| item.getName().contains(structureService.getPath() + "application");
+		return new DDDFitness(2, item.getPath().contains(structureService.getPath() + "application") ? 2 : 1);
 	}
 
 	private DDDFitness evaluateDomainModule(Package item) {
-		DDDFitness fitness;
-		fitness = new DDDFitness(3, 1);
+		DDDFitness fitness = new DDDFitness(3, 1);
 		if (item.getPath().contains(structureService.getPath() + "domain." + item.getName())) {
 			fitness.incNumberOfFulfilledCriteria();
 		}
@@ -110,21 +97,20 @@ public class FitnessServiceImpl implements FitnessService {
 
 	private boolean containsInfrastructure(Package module) {
 		for (Artifact artifact : module.getConataints()) {
-			if (artifact.getType() != DDDType.MODULE 
-				&& (artifact.getType() != DDDType.INFRASTRUCTUR || artifact.getType() != DDDType.CONTROLLER)) {
-				return false;
+			if (artifact.getType() == DDDType.INFRASTRUCTUR || artifact.getType() == DDDType.CONTROLLER) {
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 	
 	private boolean containsApplication(Package module) {
 		for (Artifact artifact : module.getConataints()) {
-			if (artifact.getType() != DDDType.MODULE && artifact.getType() != DDDType.APPLICATION_SERVICE) {
-				return false;
+			if (artifact.getType() == DDDType.APPLICATION_SERVICE) {
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 
 	private void evaluateClasses() {
