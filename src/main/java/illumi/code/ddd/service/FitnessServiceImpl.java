@@ -128,11 +128,11 @@ public class FitnessServiceImpl implements FitnessService {
 					case AGGREGATE_ROOT:
 						evaluateAggregateRoot(item);
 						break;
-					case FACTORY:
-						evaluateFactory(item);
-						break;
 					case REPOSITORY:
 						evaluateRepository(item); 
+						break;
+					case FACTORY:
+						evaluateFactory(item);
 						break;
 					case SERVICE:
 						evaluateService(item);
@@ -142,13 +142,118 @@ public class FitnessServiceImpl implements FitnessService {
 						break;
 					case CONTROLLER:
 					case INFRASTRUCTUR:
-						evaluateInfrastructure(item);  
-						break;
 					default:
-						item.setFitness(new DDDFitness());
+						evaluateInfrastructure(item); 
 				}
 				
 			});
+	}
+	
+	private void evaluateEntity(Class entity) {
+		LOGGER.info("DDD:ENTITY:{}", entity.getName());
+		DDDFitness fitness = new DDDFitness();
+		
+		// Must have criteria of Entity: ID, equals() and hashCode()
+		fitness.addNumberOfCriteria(3);
+		
+		evaluateEntityFields(entity, fitness);
+		
+		evaluateEntityMethods(entity, fitness);
+		
+		evaluateSuperClass(entity.getSuperClass(), fitness);
+		
+		entity.setFitness(fitness);
+	}
+
+	private void evaluateEntityFields(Class entity, DDDFitness fitness) {
+		for (Field field : entity.getFields()) {
+			if (isFieldAnId(field)) {
+				fitness.incNumberOfFulfilledCriteria();
+			}
+			
+			// Is type of field Entity or Value Object?
+			fitness.incNumberOfCriteria();
+			if (field.getType().contains(structureService.getPath())) {
+				fitness.incNumberOfFulfilledCriteria();
+			}
+		}
+	}
+	
+	private boolean isFieldAnId(Field field) {
+		return field.getName().toUpperCase().endsWith("ID");
+	}
+
+	private void evaluateEntityMethods(Class entity, DDDFitness fitness) {
+		for (Method method : entity.getMethods()) {
+			if (isNeededMethod(method)) {
+				fitness.incNumberOfFulfilledCriteria();
+			} 
+		}
+	}
+	
+	private boolean isNeededMethod(Method method) {
+		// equals() or hashCode()? 
+		return method.getName().equals("equals") || method.getName().equals("hashCode");
+	}
+
+	private void evaluateSuperClass(Class item, DDDFitness fitness) {
+		if (item != null) {
+			for (Field field : item.getFields()) {
+				if (isFieldAnId(field)) {
+					fitness.incNumberOfFulfilledCriteria();
+					break;
+				}
+			}
+			
+			evaluateEntityMethods(item, fitness);
+			
+			evaluateSuperClass(item.getSuperClass(), fitness);
+		}
+		
+	}
+	
+	private void evaluateValueObject(Class valueObject) {
+		LOGGER.info("DDD:VALUE_OBJECT:{}", valueObject.getName());
+		// Must have criteria of Entity: no ID
+		DDDFitness fitness = new DDDFitness(1, 1);
+		
+		evaluateValueObjectFields(valueObject, fitness);
+		
+		evaluateValueObjectMethods(valueObject, fitness);
+		
+		valueObject.setFitness(fitness);
+	}
+
+	private void evaluateValueObjectFields(Class valueObject, DDDFitness fitness) {
+		for (Field field : valueObject.getFields()) {
+			if (isFieldAnId(field)) {
+				fitness.decNumberOfFulfilledCriteria();
+			}
+			
+			// Is type of field Value Object or standard type?
+			// Has the field a getter and an immutable setter?
+			fitness.addNumberOfCriteria(4);
+			if (field.getType().contains(structureService.getPath()) || field.getType().contains("java.lang.")) {
+				fitness.incNumberOfFulfilledCriteria();
+			}
+		}
+	}
+
+	private void evaluateValueObjectMethods(Class valueObject, DDDFitness fitness) {
+		for (Method method : valueObject.getMethods()) {
+			if (method.getName().startsWith("set")) {
+				fitness.incNumberOfFulfilledCriteria();
+				if (isMethodImmutable(method, valueObject)) {
+					fitness.incNumberOfFulfilledCriteria();
+				} 
+			} else if (method.getName().startsWith("get")) {
+				fitness.incNumberOfFulfilledCriteria();
+			}
+		}
+	}
+	
+	private boolean isMethodImmutable(Method method, Class artifact) {
+		return method.getSignature().split(" ")[0].contains(artifact.getPath());
 	}
 	
 	private void evaluateAggregateRoot(Class aggregate) {
@@ -192,114 +297,6 @@ public class FitnessServiceImpl implements FitnessService {
 		return new ArrayList<>();
 	}
 
-	private void evaluateEntity(Class entity) {
-		LOGGER.info("DDD:ENTITY:{}", entity.getName());
-		DDDFitness fitness = new DDDFitness();
-		
-		// Must have criteria of Entity: ID, equals() and hashCode()
-		fitness.addNumberOfCriteria(3);
-		
-		evaluateEntityFields(entity, fitness);
-		
-		evaluateEntityMethods(entity, fitness);
-		
-		evaluateSuperClass(entity.getSuperClass(), fitness);
-		
-		entity.setFitness(fitness);
-	}
-
-	private void evaluateEntityMethods(Class entity, DDDFitness fitness) {
-		for (Method method : entity.getMethods()) {
-			if (isNeededMethod(method)) {
-				fitness.incNumberOfFulfilledCriteria();
-			} 
-		}
-	}
-
-	private void evaluateEntityFields(Class entity, DDDFitness fitness) {
-		for (Field field : entity.getFields()) {
-			if (isFieldAnId(field)) {
-				fitness.incNumberOfFulfilledCriteria();
-			}
-			
-			// Is type of field Entity or Value Object?
-			fitness.incNumberOfCriteria();
-			if (field.getType().contains(structureService.getPath())) {
-				fitness.incNumberOfFulfilledCriteria();
-			}
-		}
-	}
-
-	private void evaluateSuperClass(Class item, DDDFitness fitness) {
-		if (item != null) {
-			for (Field field : item.getFields()) {
-				if (isFieldAnId(field)) {
-					fitness.incNumberOfFulfilledCriteria();
-					break;
-				}
-			}
-			
-			evaluateEntityMethods(item, fitness);
-			
-			evaluateSuperClass(item.getSuperClass(), fitness);
-		}
-		
-	}
-	
-	private boolean isFieldAnId(Field field) {
-		return field.getName().toUpperCase().endsWith("ID");
-	}
-	
-	private boolean isNeededMethod(Method method) {
-		// equals() or hashCode()? 
-		return method.getName().equals("equals") || method.getName().equals("hashCode");
-	}
-	
-	private void evaluateValueObject(Class valueObject) {
-		LOGGER.info("DDD:VALUE_OBJECT:{}", valueObject.getName());
-		// Must have criteria of Entity: no ID
-		DDDFitness fitness = new DDDFitness(1, 1);
-		
-		evaluateValueObjectFields(valueObject, fitness);
-		
-		evaluateValueObjectMethods(valueObject, fitness);
-		
-		evaluateSuperClass(valueObject.getSuperClass(), fitness);
-		
-		valueObject.setFitness(fitness);
-	}
-
-	private void evaluateValueObjectMethods(Class valueObject, DDDFitness fitness) {
-		for (Method method : valueObject.getMethods()) {
-			if (method.getName().startsWith("set")) {
-				fitness.incNumberOfFulfilledCriteria();
-				if (isMethodImmutable(method, valueObject)) {
-					fitness.incNumberOfFulfilledCriteria();
-				} 
-			} else if (method.getName().startsWith("get")) {
-				fitness.incNumberOfFulfilledCriteria();
-			}
-		}
-	}
-
-	private void evaluateValueObjectFields(Class valueObject, DDDFitness fitness) {
-		for (Field field : valueObject.getFields()) {
-			if (isFieldAnId(field)) {
-				fitness.decNumberOfFulfilledCriteria();
-			}
-			
-			// Is type of field Value Object or standard type?
-			fitness.addNumberOfCriteria(4);
-			if (field.getType().contains(structureService.getPath()) || field.getType().contains("java.lang.")) {
-				fitness.incNumberOfFulfilledCriteria();
-			}
-		}
-	}
-	
-	private boolean isMethodImmutable(Method method, Class artifact) {
-		return method.getSignature().split(" ")[0].contains(artifact.getPath());
-	}
-
 	private void evaluateRepository(Class repository) {
 		LOGGER.info("DDD:REPOSITORY:{}", repository.getName());
 		DDDFitness fitness = new DDDFitness(7, 0);
@@ -336,11 +333,15 @@ public class FitnessServiceImpl implements FitnessService {
 		if (method.getName().startsWith("findBy") || method.getName().startsWith("get")) {
 			findCounter++;
 			fitness.incNumberOfFulfilledCriteria();
-		} else if (method.getName().startsWith("save") || method.getName().startsWith("add") || method.getName().startsWith("insert")) {
+		} else if (method.getName().startsWith("save") 
+					|| method.getName().startsWith("add") 
+					|| method.getName().startsWith("insert")) {
 			fitness.incNumberOfFulfilledCriteria();
-		} else if (method.getName().startsWith("delete") || method.getName().startsWith("remove")) {
+		} else if (method.getName().startsWith("delete") 
+					|| method.getName().startsWith("remove")) {
 			fitness.incNumberOfFulfilledCriteria();
-		} else if (method.getName().startsWith("contains") || method.getName().startsWith("exists")) {
+		} else if (method.getName().startsWith("contains") 
+					|| method.getName().startsWith("exists")) {
 			fitness.incNumberOfFulfilledCriteria();
 		} else if (method.getName().startsWith("update")) {
 			fitness.incNumberOfFulfilledCriteria();
@@ -408,13 +409,15 @@ public class FitnessServiceImpl implements FitnessService {
 		structureService.getInterfaces().stream()
 			.parallel()
 			.forEach(item -> {
-				if (item.getType() == DDDType.FACTORY) {
-					LOGGER.info("DDD:FACTORY:{}", item.getName());
+				switch(item.getType()) {
+				case FACTORY:
 					evaluateFactory(item);
-				} else if (item.getType() == DDDType.REPOSITORY) {
-					LOGGER.info("DDD:REPOSITORY:{}", item.getName());
+					break;
+				case REPOSITORY:
 					evaluateRepository(item);
-				} else  {
+					break;
+				case SERVICE:
+				default:
 					LOGGER.info("DDD:SERVICE:{}", item.getName());
 					item.setFitness(new DDDFitness());
 				}
@@ -422,6 +425,7 @@ public class FitnessServiceImpl implements FitnessService {
 	}
 	
 	private void evaluateRepository(Interface repository) {
+		LOGGER.info("DDD:REPOSITORY:{}", repository.getName());
 		DDDFitness fitness = new DDDFitness(6, 0);
 		
 		if (repository.getName().endsWith("Repository")) {
@@ -447,6 +451,7 @@ public class FitnessServiceImpl implements FitnessService {
 	}
 
 	private void evaluateFactory(Interface factory) {
+		LOGGER.info("DDD:FACTORY:{}", factory.getName());
 		DDDFitness fitness = new DDDFitness(3, 0);
 		
 		if (factory.getName().endsWith("Factory")) {
@@ -470,7 +475,7 @@ public class FitnessServiceImpl implements FitnessService {
 
 	private void evaluateAnnotations() {
 		LOGGER.info("Evaluation of Annotations");
-		structureService.getInterfaces().stream()
+		structureService.getAnnotations().stream()
 			.parallel()
 			.forEach(item -> {
 				LOGGER.info("DDD:INFRASTRUCTUR:{}", item.getName());

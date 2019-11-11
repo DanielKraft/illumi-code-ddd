@@ -278,8 +278,16 @@ public class AnalyseServiceImpl implements AnalyseService {
 		structureService.getClasses().stream()
 		.parallel()
 		.forEach(item -> {
-			if (isDomainEvent(item)) {
-				item.setType(DDDType.DOMAIN_EVENT);
+			switch(item.getType()) {
+				case ENTITY:
+				case AGGREGATE_ROOT:
+				case VALUE_OBJECT:
+					if (isDomainEvent(item)) {
+						item.setType(DDDType.DOMAIN_EVENT);
+					}
+					break;
+				default:
+					break;
 			}
 		});
 	}

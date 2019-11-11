@@ -62,6 +62,10 @@ public class Class extends Artifact {
 	public void setFields(Driver driver) {
 		this.fields = (ArrayList<Field>) JavaArtifactService.getFields(getPath(), driver, QUERY_FIELDS);
     }
+	
+	public void addField(Field field) {
+		this.fields.add(field);
+	}
 
 	public List<Method> getMethods() {
 		return methods;
@@ -71,6 +75,10 @@ public class Class extends Artifact {
 		this.methods = (ArrayList<Method>) JavaArtifactService.getMethods(getPath(), driver, QUERY_METHODS);
     }
 	
+	public void addMethod(Method method) {
+		this.methods.add(method);
+	}
+	
 	public List<Interface> getInterfaces() {
 		return implInterfaces;
 	}
@@ -78,6 +86,10 @@ public class Class extends Artifact {
 	public void setImplInterfaces(Driver driver, List<Interface> interfaces) {
 		this.implInterfaces =  (ArrayList<Interface>) JavaArtifactService.getImplInterfaces(getPath(), driver, QUERY_IMPL, interfaces);
     }
+	
+	public void addImplInterface(Interface implInterface) {
+		this.implInterfaces.add(implInterface);
+	}
 
 	public Class getSuperClass() {
 		return superClass;
@@ -85,6 +97,10 @@ public class Class extends Artifact {
 
 	public void setSuperClass(Driver driver, List<Class> classes) {
 		this.superClass = JavaArtifactService.getSuperClass(getPath(), driver, QUERY_SUPER, classes);
+	}
+	
+	public void addSuperClass(Class superClass) {
+		this.superClass = superClass;
 	}
 	
 	public List<Annotation> getAnnotations() {

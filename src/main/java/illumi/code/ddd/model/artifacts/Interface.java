@@ -64,6 +64,10 @@ public class Interface extends Artifact {
 		this.fields = (ArrayList<Field>) JavaArtifactService.getFields(getPath(), driver, QUERY_FIELDS);
     }
 	
+	public void addField(Field field) {
+		this.fields.add(field);
+	}
+	
 	public List<Method> getMethods() {
 		return methods;
 	}
@@ -71,6 +75,10 @@ public class Interface extends Artifact {
 	public void setMethods(Driver driver) {
 		this.methods = (ArrayList<Method>) JavaArtifactService.getMethods(getPath(), driver, QUERY_METHODS);
     }
+	
+	public void addMethod(Method method) {
+		this.methods.add(method);
+	}
 
 	public List<Interface> getInterfaces() {
 		return implInterfaces;

@@ -99,7 +99,7 @@ public class AnalyseServiceImplTest {
 				        			+ "CREATE(enum:Java:Enum{fqn: 'de.test.domain.person.CustomerType', name: 'CustomerType'})"
 				        			+ "CREATE(person)-[:CONTAINS]->(enum)"
 				        			
-									+ "CREATE(event1:Java:Class{fqn: 'de.test.domain.person.Order', name: 'Order'})"
+									+ "CREATE(event1:Java:Class{fqn: 'de.test.domain.person.Order', name: 'OrderActivated'})"
 									+ "CREATE(person)-[:CONTAINS]->(event1)"
 										+ "CREATE(time1:Java:Field{name: 'timestamp', signature: 'java.lang.Long timestamp', visibility: 'private'})"
 										+ "CREATE(event1)-[:DECLARES]->(time1)"

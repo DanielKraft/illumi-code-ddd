@@ -56,7 +56,7 @@ public class MetricServiceImpl implements MetricService {
 		ArrayList<JSONObject> result = new ArrayList<>();
 		
 		getContainingArtifacts(result, (ArrayList<Artifact>) structureService.getStructure());
-		result.sort((JSONObject a1, JSONObject a2) -> ((Double) a2.get("fitness")).compareTo((Double) a1.get("fitness")));
+		result.sort((JSONObject a1, JSONObject a2) -> Double.compare(a2.getDouble("fitness"), a1.getDouble("fitness")));
 		return result;
 	}
 
