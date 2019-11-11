@@ -137,6 +137,9 @@ public class FitnessServiceImpl implements FitnessService {
 					case SERVICE:
 						evaluateService(item);
 						break;
+					case DOMAIN_EVENT:
+						evaluateDomainEvent(item);
+						break;
 					case APPLICATION_SERVICE:
 						evaluateApplicationService(item);
 						break;
@@ -148,7 +151,7 @@ public class FitnessServiceImpl implements FitnessService {
 				
 			});
 	}
-	
+
 	private void evaluateEntity(Class entity) {
 		LOGGER.info("DDD:ENTITY:{}", entity.getName());
 		DDDFitness fitness = new DDDFitness();
@@ -402,6 +405,47 @@ public class FitnessServiceImpl implements FitnessService {
 	private void evaluateInfrastructure(Class infra) {
 		LOGGER.info("DDD:INFRASTRUCTUR:{}", infra.getName());
 		infra.setFitness(new DDDFitness(1, infra.getPath().contains("infrastructure.") ? 1 : 0));
+	}
+	
+	private void evaluateDomainEvent(Class event) {
+		LOGGER.info("DDD:DOMAIN_EVENT:{}", event.getName());
+		DDDFitness fitness = new DDDFitness(1, 0);
+		
+		int ctr = evaluateDomainEventFields(event, fitness);
+		
+		evaluateDomainEventMethods(event, fitness, ctr);
+		
+		event.setFitness(fitness);
+	}
+
+	private int evaluateDomainEventFields(Class event, DDDFitness fitness) {
+		int ctr = 0;
+		for (Field field : event.getFields()) {
+			if (field.getName().contains("time") 
+				|| field.getName().contains("date") 
+				|| field.getType().contains("java.time.")
+				|| field.getType().contains(structureService.getPath())) {
+				fitness.incNumberOfFulfilledCriteria();
+				ctr++;
+				if (field.getName().toUpperCase().endsWith("ID")) {
+					fitness.incNumberOfFulfilledCriteria();
+				}
+			}
+		}
+		fitness.addNumberOfCriteria(ctr);
+		return ctr;
+	}
+
+	private void evaluateDomainEventMethods(Class event, DDDFitness fitness, int ctr) {
+		fitness.add(new DDDFitness(ctr * 2, ctr));
+		
+		for (Method method : event.getMethods()) {
+			if (method.getName().startsWith("get")) {
+				fitness.incNumberOfFulfilledCriteria();
+			} else if (method.getName().startsWith("set")) {
+				fitness.decNumberOfFulfilledCriteria();
+			}
+		}
 	}
 	
 	private void evaluateInterfaces() {

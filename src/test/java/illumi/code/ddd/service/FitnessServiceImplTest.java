@@ -168,6 +168,17 @@ private FitnessServiceImpl service;
 		domain1.addConataints(domainService2); 
 		structure.addClasses(domainService2);
 		
+		Class domainEvent = new Class("Ordered", "de.test.domain.test1.Ordered");
+		domainEvent.setType(DDDType.DOMAIN_EVENT); 
+		domainEvent.setDomain("test1"); 
+		domainEvent.addField(new Field("private", "timestamp", "java.lang.Long timestamp"));
+		domainEvent.addField(new Field("private", "test1", "de.test.domain.test1.Test1 test1"));
+		domainEvent.addMethod(new Method("public", "getTimestamp", "java.lang.Long getTimestamp()"));
+		domainEvent.addMethod(new Method("public", "getTest", "de.test.domain.test1.Test1 test1 getTimestamp()"));
+		domainEvent.addMethod(new Method("public", "setTest", "void getTimestamp(de.test.domain.test1.Test1 test1)"));
+		domain1.addConataints(domainEvent); 
+		structure.addClasses(domainEvent);
+		
 		Package infrastructure = new Package("infrastructure", "de.test.infrastructure");
 		infrastructure.setType(DDDType.MODULE);
 		structure.addPackage(infrastructure);
@@ -260,9 +271,10 @@ private FitnessServiceImpl service;
 				 () -> assertEquals(100.0, domain.getJSONObject(4).getDouble("fitness"), domain.getJSONObject(4).getString("name")),
 				 () -> assertEquals(100.0, domain.getJSONObject(6).getDouble("fitness"), domain.getJSONObject(6).getString("name")),
 				 () -> assertEquals(100.0, domain.getJSONObject(8).getDouble("fitness"), domain.getJSONObject(8).getString("name")),
-				 () -> assertEquals(0.0, domain.getJSONObject(9).getDouble("fitness"), domain.getJSONObject(9).getString("name")),
 				 () -> assertEquals(0.0, domain.getJSONObject(10).getDouble("fitness"), domain.getJSONObject(10).getString("name")),
-				 () -> assertEquals(0.0, domain.getJSONObject(11).getDouble("fitness"), domain.getJSONObject(11).getString("name")));
+				 () -> assertEquals(0.0, domain.getJSONObject(12).getDouble("fitness"), domain.getJSONObject(12).getString("name")),
+				 () -> assertEquals(0.0, domain.getJSONObject(14).getDouble("fitness"), domain.getJSONObject(14).getString("name")),
+				 () -> assertEquals(71.43, domain.getJSONObject(15).getDouble("fitness"), domain.getJSONObject(15).getString("name")));
 	}
 	
 	@Test
