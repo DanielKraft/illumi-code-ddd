@@ -15,7 +15,7 @@ import org.neo4j.harness.TestServerBuilders;
 import illumi.code.ddd.model.DDDType;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class EnumTest {
+public class EnumCreationTest {
 	private ServerControls embeddedDatabaseServer;
 		
 	@BeforeAll
