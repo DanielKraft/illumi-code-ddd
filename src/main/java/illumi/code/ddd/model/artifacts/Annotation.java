@@ -6,6 +6,8 @@ import java.util.List;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.Record;
 
+import illumi.code.ddd.model.DDDFitness;
+import illumi.code.ddd.model.DDDIssueType;
 import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.service.JavaArtifactService;
 
@@ -60,5 +62,13 @@ public class Annotation extends Artifact {
 	
 	public void setAnnotations(Driver driver, List<Annotation> annotations) {
 		this.annotations = (ArrayList<Annotation>) JavaArtifactService.getAnnotations(getPath(), driver, QUERY_PARENT_ANNOTATIONS, QUERY_CHILD_ANNOTATIONS, annotations);
+	}
+	
+	public void evaluate() {
+		if (getPath().contains("infrastructure.")) {
+			setFitness(new DDDFitness().addSuccessfulCriteria(DDDIssueType.MINOR));
+		} else {
+			setFitness(new DDDFitness().addFailedCriteria(DDDIssueType.MINOR, String.format("The annotation '%s' is not part of an infrastructure module", getName())));
+		}
 	}
 }
