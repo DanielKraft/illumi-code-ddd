@@ -8,40 +8,12 @@ import org.junit.jupiter.api.Test;
 public class DDDFitnessTest {
 	
 	@Test
-	public void testAddNumberOfCriteria() {
+	public void testAddSuccessfulCriteria() {
 		DDDFitness fitness = new DDDFitness();
 		
-		fitness.addNumberOfCriteria(3);
+		fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
 		
-		JSONObject result = fitness.toJSON();
-		
-		assertEquals(DDDRating.F, result.get("score"));
-		assertEquals(3, ((JSONObject) result.get("criteria")).get("total"));
-		assertEquals(0, ((JSONObject) result.get("criteria")).get("fulfilled"));
-		assertEquals(0.0, result.get("fitness"));
-	}
-	
-	@Test
-	public void testIncNumberOfCriteria() {
-		DDDFitness fitness = new DDDFitness();
-		
-		fitness.incNumberOfCriteria();
-		
-		JSONObject result = fitness.toJSON();
-		
-		assertEquals(DDDRating.F, result.get("score"));
-		assertEquals(1, ((JSONObject) result.get("criteria")).get("total"));
-		assertEquals(0, ((JSONObject) result.get("criteria")).get("fulfilled"));
-		assertEquals(0.0, result.get("fitness"));
-	}
-	
-	@Test
-	public void testIncNumberOfFulfilledCriteria() {
-		DDDFitness fitness = new DDDFitness(2, 1);
-		
-		fitness.incNumberOfFulfilledCriteria();
-		
-		JSONObject result = fitness.toJSON();
+		JSONObject result = fitness.summary();
 		
 		assertEquals(DDDRating.A, result.get("score"));
 		assertEquals(2, ((JSONObject) result.get("criteria")).get("total"));
@@ -50,17 +22,17 @@ public class DDDFitnessTest {
 	}
 	
 	@Test
-	public void testDecNumberOfFulfilledCriteria() {
-		DDDFitness fitness = new DDDFitness(2, 2);
+	public void testAddFailedCriteria() {
+		DDDFitness fitness = new DDDFitness();
 		
-		fitness.decNumberOfFulfilledCriteria();
+		fitness.addFailedCriteria(DDDIssueType.MINOR, "test");
 		
-		JSONObject result = fitness.toJSON();
+		JSONObject result = fitness.summary();
 		
-		assertEquals(DDDRating.E, result.get("score"));
-		assertEquals(2, ((JSONObject) result.get("criteria")).get("total"));
-		assertEquals(1, ((JSONObject) result.get("criteria")).get("fulfilled"));
-		assertEquals(50.0, result.get("fitness"));
+		assertEquals(DDDRating.F, result.get("score"));
+		assertEquals(1, ((JSONObject) result.get("criteria")).get("total"));
+		assertEquals(0, ((JSONObject) result.get("criteria")).get("fulfilled"));
+		assertEquals(0.0, result.get("fitness"));
 	}
 	
 	@Test
@@ -71,7 +43,7 @@ public class DDDFitnessTest {
 		
 		fitness.add(otherFitness);
 		
-		JSONObject result = fitness.toJSON();
+		JSONObject result = fitness.summary();
 		
 		assertEquals(DDDRating.D, result.get("score"));
 		assertEquals(10, ((JSONObject) result.get("criteria")).get("total"));

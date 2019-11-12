@@ -32,7 +32,7 @@ public class MetricServiceImpl implements MetricService {
 				
 		calcFitness(fitness, (ArrayList<Artifact>) structureService.getStructure());
 		
-		JSONObject metric = fitness.toJSON();
+		JSONObject metric = fitness.summary();
 		ArrayList<JSONObject> rating = getRating();
 				
 		return new JSONObject()

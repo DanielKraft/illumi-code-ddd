@@ -253,9 +253,9 @@ private FitnessServiceImpl service;
 				 () -> assertEquals(100.0, domain1.getDouble("fitness"), domain1.getString("name")),
 				 () -> assertEquals(100.0, application.getDouble("fitness"), application.getString("name")),
 				 () -> assertEquals(100.0, infrastructure.getDouble("fitness"), infrastructure.getString("name")),
-				 () -> assertEquals(33.33,  domain2.getDouble("fitness"), domain2.getString("name")),
-				 () -> assertEquals(50.0, domain2.getJSONArray("contains").getJSONObject(1).getDouble("fitness"), domain2.getJSONArray("contains").getJSONObject(1).getString("name")),
-				 () -> assertEquals(50.0, domain2.getJSONArray("contains").getJSONObject(2).getDouble("fitness"), domain2.getJSONArray("contains").getJSONObject(2).getString("name")));
+				 () -> assertEquals(25.0,  domain2.getDouble("fitness"), domain2.getString("name")),
+				 () -> assertEquals(75.0, domain2.getJSONArray("contains").getJSONObject(1).getDouble("fitness"), domain2.getJSONArray("contains").getJSONObject(1).getString("name")),
+				 () -> assertEquals(75.0, domain2.getJSONArray("contains").getJSONObject(2).getDouble("fitness"), domain2.getJSONArray("contains").getJSONObject(2).getString("name")));
 	}
 	
 	@Test
@@ -265,16 +265,16 @@ private FitnessServiceImpl service;
 		JSONArray domain = result.getJSONObject(0).getJSONArray("contains").getJSONObject(0).getJSONArray("contains");
 		
 		assertAll("Should return fitness of classes",
-				 () -> assertEquals(20.0, domain.getJSONObject(0).getDouble("fitness"), domain.getJSONObject(0).getString("name")),
-				 () -> assertEquals(100.0, domain.getJSONObject(1).getDouble("fitness"), domain.getJSONObject(1).getString("name")),
-				 () -> assertEquals(53.85, domain.getJSONObject(2).getDouble("fitness"), domain.getJSONObject(2).getString("name")),
+				 () -> assertEquals(28.57, domain.getJSONObject(0).getDouble("fitness"), domain.getJSONObject(0).getString("name")),
+				 () -> assertEquals(75.0, domain.getJSONObject(1).getDouble("fitness"), domain.getJSONObject(1).getString("name")),
+				 () -> assertEquals(55.56, domain.getJSONObject(2).getDouble("fitness"), domain.getJSONObject(2).getString("name")),
 				 () -> assertEquals(100.0, domain.getJSONObject(4).getDouble("fitness"), domain.getJSONObject(4).getString("name")),
 				 () -> assertEquals(100.0, domain.getJSONObject(6).getDouble("fitness"), domain.getJSONObject(6).getString("name")),
 				 () -> assertEquals(100.0, domain.getJSONObject(8).getDouble("fitness"), domain.getJSONObject(8).getString("name")),
 				 () -> assertEquals(0.0, domain.getJSONObject(10).getDouble("fitness"), domain.getJSONObject(10).getString("name")),
 				 () -> assertEquals(0.0, domain.getJSONObject(12).getDouble("fitness"), domain.getJSONObject(12).getString("name")),
 				 () -> assertEquals(0.0, domain.getJSONObject(14).getDouble("fitness"), domain.getJSONObject(14).getString("name")),
-				 () -> assertEquals(71.43, domain.getJSONObject(15).getDouble("fitness"), domain.getJSONObject(15).getString("name")));
+				 () -> assertEquals(70.0, domain.getJSONObject(15).getDouble("fitness"), domain.getJSONObject(15).getString("name")));
 	}
 	
 	@Test
@@ -284,7 +284,7 @@ private FitnessServiceImpl service;
 		JSONArray domain = result.getJSONObject(0).getJSONArray("contains").getJSONObject(0).getJSONArray("contains");
 		
 		assertAll("Should return fitness of classes",
-				 () -> assertEquals(83.33, domain.getJSONObject(3).getDouble("fitness"), domain.getJSONObject(3).getString("name")),
+				 () -> assertEquals(60.0, domain.getJSONObject(3).getDouble("fitness"), domain.getJSONObject(3).getString("name")),
 				 () -> assertEquals(100.0, domain.getJSONObject(5).getDouble("fitness"), domain.getJSONObject(5).getString("name")),
 				 () -> assertEquals(100.0, domain.getJSONObject(7).getDouble("fitness"), domain.getJSONObject(7).getString("name")),
 				 () -> assertEquals(0.0, domain.getJSONObject(9).getDouble("fitness"), domain.getJSONObject(9).getString("name")),

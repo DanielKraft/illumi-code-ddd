@@ -78,6 +78,7 @@ public abstract class Artifact {
 				.put("name", name)
 				.put("DDD", type)
 				.put("domain", domain)
-				.put("fitness", fitness != null ? getFitness() : null);
+				.put("fitness", fitness != null ? getFitness() : null)
+				.put("issues", fitness != null ? fitness.getIssues() : null);
 	}
 }

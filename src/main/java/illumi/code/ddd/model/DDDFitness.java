@@ -1,5 +1,8 @@
 package illumi.code.ddd.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.json.JSONObject;
 
 public class DDDFitness {
@@ -7,30 +10,28 @@ public class DDDFitness {
 	private int numberOfCriteria;
 	private int numberOfFulfilledCriteria;
 	
+	private ArrayList<DDDIssue> issues;
+	
 	public DDDFitness() {
-		this.numberOfCriteria = 0;
-		this.numberOfFulfilledCriteria = 0;
+		this(0, 0);
 	}
 	
 	public DDDFitness(int numberOfCriteria, int numberOfFulfilledCriteria) {
 		this.numberOfCriteria = numberOfCriteria;
 		this.numberOfFulfilledCriteria = numberOfFulfilledCriteria;
+		this.issues = new ArrayList<>();
+	}
+
+	public DDDFitness addFailedCriteria(DDDIssueType type, String description) {
+		numberOfCriteria += type.weight;
+		issues.add(new DDDIssue(type, description));
+		return this;
 	}
 	
-	public void addNumberOfCriteria(int num) {
-		numberOfCriteria += num;
-	}
-	
-	public void incNumberOfCriteria() {
-		numberOfCriteria++;
-	}
-	
-	public void incNumberOfFulfilledCriteria() {
-		numberOfFulfilledCriteria++;
-	}
-	
-	public void decNumberOfFulfilledCriteria() {
-		numberOfFulfilledCriteria--;
+	public DDDFitness addSuccessfulCriteria(DDDIssueType type) {
+		numberOfCriteria += type.weight;
+		numberOfFulfilledCriteria += type.weight;
+		return this;
 	}
 	
 	public void add(DDDFitness fitness) {
@@ -49,15 +50,15 @@ public class DDDFitness {
 	
 	public DDDRating getscore() {
 		double fitness = calculateFitness();
-		if (fitness >= 90.0) 		return DDDRating.A;
-		else if (fitness >= 80.0)	return DDDRating.B;
-		else if (fitness >= 70.0)	return DDDRating.C;
-		else if (fitness >= 60.0)	return DDDRating.D;
-		else if (fitness >= 50.0)	return DDDRating.E;
+		if (fitness >= DDDRating.A.lowerBorder) 		return DDDRating.A;
+		else if (fitness >= DDDRating.B.lowerBorder)	return DDDRating.B;
+		else if (fitness >= DDDRating.C.lowerBorder)	return DDDRating.C;
+		else if (fitness >= DDDRating.D.lowerBorder)	return DDDRating.D;
+		else if (fitness >= DDDRating.E.lowerBorder)	return DDDRating.E;
 		else return DDDRating.F;
 	}
 	
-	public JSONObject toJSON() {
+	public JSONObject summary() {
 		return new JSONObject()
 				.put("score", getscore())
 				.put("criteria", new JSONObject()
@@ -65,4 +66,9 @@ public class DDDFitness {
 						.put("fulfilled", numberOfFulfilledCriteria))
 				.put("fitness", calculateFitness());
 	}
+
+	public List<DDDIssue> getIssues() {
+		return issues;
+	}
+	
 }
