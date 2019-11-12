@@ -50,20 +50,20 @@ public class FitnessServiceImpl implements FitnessService {
 		LOGGER.info("Evaluation of Modules");
 		structureService.getPackages().stream()
 			.parallel()
-			.forEach(item -> {
-				LOGGER.info("DDD:MODULE:{}", item.getName());
+			.forEach(module -> {
+				LOGGER.info("DDD:MODULE:{}", module.getName());
 				DDDFitness fitness = new DDDFitness();
 				
-				if (isDomainModule(item)) {
-					fitness = evaluateDomainModule(item);
-				} else if (containsInfrastructure(item)) {
-					fitness = evaluateInfrastructureModule(item);
-				} else if (containsApplication(item)) {
-					fitness = evaluateApplicationModule(item);
+				if (isDomainModule(module)) {
+					fitness = evaluateDomainModule(module);
+				} else if (containsInfrastructure(module)) {
+					fitness = evaluateInfrastructureModule(module);
+				} else if (containsApplication(module)) {
+					fitness = evaluateApplicationModule(module);
 				} else {
-					fitness = new DDDFitness().addFailedCriteria(DDDIssueType.INFO, "The module '" + item.getName() + "' is no DDD-Module.");
+					fitness = new DDDFitness().addFailedCriteria(DDDIssueType.INFO, String.format("The module '%s' is no DDD-Module.", module.getName()));
 				}
-				item.setFitness(fitness);
+				module.setFitness(fitness);
 			});
 	}
 
@@ -76,13 +76,13 @@ public class FitnessServiceImpl implements FitnessService {
 		if (item.getPath().contains(structureService.getPath() + "domain." + item.getName())) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
 		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, "The module '" + item.getName() + "' is not a submodule of the module 'domain'.");
+			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The module '%s' is not a submodule of the module 'domain'.", item.getName()));
 		}
 		
 		if (containsAggregateRoot(item)) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
 		} else {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, "The module '" + item.getName() + "' does not contain an Aggregate Root.");
+			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The module '%s' does not contain an Aggregate Root.", item.getName()));
 		}
 		return fitness;
 	}
@@ -105,19 +105,19 @@ public class FitnessServiceImpl implements FitnessService {
 		return false;
 	}
 
-	private DDDFitness evaluateInfrastructureModule(Package item) {
+	private DDDFitness evaluateInfrastructureModule(Package module) {
 		DDDFitness fitness = new DDDFitness().addSuccessfulCriteria(DDDIssueType.MINOR);
 		
-		if (item.getPath().contains(structureService.getPath() + "infrastructur")) {
+		if (module.getPath().contains(structureService.getPath() + "infrastructur")) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
 		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, "The module '" + item.getName() + "' is not an infrastructure module.");
+			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The module '%s' is not an infrastructure module.", module.getName()));
 		}
 		
-		if (containsOnlyInfrastructure(item)) {
+		if (containsOnlyInfrastructure(module)) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
 		} else {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, "The module '" + item.getName() + "' dose not only containts infrastructure artifacts.");
+			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The module '%s' dose not only containts infrastructure artifacts.", module.getName()));
 		}
 		
 		return fitness;
@@ -141,19 +141,19 @@ public class FitnessServiceImpl implements FitnessService {
 		return false;
 	}
 
-	private DDDFitness evaluateApplicationModule(Package item) {
+	private DDDFitness evaluateApplicationModule(Package module) {
 		DDDFitness fitness = new DDDFitness().addSuccessfulCriteria(DDDIssueType.MINOR);
 		
-		if (item.getPath().contains(structureService.getPath() + "application")) {
+		if (module.getPath().contains(structureService.getPath() + "application")) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
 		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, "The module '" + item.getName() + "' is not an application module.");
+			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The module '%s' is not an application module.", module.getName()));
 		}
 		
-		if (containsOnlyApplication(item)) {
+		if (containsOnlyApplication(module)) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
 		} else {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, "The module '" + item.getName() + "' dose not only containts infrastructure artifacts.");
+			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The module '%s' dose not only containts infrastructure artifacts.", module.getName()));
 		}
 		
 		return fitness;
@@ -231,14 +231,14 @@ public class FitnessServiceImpl implements FitnessService {
 			if (field.getType().contains(structureService.getPath())) {
 				fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
 			} else {
-				fitness.addFailedCriteria(DDDIssueType.MINOR, "The Field '" + field.getName() + "' of the Entity '" + entity.getName() + "' is not a type of an Entity or a Value Object");
+				fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The Field '%s' of the Entity '%s' is not a type of an Entity or a Value Object", field.getName(), entity.getName()));
 			}
 		}
 		
 		if (containtsId) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
 		} else if (entity.getSuperClass() == null) {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, "The Entity '" + entity.getName() + "' does not containts an ID.");
+			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The Entity '%s' does not containts an ID.", entity.getName()));
 		}
 	}
 	
@@ -256,7 +256,7 @@ public class FitnessServiceImpl implements FitnessService {
 		if (ctr >= 2) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
 		} else if (entity.getSuperClass() == null) {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, "The Entity '" + entity.getName() + "' does not containts all needed methods (equals/hashCode).");
+			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The Entity '%s' does not containts all needed methods (equals/hashCode).", entity.getName()));
 		}
 	}
 	
@@ -279,7 +279,7 @@ public class FitnessServiceImpl implements FitnessService {
 			if (containtsId) {
 				fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
 			} else if (item.getSuperClass() == null) {
-				fitness.addFailedCriteria(DDDIssueType.MAJOR, "The Entity '" + item.getName() + "' does not containts an ID.");
+				fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The Entity '%s' does not containts an ID.", item.getName()));
 			}
 			
 			evaluateEntityMethods(item, fitness);
@@ -310,7 +310,7 @@ public class FitnessServiceImpl implements FitnessService {
 			if (field.getType().contains(structureService.getPath()) || field.getType().contains("java.lang.")) {
 				fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
 			} else {
-				fitness.addFailedCriteria(DDDIssueType.MAJOR, "The Field '" + field.getName() + "' of Value Object '" + valueObject.getName() + "' is not a Value Object or a standard type.");
+				fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The Field '%s' of Value Object '%s' is not a Value Object or a standard type.", field.getName(), valueObject.getName()));
 			}
 			
 			// Has the field a getter and an immutable setter?
@@ -320,7 +320,7 @@ public class FitnessServiceImpl implements FitnessService {
 		if (!containtsId) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
 		} else {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, "The Value Object '" + valueObject.getName() + "' containts an ID.");
+			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The Value Object '%s' containts an ID.", valueObject.getName()));
 		}
 	}
 	
@@ -328,14 +328,14 @@ public class FitnessServiceImpl implements FitnessService {
 		boolean containtsSetter = false;
 		boolean containtsGetter = false;
 		for (Method method : valueObject.getMethods()) {
-			if (method.getName().toUpperCase().equals("SET" + field.getName().toUpperCase())) {
+			if (method.getName().equalsIgnoreCase("set" + field.getName())) {
 				containtsSetter = true;
 				if (isMethodImmutable(method, valueObject)) {
 					fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
 				} else {
-					fitness.addFailedCriteria(DDDIssueType.MAJOR, "The method '" + method.getName() + "(...)' is not immutable.");
+					fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The method '%s(...)' is not immutable.", method.getName()));
 				}
-			} else if (method.getName().toUpperCase().equals("GET" + field.getName().toUpperCase())) {
+			} else if (method.getName().equalsIgnoreCase("get" + field.getName())) {
 				containtsGetter = true;
 			}
 		}
@@ -343,13 +343,13 @@ public class FitnessServiceImpl implements FitnessService {
 		if (containtsSetter) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
 		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, "The field '" + field.getName() + "' does not have a setter.");
+			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The field '%s' does not have a setter.", field.getName()));
 		}
 		
 		if (containtsGetter) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
 		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, "The field '" + field.getName() + "' does not have a Getter.");
+			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The field '%s' does not have a Getter.", field.getName()));
 		}
 	}
 	
@@ -384,19 +384,19 @@ public class FitnessServiceImpl implements FitnessService {
 		if (repoAvailable) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
 		} else {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, "No repository of the aggregate root '" + aggregate.getName() + "' is available");
+			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("No repository of the aggregate root '%s' is available", aggregate.getName()));
 		}
 		
 		if (factoryAvailable) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
 		} else {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, "No factory of the aggregate root '" + aggregate.getName() + "' is available");
+			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("No factory of the aggregate root '%s' is available", aggregate.getName()));
 		}
 		
 		if (serviceAvailable) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
 		} else {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, "No service of the aggregate root '" + aggregate.getName() + "' is available");
+			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("No service of the aggregate root '%s' is available", aggregate.getName()));
 		}
 	}
 
@@ -438,7 +438,7 @@ public class FitnessServiceImpl implements FitnessService {
 		if (repository.getName().endsWith("RepositoryImpl")) {
 			fitness.addSuccessfulCriteria(DDDIssueType.INFO);
 		} else {
-			fitness.addFailedCriteria(DDDIssueType.INFO, "The name of the repsitory '" + repository.getName() + "' should end with 'RepositoryImpl'");
+			fitness.addFailedCriteria(DDDIssueType.INFO, String.format("The name of the repsitory '%s' should end with 'RepositoryImpl'", repository.getName()));
 		}
 	}
 
@@ -453,14 +453,22 @@ public class FitnessServiceImpl implements FitnessService {
 		if (containtsInterface) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
 		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, "The repsitory '" + repository.getName() + "' does not implement an interface.");
+			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The repsitory '%s' does not implement an interface.", repository.getName()));
 		}
 	}
 
 	private void evaluateRepositoryMethods(Class repository, DDDFitness fitness) {
-		boolean containtsFind = false, containtsSave = false, containtsDelete = false, containtsContains = false, containtsUpdate = false;
+		evaluateRepositoryMethods((ArrayList<Method>) repository.getMethods(), repository.getName(), fitness);
+	}
+
+	private void evaluateRepositoryMethods(ArrayList<Method> methods, String name, DDDFitness fitness) {
+		boolean containtsFind = false;
+		boolean containtsSave = false;
+		boolean containtsDelete = false;
+		boolean containtsContains = false;
+		boolean containtsUpdate = false;
 		
-		for (Method method : repository.getMethods()) {
+		for (Method method : methods) {
 			if (isFind(method)) {
 				containtsFind = true;
 			} else if (isSave(method)) {
@@ -474,30 +482,41 @@ public class FitnessServiceImpl implements FitnessService {
 			}
 		}
 		
-		if (containtsFind)
+		createIssues(name, fitness, containtsFind, containtsSave, containtsDelete, containtsContains, containtsUpdate);
+	}
+
+	private void createIssues(String name, DDDFitness fitness, boolean containtsFind, boolean containtsSave,
+			boolean containtsDelete, boolean containtsContains, boolean containtsUpdate) {
+		if (containtsFind) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		else 					
-			fitness.addFailedCriteria(DDDIssueType.MINOR, "The Repository '" + repository.getName() + "' has no findBy/get method.");
+		} else {
+			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The Repository interface '%s' has no findBy/get method.", name));
+		}
 		
-		if (containtsSave)		
+		if (containtsSave) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		else 					
-			fitness.addFailedCriteria(DDDIssueType.MINOR, "The Repository '" + repository.getName() + "' has no save/add/insert method.");
+		} else {
+			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The Repository interface '%s' has no save/add/insert method.", name));
+		}
 		
-		if (containtsDelete)	
+		if (containtsDelete) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		else 					
-			fitness.addFailedCriteria(DDDIssueType.MINOR, "The Repository '" + repository.getName() + "' has no delete/remove method.");
+		} else {
+			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The Repository interface '%s' has no delete/remove method.", name));
+		}
 		
-		if (containtsContains)	
+		if (containtsContains) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		else 					
-			fitness.addFailedCriteria(DDDIssueType.MINOR, "The Repository '" + repository.getName() + "' has no contains/exists method.");
+		} else {
+			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The Repository interface '%s' has no contains/exists method.", name));
+		}
 		
-		if (containtsUpdate)	
+		if (containtsUpdate) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		else 					
-			fitness.addFailedCriteria(DDDIssueType.MINOR, "The Repository '" + repository.getName() + "' has no update method.");
+		} else {
+ 					
+			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The Repository interface '%s' has no update method.", name));
+		}
 	}
 
 	private boolean isFind(Method method) {
@@ -544,7 +563,7 @@ public class FitnessServiceImpl implements FitnessService {
 		if (factory.getName().endsWith("FactoryImpl")) {
 			fitness.addSuccessfulCriteria(DDDIssueType.INFO);
 		} else {
-			fitness.addFailedCriteria(DDDIssueType.INFO, "The name of the factory '" + factory.getName() + "' should end with 'FactoryImpl'");
+			fitness.addFailedCriteria(DDDIssueType.INFO, String.format("The name of the factory '%s' should end with 'FactoryImpl'", factory.getName()));
 		}
 	}
 	
@@ -559,7 +578,7 @@ public class FitnessServiceImpl implements FitnessService {
 		if (containtsInterface) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
 		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, "The factory '" + factory.getName() + "' does not implement an interface.");
+			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The factory '%s' does not implement an interface.", factory.getName()));
 		}
 	}
 
@@ -574,7 +593,7 @@ public class FitnessServiceImpl implements FitnessService {
 		if (containtsRepo) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
 		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, "The factory '" + factory.getName() + "' does not containts a repository as field.");
+			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The factory '%s' does not containts a repository as field.", factory.getName()));
 		}
 	}
 
@@ -589,7 +608,7 @@ public class FitnessServiceImpl implements FitnessService {
 		if (conataintsCreate) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
 		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, "The factory '" + factory.getName() + "' does not containts a create method.");
+			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The factory '%s' does not containts a create method.", factory.getName()));
 		}
 	}
 	
@@ -608,7 +627,7 @@ public class FitnessServiceImpl implements FitnessService {
 		if (service.getName().endsWith("Impl")) {
 			fitness.addSuccessfulCriteria(DDDIssueType.INFO);
 		} else {
-			fitness.addFailedCriteria(DDDIssueType.INFO, "The name of the service '" + service.getName() + "' should end with 'Impl'");
+			fitness.addFailedCriteria(DDDIssueType.INFO, String.format("The name of the service '%s' should end with 'Impl'", service.getName()));
 		}
 	}
 	
@@ -623,7 +642,7 @@ public class FitnessServiceImpl implements FitnessService {
 		if (containtsInterface) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
 		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, "The service '" + service.getName() + "' does not implement an interface.");
+			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The service '%s' does not implement an interface.", service.getName()));
 		}
 	}
 
@@ -632,7 +651,7 @@ public class FitnessServiceImpl implements FitnessService {
 		if (appService.getPath().contains("application.")) {
 			appService.setFitness(new DDDFitness().addSuccessfulCriteria(DDDIssueType.MINOR));
 		} else {
-			appService.setFitness(new DDDFitness().addFailedCriteria(DDDIssueType.MINOR, "The application service '" + appService.getName() + "' is not part of an application module"));
+			appService.setFitness(new DDDFitness().addFailedCriteria(DDDIssueType.MINOR, String.format("The application service '%s' is not part of an application module", appService.getName())));
 		}
 	}
 
@@ -641,7 +660,7 @@ public class FitnessServiceImpl implements FitnessService {
 		if (infra.getPath().contains("infrastructure.")) {
 			infra.setFitness(new DDDFitness().addSuccessfulCriteria(DDDIssueType.MINOR));
 		} else {
-			infra.setFitness(new DDDFitness().addFailedCriteria(DDDIssueType.MINOR, "The infrastructure service '" + infra.getName() + "' is not part of an infrastructure module"));
+			infra.setFitness(new DDDFitness().addFailedCriteria(DDDIssueType.MINOR, String.format("The infrastructure service '%s' is not part of an infrastructure module", infra.getName())));
 		}
 	}
 	
@@ -675,11 +694,11 @@ public class FitnessServiceImpl implements FitnessService {
 		if (containtsId) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
 		} else {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, "The domain event '" + event.getName() + "' does not containts an ID.");
+			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The domain event '%s' does not containts an ID.",event.getName()));
 		}
 		
 		if (ctr < 0) {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, "The domain event '" + event.getName() + "' does not containts any fields.");
+			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The domain event '%s' does not containts any fields.",event.getName()));
 		}
 	}
 
@@ -704,7 +723,7 @@ public class FitnessServiceImpl implements FitnessService {
 		if (!containtsSetter) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
 		} else {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, "The domain event '" + event.getName() + "' containats a setter for the field '" + field.getName() + "'.");
+			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The domain event '%s' containats a setter for the field '%s'.", event.getName(), field.getName()));
 		}
 	}
 
@@ -743,51 +762,12 @@ public class FitnessServiceImpl implements FitnessService {
 		if (repository.getName().endsWith(REPOSITORY)) {
 			fitness.addSuccessfulCriteria(DDDIssueType.INFO);
 		} else {
-			fitness.addFailedCriteria(DDDIssueType.INFO, "The name of the repsitory interface '" + repository.getName() + "' should end with 'Repository'");
+			fitness.addFailedCriteria(DDDIssueType.INFO, String.format("The name of the repsitory interface '%s' should end with 'Repository'", repository.getName()));
 		}
 	}
 
 	private void evaluateRepositoryMethods(Interface repository, DDDFitness fitness) {
-		boolean containtsFind = false, containtsSave = false, containtsDelete = false, containtsContains = false, containtsUpdate = false;
-		
-		for (Method method : repository.getMethods()) {
-			if (isFind(method)) {
-				containtsFind = true;
-			} else if (isSave(method)) {
-				containtsSave = true;
-			} else if (isDelete(method)) {
-				containtsDelete = true;
-			} else if (isContaints(method)) {
-				containtsContains = true;
-			} else if (isUpdate(method)) {
-				containtsUpdate = true;
-			}
-		}
-		
-		if (containtsFind)
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		else 					
-			fitness.addFailedCriteria(DDDIssueType.MINOR, "The Repository interface '" + repository.getName() + "' has no findBy/get method.");
-		
-		if (containtsSave)		
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		else 					
-			fitness.addFailedCriteria(DDDIssueType.MINOR, "The Repository interface '" + repository.getName() + "' has no save/add/insert method.");
-		
-		if (containtsDelete)	
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		else 					
-			fitness.addFailedCriteria(DDDIssueType.MINOR, "The Repository interface '" + repository.getName() + "' has no delete/remove method.");
-		
-		if (containtsContains)	
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		else 					
-			fitness.addFailedCriteria(DDDIssueType.MINOR, "The Repository interface '" + repository.getName() + "' has no contains/exists method.");
-		
-		if (containtsUpdate)	
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		else 					
-			fitness.addFailedCriteria(DDDIssueType.MINOR, "The Repository interface '" + repository.getName() + "' has no update method.");
+		evaluateRepositoryMethods((ArrayList<Method>) repository.getMethods(), repository.getName(), fitness);
 	}
 
 	private void evaluateFactory(Interface factory) {
@@ -807,7 +787,7 @@ public class FitnessServiceImpl implements FitnessService {
 		if (factory.getName().endsWith(FACTORY)) {
 			fitness.addSuccessfulCriteria(DDDIssueType.INFO);
 		} else {
-			fitness.addFailedCriteria(DDDIssueType.INFO, "The name of the factory interface '" + factory.getName() + "' should end with 'FactoryImpl'");
+			fitness.addFailedCriteria(DDDIssueType.INFO, String.format("The name of the factory interface '%s' should end with 'FactoryImpl'", factory.getName()));
 		}
 	}
 	
@@ -822,7 +802,7 @@ public class FitnessServiceImpl implements FitnessService {
 		if (containtsRepo) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
 		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, "The factory interface '" + factory.getName() + "' does not containts a repository as field.");
+			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The factory interface '%s' does not containts a repository as field.", factory.getName()));
 		}
 	}
 
@@ -837,7 +817,7 @@ public class FitnessServiceImpl implements FitnessService {
 		if (conataintsCreate) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
 		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, "The factory interface '" + factory.getName() + "' does not containts a create method.");
+			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The factory interface '%s' does not containts a create method.", factory.getName()));
 		}
 	}
 
@@ -850,7 +830,7 @@ public class FitnessServiceImpl implements FitnessService {
 				if (item.getPath().contains("infrastructure.")) {
 					item.setFitness(new DDDFitness().addSuccessfulCriteria(DDDIssueType.MINOR));
 				} else {
-					item.setFitness(new DDDFitness().addFailedCriteria(DDDIssueType.MINOR, "The annotation '" + item.getName() + "' is not part of an infrastructure module"));
+					item.setFitness(new DDDFitness().addFailedCriteria(DDDIssueType.MINOR, String.format("The annotation '%s' is not part of an infrastructure module", item.getName())));
 				}
 			});
 	}
