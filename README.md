@@ -4,7 +4,7 @@ Analysis of a Java system using jQAssistant and development of an algorithm to g
 ![Workflow of illumi-code-ddd](/gfx/Workflow_eng.png?raw=true "Workflow")
 
 ## Thesis
-The thesis is available in the following repository: [illumi-code-ddd](https://github.com/DanielKraft/illumi-code-ddd)
+The thesis is available in the following repository: [bachelor-thesis](https://github.com/DanielKraft/bachelor-thesis)
 
 ## Author
 [**Kraft, Daniel**](https://github.com/DanielKraft)
