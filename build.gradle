@@ -38,6 +38,7 @@ dependencies {
     compile "io.micronaut:micronaut-runtime"
     compile "io.micronaut:micronaut-http-client"
     compile "io.micronaut:micronaut-http-server-netty"
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
 	compile group: 'io.micronaut.configuration', name: 'micronaut-neo4j-bolt', version: '1.1.0'
 	compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
     compile group: 'org.json', name: 'json', version: '20180813'
