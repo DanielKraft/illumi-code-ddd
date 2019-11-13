@@ -41,19 +41,16 @@ public class Package extends Artifact {
 		this.conataints.add(artifact);
 	}
 	
-	public void evaluate(StructureService structureService) {
-		DDDFitness fitness = new DDDFitness();
-		
+	public void evaluate(StructureService structureService) {		
 		if (isDomainModule(structureService)) {
-			fitness = evaluateDomainModule(structureService);
+			setFitness(evaluateDomainModule(structureService));
 		} else if (containsInfrastructure()) {
-			fitness = evaluateInfrastructureModule(structureService);
+			setFitness(evaluateInfrastructureModule(structureService));
 		} else if (containsApplication()) {
-			fitness = evaluateApplicationModule(structureService);
+			setFitness(evaluateApplicationModule(structureService));
 		} else {
-			fitness = new DDDFitness().addFailedCriteria(DDDIssueType.INFO, String.format("The module '%s' is no DDD-Module.", getName()));
+			setFitness(new DDDFitness().addFailedCriteria(DDDIssueType.INFO, String.format("The module '%s' is no DDD-Module.", getName())));
 		}
-		setFitness(fitness);
 	}
 
 	private boolean isDomainModule(StructureService structureService) {

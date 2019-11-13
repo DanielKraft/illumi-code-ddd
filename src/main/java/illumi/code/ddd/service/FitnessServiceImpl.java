@@ -7,6 +7,8 @@ import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import illumi.code.ddd.model.artifacts.Interface;
+
 public class FitnessServiceImpl implements FitnessService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FitnessServiceImpl.class);
@@ -45,18 +47,14 @@ public class FitnessServiceImpl implements FitnessService {
 		LOGGER.info("Evaluation of Classes");
 		structureService.getClasses().stream()
 			.parallel()
-			.forEach(item -> {
-				item.evaluate(structureService);
-			});
+			.forEach(item -> item.evaluate(structureService));
 	}
 
 	private void evaluateInterfaces() {
 		LOGGER.info("Evaluation of Interfaces");
 		structureService.getInterfaces().stream()
 			.parallel()
-			.forEach(item -> {
-				item.evaluate();
-			});
+			.forEach(Interface::evaluate);
 	}
 	
 	private void evaluateAnnotations() {

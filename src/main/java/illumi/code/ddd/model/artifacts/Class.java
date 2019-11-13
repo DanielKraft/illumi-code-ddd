@@ -25,12 +25,12 @@ public class Class extends Artifact {
 	private static final String FACTORY = "Factory";
 	private static final String REPOSITORY = "Repository";
 	
-	private static final String QUERY_FIELDS 				= "MATCH (c:Class)-[:DECLARES]->(f:Field) WHERE c.fqn={path} RETURN DISTINCT f.name as name, f.signature as type, f.visibility as visibility";
-	private static final String QUERY_METHODS 				= "MATCH (c:Class)-[:DECLARES]->(m:Method) WHERE c.fqn = {path} RETURN DISTINCT m.visibility as visibility, m.name as name, m.signature as signature";
-	private static final String QUERY_SUPER 				= "MATCH (c1:Class)-[:EXTENDS]->(c2:Class) WHERE c1.fqn={path} RETURN DISTINCT c2.fqn as superClass";
-	private static final String QUERY_IMPL 					= "MATCH (c:Class)-[:IMPLEMENTS]->(i:Interface) WHERE c.fqn={path} RETURN DISTINCT i.fqn as interface";
-	private static final String QUERY_PARENT_ANNOTATIONS 	= "MATCH (parent:Class)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} RETURN DISTINCT type.fqn as annotation";
-	private static final String QUERY_CHILD_ANNOTATIONS		= "MATCH (parent:Class)-[:DECLARES]->(child:Java)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} AND (child:Field OR child:Method) RETURN DISTINCT type.fqn as annotation";
+	private static final String QUERY_CLASS_FIELDS 				= "MATCH (c:Class)-[:DECLARES]->(f:Field) WHERE c.fqn={path} RETURN DISTINCT f.name as name, f.signature as type, f.visibility as visibility";
+	private static final String QUERY_CLASS_METHODS 			= "MATCH (c:Class)-[:DECLARES]->(m:Method) WHERE c.fqn = {path} RETURN DISTINCT m.visibility as visibility, m.name as name, m.signature as signature";
+	private static final String QUERY_CLASS_SUPER 				= "MATCH (c1:Class)-[:EXTENDS]->(c2:Class) WHERE c1.fqn={path} RETURN DISTINCT c2.fqn as superClass";
+	private static final String QUERY_CLASS_IMPL 				= "MATCH (c:Class)-[:IMPLEMENTS]->(i:Interface) WHERE c.fqn={path} RETURN DISTINCT i.fqn as interface";
+	private static final String QUERY_CLASS_PARENT_ANNOTATIONS 	= "MATCH (parent:Class)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} RETURN DISTINCT type.fqn as annotation";
+	private static final String QUERY_CLASS_CHILD_ANNOTATIONS	= "MATCH (parent:Class)-[:DECLARES]->(child:Java)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} AND (child:Field OR child:Method) RETURN DISTINCT type.fqn as annotation";
 	
 	
 	private ArrayList<Field> fields;
@@ -70,7 +70,7 @@ public class Class extends Artifact {
 	}
 	
 	public void setFields(Driver driver) {
-		this.fields = (ArrayList<Field>) JavaArtifactService.getFields(getPath(), driver, QUERY_FIELDS);
+		this.fields = (ArrayList<Field>) JavaArtifactService.getFields(getPath(), driver, QUERY_CLASS_FIELDS);
     }
 	
 	public void addField(Field field) {
@@ -82,7 +82,7 @@ public class Class extends Artifact {
 	}
 
 	public void setMethods(Driver driver) {
-		this.methods = (ArrayList<Method>) JavaArtifactService.getMethods(getPath(), driver, QUERY_METHODS);
+		this.methods = (ArrayList<Method>) JavaArtifactService.getMethods(getPath(), driver, QUERY_CLASS_METHODS);
     }
 	
 	public void addMethod(Method method) {
@@ -94,7 +94,7 @@ public class Class extends Artifact {
 	}
 	
 	public void setImplInterfaces(Driver driver, List<Interface> interfaces) {
-		this.implInterfaces =  (ArrayList<Interface>) JavaArtifactService.getImplInterfaces(getPath(), driver, QUERY_IMPL, interfaces);
+		this.implInterfaces =  (ArrayList<Interface>) JavaArtifactService.getImplInterfaces(getPath(), driver, QUERY_CLASS_IMPL, interfaces);
     }
 	
 	public void addImplInterface(Interface implInterface) {
@@ -106,7 +106,7 @@ public class Class extends Artifact {
 	}
 
 	public void setSuperClass(Driver driver, List<Class> classes) {
-		this.superClass = JavaArtifactService.getSuperClass(getPath(), driver, QUERY_SUPER, classes);
+		this.superClass = JavaArtifactService.getSuperClass(getPath(), driver, QUERY_CLASS_SUPER, classes);
 	}
 	
 	public void addSuperClass(Class superClass) {
@@ -118,7 +118,7 @@ public class Class extends Artifact {
 	}
 	
 	public void setAnnotations(Driver driver, List<Annotation> annotations) {
-		this.annotations = (ArrayList<Annotation>) JavaArtifactService.getAnnotations(getPath(), driver, QUERY_PARENT_ANNOTATIONS, QUERY_CHILD_ANNOTATIONS, annotations);
+		this.annotations = (ArrayList<Annotation>) JavaArtifactService.getAnnotations(getPath(), driver, QUERY_CLASS_PARENT_ANNOTATIONS, QUERY_CLASS_CHILD_ANNOTATIONS, annotations);
 	}
 	
 	public void evaluate(StructureService structureService) {
@@ -158,58 +158,13 @@ public class Class extends Artifact {
 		LOGGER.info("DDD:ENTITY:{}", getName());
 		DDDFitness fitness = new DDDFitness();
 				
-		evaluateEntityFields(structureService, fitness);
+		Field.evaluateEntity(this, structureService, fitness);
 		
-		evaluateEntityMethods(this, fitness);
+		Method.evaluateEntity(this, fitness);
 		
 		evaluateSuperClass(getSuperClass(), fitness);
 		
 		setFitness(fitness);
-	}
-
-	private void evaluateEntityFields(StructureService structureService, DDDFitness fitness) {
-		boolean containtsId = false;
-		for (Field field : getFields()) {
-			if (isFieldAnId(field)) {
-				containtsId = true;
-			}
-			
-			// Is type of field Entity or Value Object?
-			if (field.getType().contains(structureService.getPath())) {
-				fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-			} else {
-				fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The Field '%s' of the Entity '%s' is not a type of an Entity or a Value Object", field.getName(), getName()));
-			}
-		}
-		
-		if (containtsId) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
-		} else if (getSuperClass() == null) {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The Entity '%s' does not containts an ID.", getName()));
-		}
-	}
-	
-	private boolean isFieldAnId(Field field) {
-		return field.getName().toUpperCase().endsWith("ID");
-	}
-
-	private void evaluateEntityMethods(Class item, DDDFitness fitness) {
-		int ctr = 0;
-		for (Method method : item.getMethods()) {
-			if (isNeededMethod(method)) {
-				ctr++;
-			} 
-		}
-		if (ctr >= 2) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else if (item.getSuperClass() == null) {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The Entity '%s' does not containts all needed methods (equals/hashCode).", item.getName()));
-		}
-	}
-	
-	private boolean isNeededMethod(Method method) {
-		// equals() or hashCode()? 
-		return method.getName().equals("equals") || method.getName().equals("hashCode");
 	}
 
 	private void evaluateSuperClass(Class item, DDDFitness fitness) {
@@ -217,7 +172,7 @@ public class Class extends Artifact {
 			boolean containtsId = false;
 			
 			for (Field field : item.getFields()) {
-				if (isFieldAnId(field)) {
+				if (Field.isId(field)) {
 					containtsId = true;
 					break;
 				}
@@ -229,7 +184,7 @@ public class Class extends Artifact {
 				fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The Entity '%s' does not containts an ID.", item.getName()));
 			}
 			
-			evaluateEntityMethods(item, fitness);
+			Method.evaluateEntity(item, fitness);
 			
 			evaluateSuperClass(item.getSuperClass(), fitness);
 		}
@@ -241,67 +196,9 @@ public class Class extends Artifact {
 		// Must have criteria of Entity: no ID
 		DDDFitness fitness = new DDDFitness();
 		
-		evaluateValueObjectFields(structureService, fitness);
+		Field.evaluateValueObject(this, structureService, fitness);
 				
 		setFitness(fitness);
-	}
-
-	private void evaluateValueObjectFields(StructureService structureService, DDDFitness fitness) {
-		boolean containtsId = false;
-		for (Field field : getFields()) {
-			if (isFieldAnId(field)) {
-				containtsId = true;
-			}
-			
-			// Is type of field Value Object or standard type?
-			if (field.getType().contains(structureService.getPath()) || field.getType().contains("java.lang.")) {
-				fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
-			} else {
-				fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The Field '%s' of Value Object '%s' is not a Value Object or a standard type.", field.getName(), getName()));
-			}
-			
-			// Has the field a getter and an immutable setter?
-			evaluateValueObjectMethodOfField(field, fitness);
-		}
-		
-		if (!containtsId) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The Value Object '%s' containts an ID.", getName()));
-		}
-	}
-	
-	private void evaluateValueObjectMethodOfField(Field field, DDDFitness fitness) {
-		boolean containtsSetter = false;
-		boolean containtsGetter = false;
-		for (Method method : getMethods()) {
-			if (method.getName().equalsIgnoreCase("set" + field.getName())) {
-				containtsSetter = true;
-				if (isMethodImmutable(method)) {
-					fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
-				} else {
-					fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The method '%s(...)' is not immutable.", method.getName()));
-				}
-			} else if (method.getName().equalsIgnoreCase("get" + field.getName())) {
-				containtsGetter = true;
-			}
-		}
-		
-		if (containtsSetter) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The field '%s' does not have a setter.", field.getName()));
-		}
-		
-		if (containtsGetter) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The field '%s' does not have a Getter.", field.getName()));
-		}
-	}
-	
-	private boolean isMethodImmutable(Method method) {
-		return method.getSignature().split(" ")[0].contains(getPath());
 	}
 	
 	private void evaluateAggregateRoot(StructureService structureService) {
@@ -376,7 +273,7 @@ public class Class extends Artifact {
 		
 		evaluateRepositoryInterfaces(fitness);
 		
-		evaluateRepositoryMethods(fitness);
+		Method.evaluateRepository(getName(), methods, fitness);
 		
 		setFitness(fitness);
 	}
@@ -404,92 +301,6 @@ public class Class extends Artifact {
 		}
 	}
 
-	private void evaluateRepositoryMethods(DDDFitness fitness) {
-		evaluateRepositoryMethods((ArrayList<Method>) getMethods(), getName(), fitness);
-	}
-
-	private void evaluateRepositoryMethods(ArrayList<Method> methods, String name, DDDFitness fitness) {
-		boolean containtsFind = false;
-		boolean containtsSave = false;
-		boolean containtsDelete = false;
-		boolean containtsContains = false;
-		boolean containtsUpdate = false;
-		
-		for (Method method : methods) {
-			if (isFind(method)) {
-				containtsFind = true;
-			} else if (isSave(method)) {
-				containtsSave = true;
-			} else if (isDelete(method)) {
-				containtsDelete = true;
-			} else if (isContaints(method)) {
-				containtsContains = true;
-			} else if (isUpdate(method)) {
-				containtsUpdate = true;
-			}
-		}
-		
-		createIssues(name, fitness, containtsFind, containtsSave, containtsDelete, containtsContains, containtsUpdate);
-	}
-	
-	private boolean isFind(Method method) {
-		return method.getName().startsWith("findBy") 
-				|| method.getName().startsWith("get");
-	}
-
-	private boolean isSave(Method method) {
-		return method.getName().startsWith("save") 
-				|| method.getName().startsWith("add") 
-				|| method.getName().startsWith("insert");
-	}
-
-	private boolean isDelete(Method method) {
-		return method.getName().startsWith("delete") 
-				|| method.getName().startsWith("remove");
-	}
-
-	private boolean isContaints(Method method) {
-		return method.getName().startsWith("contains")
-				|| method.getName().startsWith("exists");
-	}
-
-	private boolean isUpdate(Method method) {
-		return method.getName().startsWith("update");
-	}
-
-	private void createIssues(String name, DDDFitness fitness, boolean containtsFind, boolean containtsSave,
-			boolean containtsDelete, boolean containtsContains, boolean containtsUpdate) {
-		if (containtsFind) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The Repository '%s' has no findBy/get method.", name));
-		}
-		
-		if (containtsSave) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The Repository '%s' has no save/add/insert method.", name));
-		}
-		
-		if (containtsDelete) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The Repository '%s' has no delete/remove method.", name));
-		}
-		
-		if (containtsContains) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The Repository '%s' has no contains/exists method.", name));
-		}
-		
-		if (containtsUpdate) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The Repository '%s' has no update method.", name));
-		}
-	}
-	
 	private void evaluateFactory() {
 		LOGGER.info("DDD:FACTORY:{}", getName());
 		DDDFitness fitness = new DDDFitness();
@@ -498,9 +309,9 @@ public class Class extends Artifact {
 		
 		evaluateFactoryInterfaces(fitness);
 		
-		evaluateFactoryFields(fitness);
+		Field.evaluateFactory(getName(), fields, fitness);
 				
-		evaluateFactoryMethods(fitness);
+		Method.evaluateFactory(getName(), methods, fitness);
 		
 		setFitness(fitness);
 	}
@@ -525,36 +336,6 @@ public class Class extends Artifact {
 			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
 		} else {
 			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The factory '%s' does not implement an interface.", getName()));
-		}
-	}
-
-	private void evaluateFactoryFields(DDDFitness fitness) {
-		boolean containtsRepo = false;
-		for (Field field : getFields()) {
-			if (field.getType().contains(REPOSITORY)) {
-				containtsRepo = true;
-			}
-		}
-		
-		if (containtsRepo) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The factory '%s' does not containts a repository as field.", getName()));
-		}
-	}
-
-	private void evaluateFactoryMethods(DDDFitness fitness) {
-		boolean conataintsCreate = false;
-		for (Method method : getMethods()) {
-			if (method.getName().startsWith("create")) {
-				conataintsCreate = true;
-			} 
-		}
-		
-		if (conataintsCreate) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The factory '%s' does not containts a create method.", getName()));
 		}
 	}
 	
@@ -614,62 +395,8 @@ public class Class extends Artifact {
 		LOGGER.info("DDD:DOMAIN_EVENT:{}", getName());
 		DDDFitness fitness = new DDDFitness();
 		
-		evaluateDomainEventFields(structureService, fitness);
+		Field.evaluateDomainEvent(this, structureService, fitness);
 				
 		setFitness(fitness);
-	}
-
-	private void evaluateDomainEventFields(StructureService structureService, DDDFitness fitness) {
-		int ctr = 0;
-		boolean containtsId = false;
-		
-		for (Field field : getFields()) {
-			if (field.getName().contains("time") 
-				|| field.getName().contains("date") 
-				|| field.getType().contains("java.time.")
-				|| field.getType().contains(structureService.getPath())) {
-				fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-				ctr++;
-				evaluateDomainEventMethodsOfField(field, fitness);
-				if (field.getName().toUpperCase().endsWith("ID")) {
-					containtsId = true;
-				}
-			}
-		}
-		
-		if (containtsId) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The domain event '%s' does not containts an ID.",getName()));
-		}
-		
-		if (ctr == 0) {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The domain event '%s' does not containts any fields.",getName()));
-		}
-	}
-
-	private void evaluateDomainEventMethodsOfField(Field field, DDDFitness fitness) {
-		boolean containtsGetter = false;
-		boolean containtsSetter = false;
-		
-		for (Method method : getMethods()) {
-			if (method.getName().toUpperCase().startsWith("GET" + field.getName().toUpperCase())) {
-				containtsGetter = true;
-			} else if (method.getName().toUpperCase().startsWith("SET" + field.getName().toUpperCase())) {
-				containtsSetter = true;
-			}
-		}
-		
-		if (containtsGetter) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, "");
-		}
-		
-		if (!containtsSetter) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The domain event '%s' containats a setter for the field '%s'.", getName(), field.getName()));
-		}
 	}
 }

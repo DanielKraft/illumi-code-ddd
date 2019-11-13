@@ -28,24 +28,29 @@ public class MetricServiceImplTest {
 		Package domain = new Package("domain", "de.test.domain");
 		domain.setType(DDDType.MODULE);
 		domain.setFitness(new DDDFitness(3, 2));
+		structure.addPackage(domain);
 		Class entity = new Class("Entity", "de.test.domain.Entity");
 		entity.setType(DDDType.ENTITY);
 		entity.setDomain("domain");
 		entity.setFitness(new DDDFitness(15, 9));
 		domain.addConataints(entity);
+		structure.addClasses(entity);
 		Class repo = new Class("EntityRepository", "de.test.domain.EntityRepository");
 		repo.setType(DDDType.REPOSITORY);
 		repo.setDomain("domain");
 		repo.setFitness(new DDDFitness(5, 4));
 		domain.addConataints(repo);
+		structure.addClasses(repo);
 		
 		Package infrastructure = new Package("infrastructure", "de.test.infrastructure");
 		infrastructure.setType(DDDType.MODULE);
 		infrastructure.setFitness(new DDDFitness(5, 3));
+		structure.addPackage(infrastructure);
 		Class contoller = new Class("EntityController", "de.test.infrastructure.EntityController");
 		contoller.setType(DDDType.CONTROLLER);
 		contoller.setFitness(new DDDFitness(12, 7));
 		infrastructure.addConataints(contoller);
+		structure.addClasses(contoller);
 		
 		ArrayList<Artifact> data = new ArrayList<>();
 		data.add(domain);

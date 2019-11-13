@@ -24,11 +24,11 @@ public class Interface extends Artifact {
 	private static final String FACTORY = "Factory";
 	private static final String REPOSITORY = "Repository";
 	
-	private static final String QUERY_FIELDS 				= "MATCH (i:Interface)-[:DECLARES]->(f:Field) WHERE i.fqn= {path} RETURN DISTINCT f.name as name, f.signature as type, f.visibility as visibility";
-	private static final String QUERY_METHODS				= "MATCH (i:Interface)-[:DECLARES]->(m:Method) WHERE i.fqn = {path} RETURN DISTINCT m.visibility as visibility, m.name as name, m.signature as signature";
-	private static final String QUERY_IMPL 					= "MATCH (i1:Interface)-[:IMPLEMENTS]->(i2:Interface) WHERE i1.fqn= {path} RETURN i2.fqn as interface";
-	private static final String QUERY_PARENT_ANNOTATIONS	= "MATCH (parent:Interface)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} RETURN DISTINCT type.fqn as annotation";
-	private static final String QUERY_CHILD_ANNOTATIONS 	= "MATCH (parent:Interface)-[:DECLARES]->(child:Java)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} AND (child:Field OR child:Method) RETURN DISTINCT type.fqn as annotation";
+	private static final String QUERY_INTERFACE_FIELDS 				= "MATCH (i:Interface)-[:DECLARES]->(f:Field) WHERE i.fqn= {path} RETURN DISTINCT f.name as name, f.signature as type, f.visibility as visibility";
+	private static final String QUERY_INTERFACE_METHODS				= "MATCH (i:Interface)-[:DECLARES]->(m:Method) WHERE i.fqn = {path} RETURN DISTINCT m.visibility as visibility, m.name as name, m.signature as signature";
+	private static final String QUERY_INTERFACE_IMPL 				= "MATCH (i1:Interface)-[:IMPLEMENTS]->(i2:Interface) WHERE i1.fqn= {path} RETURN i2.fqn as interface";
+	private static final String QUERY_INTERFACE_PARENT_ANNOTATIONS	= "MATCH (parent:Interface)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} RETURN DISTINCT type.fqn as annotation";
+	private static final String QUERY_INTERFACE_CHILD_ANNOTATIONS 	= "MATCH (parent:Interface)-[:DECLARES]->(child:Java)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} AND (child:Field OR child:Method) RETURN DISTINCT type.fqn as annotation";
 	
 	private ArrayList<Field> fields;
 	
@@ -70,7 +70,7 @@ public class Interface extends Artifact {
 	}
 	
 	public void setFields(Driver driver) {
-		this.fields = (ArrayList<Field>) JavaArtifactService.getFields(getPath(), driver, QUERY_FIELDS);
+		this.fields = (ArrayList<Field>) JavaArtifactService.getFields(getPath(), driver, QUERY_INTERFACE_FIELDS);
     }
 	
 	public void addField(Field field) {
@@ -82,7 +82,7 @@ public class Interface extends Artifact {
 	}
 	
 	public void setMethods(Driver driver) {
-		this.methods = (ArrayList<Method>) JavaArtifactService.getMethods(getPath(), driver, QUERY_METHODS);
+		this.methods = (ArrayList<Method>) JavaArtifactService.getMethods(getPath(), driver, QUERY_INTERFACE_METHODS);
     }
 	
 	public void addMethod(Method method) {
@@ -94,7 +94,7 @@ public class Interface extends Artifact {
 	}
 	
 	public void setImplInterfaces(Driver driver, List<Interface> interfaces) {
-		this.implInterfaces =  (ArrayList<Interface>) JavaArtifactService.getImplInterfaces(getPath(), driver, QUERY_IMPL, interfaces);
+		this.implInterfaces =  (ArrayList<Interface>) JavaArtifactService.getImplInterfaces(getPath(), driver, QUERY_INTERFACE_IMPL, interfaces);
 	}
 	
 	public List<Annotation> getAnnotations() {
@@ -102,7 +102,7 @@ public class Interface extends Artifact {
 	}
 	
 	public void setAnnotations(Driver driver, List<Annotation> annotations) {
-		this.annotations = (ArrayList<Annotation>) JavaArtifactService.getAnnotations(getPath(), driver, QUERY_PARENT_ANNOTATIONS, QUERY_CHILD_ANNOTATIONS, annotations);
+		this.annotations = (ArrayList<Annotation>) JavaArtifactService.getAnnotations(getPath(), driver, QUERY_INTERFACE_PARENT_ANNOTATIONS, QUERY_INTERFACE_CHILD_ANNOTATIONS, annotations);
 	}
 	
 	public void evaluate() {
@@ -126,7 +126,7 @@ public class Interface extends Artifact {
 		
 		evaluateRepositoryName(fitness);
 		
-		evaluateRepositoryMethods(fitness);
+		Method.evaluateRepository(getName(), methods, fitness);
 		
 		setFitness(fitness);
 	}
@@ -138,92 +138,6 @@ public class Interface extends Artifact {
 			fitness.addFailedCriteria(DDDIssueType.INFO, String.format("The name of the repsitory interface '%s' should end with 'Repository'", getName()));
 		}
 	}
-
-	private void evaluateRepositoryMethods(DDDFitness fitness) {
-		evaluateRepositoryMethods((ArrayList<Method>) getMethods(), getName(), fitness);
-	}
-	
-	private void evaluateRepositoryMethods(ArrayList<Method> methods, String name, DDDFitness fitness) {
-		boolean containtsFind = false;
-		boolean containtsSave = false;
-		boolean containtsDelete = false;
-		boolean containtsContains = false;
-		boolean containtsUpdate = false;
-		
-		for (Method method : methods) {
-			if (isFind(method)) {
-				containtsFind = true;
-			} else if (isSave(method)) {
-				containtsSave = true;
-			} else if (isDelete(method)) {
-				containtsDelete = true;
-			} else if (isContaints(method)) {
-				containtsContains = true;
-			} else if (isUpdate(method)) {
-				containtsUpdate = true;
-			}
-		}
-		
-		createIssues(name, fitness, containtsFind, containtsSave, containtsDelete, containtsContains, containtsUpdate);
-	}
-	
-	private boolean isFind(Method method) {
-		return method.getName().startsWith("findBy") 
-				|| method.getName().startsWith("get");
-	}
-
-	private boolean isSave(Method method) {
-		return method.getName().startsWith("save") 
-				|| method.getName().startsWith("add") 
-				|| method.getName().startsWith("insert");
-	}
-
-	private boolean isDelete(Method method) {
-		return method.getName().startsWith("delete") 
-				|| method.getName().startsWith("remove");
-	}
-
-	private boolean isContaints(Method method) {
-		return method.getName().startsWith("contains")
-				|| method.getName().startsWith("exists");
-	}
-
-	private boolean isUpdate(Method method) {
-		return method.getName().startsWith("update");
-	}
-
-	private void createIssues(String name, DDDFitness fitness, boolean containtsFind, boolean containtsSave,
-			boolean containtsDelete, boolean containtsContains, boolean containtsUpdate) {
-		if (containtsFind) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The Repository interface '%s' has no findBy/get method.", name));
-		}
-		
-		if (containtsSave) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The Repository interface '%s' has no save/add/insert method.", name));
-		}
-		
-		if (containtsDelete) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The Repository interface '%s' has no delete/remove method.", name));
-		}
-		
-		if (containtsContains) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The Repository interface '%s' has no contains/exists method.", name));
-		}
-		
-		if (containtsUpdate) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The Repository interface '%s' has no update method.", name));
-		}
-	}
 	
 	private void evaluateFactory() {
 		LOGGER.info("DDD:FACTORY:{}", getName());
@@ -231,9 +145,9 @@ public class Interface extends Artifact {
 		
 		evaluateFactoryName(fitness);
 		
-		evaluateFactoryFields(fitness);
+		Field.evaluateFactory(getName(), fields, fitness);
 				
-		evaluateFactoryMethods(fitness);
+		Method.evaluateFactory(getName(), methods, fitness);
 		
 		setFitness(fitness);
 	}
@@ -243,36 +157,6 @@ public class Interface extends Artifact {
 			fitness.addSuccessfulCriteria(DDDIssueType.INFO);
 		} else {
 			fitness.addFailedCriteria(DDDIssueType.INFO, String.format("The name of the factory interface '%s' should end with 'FactoryImpl'", getName()));
-		}
-	}
-	
-	private void evaluateFactoryFields(DDDFitness fitness) {
-		boolean containtsRepo = false;
-		for (Field field : getFields()) {
-			if (field.getType().contains(REPOSITORY)) {
-				containtsRepo = true;
-			}
-		}
-		
-		if (containtsRepo) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The factory interface '%s' does not containts a repository as field.", getName()));
-		}
-	}
-
-	private void evaluateFactoryMethods(DDDFitness fitness) {
-		boolean conataintsCreate = false;
-		for (Method method : getMethods()) {
-			if (method.getName().startsWith("create")) {
-				conataintsCreate = true;
-			} 
-		}
-		
-		if (conataintsCreate) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The factory interface '%s' does not containts a create method.", getName()));
 		}
 	}
 }
