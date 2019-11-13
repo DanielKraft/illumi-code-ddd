@@ -109,6 +109,19 @@ public class StructureService {
 		this.annotations.add(a);
 	}
 	
+	public List<Artifact> getAllArtifacts() {
+		ArrayList<Artifact> all = new ArrayList<>();
+		
+		all.addAll(this.packages);
+		all.addAll(this.classes);
+		all.addAll(this.interfaces);
+		all.addAll(this.enums);
+		all.addAll(this.annotations);
+
+		all.sort((Artifact a1, Artifact a2) -> Double.compare(a2.getFitness(), a1.getFitness()));
+		return all;
+	}
+	
 	public JSONArray getJOSN() {
 		return convertPackage(structure);
 	}

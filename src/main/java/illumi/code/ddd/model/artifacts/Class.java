@@ -5,22 +5,32 @@ import java.util.List;
 
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.Record;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import illumi.code.ddd.model.DDDFitness;
+import illumi.code.ddd.model.DDDIssueType;
 import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.service.JavaArtifactService;
+import illumi.code.ddd.service.StructureService;
 
 /**
  * Entity-Class: Class
  * @author Daniel Kraft
  */
 public class Class extends Artifact {
-		
-	private static final String QUERY_FIELDS 				= "MATCH (c:Class)-[:DECLARES]->(f:Field) WHERE c.fqn={path} RETURN DISTINCT f.name as name, f.signature as type, f.visibility as visibility";
-	private static final String QUERY_METHODS 				= "MATCH (c:Class)-[:DECLARES]->(m:Method) WHERE c.fqn = {path} RETURN DISTINCT m.visibility as visibility, m.name as name, m.signature as signature";
-	private static final String QUERY_SUPER 				= "MATCH (c1:Class)-[:EXTENDS]->(c2:Class) WHERE c1.fqn={path} RETURN DISTINCT c2.fqn as superClass";
-	private static final String QUERY_IMPL 					= "MATCH (c:Class)-[:IMPLEMENTS]->(i:Interface) WHERE c.fqn={path} RETURN DISTINCT i.fqn as interface";
-	private static final String QUERY_PARENT_ANNOTATIONS 	= "MATCH (parent:Class)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} RETURN DISTINCT type.fqn as annotation";
-	private static final String QUERY_CHILD_ANNOTATIONS		= "MATCH (parent:Class)-[:DECLARES]->(child:Java)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} AND (child:Field OR child:Method) RETURN DISTINCT type.fqn as annotation";
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(Class.class);
+	
+	private static final String FACTORY = "Factory";
+	private static final String REPOSITORY = "Repository";
+	
+	private static final String QUERY_CLASS_FIELDS 				= "MATCH (c:Class)-[:DECLARES]->(f:Field) WHERE c.fqn={path} RETURN DISTINCT f.name as name, f.signature as type, f.visibility as visibility";
+	private static final String QUERY_CLASS_METHODS 			= "MATCH (c:Class)-[:DECLARES]->(m:Method) WHERE c.fqn = {path} RETURN DISTINCT m.visibility as visibility, m.name as name, m.signature as signature";
+	private static final String QUERY_CLASS_SUPER 				= "MATCH (c1:Class)-[:EXTENDS]->(c2:Class) WHERE c1.fqn={path} RETURN DISTINCT c2.fqn as superClass";
+	private static final String QUERY_CLASS_IMPL 				= "MATCH (c:Class)-[:IMPLEMENTS]->(i:Interface) WHERE c.fqn={path} RETURN DISTINCT i.fqn as interface";
+	private static final String QUERY_CLASS_PARENT_ANNOTATIONS 	= "MATCH (parent:Class)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} RETURN DISTINCT type.fqn as annotation";
+	private static final String QUERY_CLASS_CHILD_ANNOTATIONS	= "MATCH (parent:Class)-[:DECLARES]->(child:Java)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} AND (child:Field OR child:Method) RETURN DISTINCT type.fqn as annotation";
 	
 	
 	private ArrayList<Field> fields;
@@ -60,7 +70,7 @@ public class Class extends Artifact {
 	}
 	
 	public void setFields(Driver driver) {
-		this.fields = (ArrayList<Field>) JavaArtifactService.getFields(getPath(), driver, QUERY_FIELDS);
+		this.fields = (ArrayList<Field>) JavaArtifactService.getFields(getPath(), driver, QUERY_CLASS_FIELDS);
     }
 	
 	public void addField(Field field) {
@@ -72,7 +82,7 @@ public class Class extends Artifact {
 	}
 
 	public void setMethods(Driver driver) {
-		this.methods = (ArrayList<Method>) JavaArtifactService.getMethods(getPath(), driver, QUERY_METHODS);
+		this.methods = (ArrayList<Method>) JavaArtifactService.getMethods(getPath(), driver, QUERY_CLASS_METHODS);
     }
 	
 	public void addMethod(Method method) {
@@ -84,7 +94,7 @@ public class Class extends Artifact {
 	}
 	
 	public void setImplInterfaces(Driver driver, List<Interface> interfaces) {
-		this.implInterfaces =  (ArrayList<Interface>) JavaArtifactService.getImplInterfaces(getPath(), driver, QUERY_IMPL, interfaces);
+		this.implInterfaces =  (ArrayList<Interface>) JavaArtifactService.getImplInterfaces(getPath(), driver, QUERY_CLASS_IMPL, interfaces);
     }
 	
 	public void addImplInterface(Interface implInterface) {
@@ -96,7 +106,7 @@ public class Class extends Artifact {
 	}
 
 	public void setSuperClass(Driver driver, List<Class> classes) {
-		this.superClass = JavaArtifactService.getSuperClass(getPath(), driver, QUERY_SUPER, classes);
+		this.superClass = JavaArtifactService.getSuperClass(getPath(), driver, QUERY_CLASS_SUPER, classes);
 	}
 	
 	public void addSuperClass(Class superClass) {
@@ -108,6 +118,285 @@ public class Class extends Artifact {
 	}
 	
 	public void setAnnotations(Driver driver, List<Annotation> annotations) {
-		this.annotations = (ArrayList<Annotation>) JavaArtifactService.getAnnotations(getPath(), driver, QUERY_PARENT_ANNOTATIONS, QUERY_CHILD_ANNOTATIONS, annotations);
+		this.annotations = (ArrayList<Annotation>) JavaArtifactService.getAnnotations(getPath(), driver, QUERY_CLASS_PARENT_ANNOTATIONS, QUERY_CLASS_CHILD_ANNOTATIONS, annotations);
+	}
+	
+	public void evaluate(StructureService structureService) {
+		switch(getType()) {
+			case ENTITY:
+				evaluateEntity(structureService);
+				break;
+			case VALUE_OBJECT:
+				evaluateValueObject(structureService);
+				break;
+			case AGGREGATE_ROOT:
+				evaluateAggregateRoot(structureService);
+				break;
+			case REPOSITORY:
+				evaluateRepository(); 
+				break;
+			case FACTORY:
+				evaluateFactory();
+				break;
+			case SERVICE:
+				evaluateService();
+				break;
+			case DOMAIN_EVENT:
+				evaluateDomainEvent(structureService);
+				break;
+			case APPLICATION_SERVICE:
+				evaluateApplicationService();
+				break;
+			case CONTROLLER:
+			case INFRASTRUCTUR:
+			default:
+				evaluateInfrastructure(); 
+		}
+	}
+
+	private void evaluateEntity(StructureService structureService) {
+		LOGGER.info("DDD:ENTITY:{}", getName());
+		DDDFitness fitness = new DDDFitness();
+				
+		Field.evaluateEntity(this, structureService, fitness);
+		
+		Method.evaluateEntity(this, fitness);
+		
+		evaluateSuperClass(getSuperClass(), fitness);
+		
+		setFitness(fitness);
+	}
+
+	private void evaluateSuperClass(Class item, DDDFitness fitness) {
+		if (item != null) {
+			boolean containtsId = false;
+			
+			for (Field field : item.getFields()) {
+				if (Field.isId(field)) {
+					containtsId = true;
+					break;
+				}
+			}
+			
+			if (containtsId) {
+				fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
+			} else if (item.getSuperClass() == null) {
+				fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The Entity '%s' does not containts an ID.", item.getName()));
+			}
+			
+			Method.evaluateEntity(item, fitness);
+			
+			evaluateSuperClass(item.getSuperClass(), fitness);
+		}
+		
+	}
+	
+	private void evaluateValueObject(StructureService structureService) {
+		LOGGER.info("DDD:VALUE_OBJECT:{}", getName());
+		// Must have criteria of Entity: no ID
+		DDDFitness fitness = new DDDFitness();
+		
+		Field.evaluateValueObject(this, structureService, fitness);
+				
+		setFitness(fitness);
+	}
+	
+	private void evaluateAggregateRoot(StructureService structureService) {
+		LOGGER.info("DDD:AGGREGATE_ROOT:{}", getName());
+		evaluateEntity(structureService);
+		DDDFitness fitness = getDDDFitness();
+		
+		evaluateDomainStructure(structureService, fitness);
+		
+	}
+
+	private void evaluateDomainStructure(StructureService structureService, DDDFitness fitness) {
+		boolean repoAvailable = false;
+		boolean factoryAvailable = false;
+		boolean serviceAvailable = false;
+		
+		for (Artifact artifact : getDomainModule(structureService, getDomain())) {
+			if (isAggregateRootRepository(artifact)) {
+				repoAvailable = true;
+			} else if(isAggregateRootFactory(artifact) ) {
+				factoryAvailable = true;
+			} else if(isAggregateRootService(artifact)) {
+				serviceAvailable = true;
+			}
+		}
+		
+		if (repoAvailable) {
+			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
+		} else {
+			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("No repository of the aggregate root '%s' is available", getName()));
+		}
+		
+		if (factoryAvailable) {
+			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
+		} else {
+			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("No factory of the aggregate root '%s' is available", getName()));
+		}
+		
+		if (serviceAvailable) {
+			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
+		} else {
+			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("No service of the aggregate root '%s' is available", getName()));
+		}
+	}
+
+	private boolean isAggregateRootRepository(Artifact artifact) {
+		return artifact.getType() == DDDType.REPOSITORY && artifact.getName().contains(getName() + REPOSITORY);
+	}
+
+	private boolean isAggregateRootFactory(Artifact artifact) {
+		return artifact.getType() == DDDType.FACTORY && artifact.getName().contains(getName() + FACTORY);
+	}
+
+	private boolean isAggregateRootService(Artifact artifact) {
+		return artifact.getType() == DDDType.SERVICE && artifact.getName().contains(getName());
+	}
+
+	private ArrayList<Artifact> getDomainModule(StructureService structureService, String domain) {
+		for (Package module : structureService.getPackages()) {
+			if (module.getName().contains(domain)) {
+				return (ArrayList<Artifact>) module.getConataints();
+			}
+		}
+		return new ArrayList<>();
+	}
+
+	private void evaluateRepository() {
+		LOGGER.info("DDD:REPOSITORY:{}", getName());
+		DDDFitness fitness = new DDDFitness();
+		
+		evaluateRepositoryName(fitness);
+		
+		evaluateRepositoryInterfaces(fitness);
+		
+		Method.evaluateRepository(getName(), methods, fitness);
+		
+		setFitness(fitness);
+	}
+
+	private void evaluateRepositoryName(DDDFitness fitness) {
+		if (getName().endsWith("RepositoryImpl")) {
+			fitness.addSuccessfulCriteria(DDDIssueType.INFO);
+		} else {
+			fitness.addFailedCriteria(DDDIssueType.INFO, String.format("The name of the repsitory '%s' should end with 'RepositoryImpl'", getName()));
+		}
+	}
+
+	private void evaluateRepositoryInterfaces(DDDFitness fitness) {
+		boolean containtsInterface = false;
+		for (Interface i : getInterfaces()) {
+			if (i.getName().endsWith(REPOSITORY)) {
+				containtsInterface = true;
+			}
+		}
+		
+		if (containtsInterface) {
+			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
+		} else {
+			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The repsitory '%s' does not implement an interface.", getName()));
+		}
+	}
+
+	private void evaluateFactory() {
+		LOGGER.info("DDD:FACTORY:{}", getName());
+		DDDFitness fitness = new DDDFitness();
+		
+		evaluateFactoryName(fitness);
+		
+		evaluateFactoryInterfaces(fitness);
+		
+		Field.evaluateFactory(getName(), fields, fitness);
+				
+		Method.evaluateFactory(getName(), methods, fitness);
+		
+		setFitness(fitness);
+	}
+
+	private void evaluateFactoryName(DDDFitness fitness) {
+		if (getName().endsWith("FactoryImpl")) {
+			fitness.addSuccessfulCriteria(DDDIssueType.INFO);
+		} else {
+			fitness.addFailedCriteria(DDDIssueType.INFO, String.format("The name of the factory '%s' should end with 'FactoryImpl'", getName()));
+		}
+	}
+	
+	private void evaluateFactoryInterfaces(DDDFitness fitness) {
+		boolean containtsInterface = false;
+		for (Interface i : getInterfaces()) {
+			if (i.getName().endsWith(FACTORY)) {
+				containtsInterface = true;
+			}
+		}
+		
+		if (containtsInterface) {
+			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
+		} else {
+			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The factory '%s' does not implement an interface.", getName()));
+		}
+	}
+	
+	private void evaluateService() {
+		LOGGER.info("DDD:SERVICE:{}", getName());
+		DDDFitness fitness = new DDDFitness();
+		
+		evaluateServiceName(fitness);
+		
+		evaluateServiceInterfaces(fitness);
+
+		setFitness(fitness);
+	}
+	
+	private void evaluateServiceName(DDDFitness fitness) {
+		if (getName().endsWith("Impl")) {
+			fitness.addSuccessfulCriteria(DDDIssueType.INFO);
+		} else {
+			fitness.addFailedCriteria(DDDIssueType.INFO, String.format("The name of the service '%s' should end with 'Impl'", getName()));
+		}
+	}
+	
+	private void evaluateServiceInterfaces(DDDFitness fitness) {
+		boolean containtsInterface = false;
+		for (Interface i : getInterfaces()) {
+			if (getName().startsWith(i.getName())) {
+				containtsInterface = true;
+			}
+		}
+		
+		if (containtsInterface) {
+			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
+		} else {
+			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The service '%s' does not implement an interface.", getName()));
+		}
+	}
+
+	private void evaluateApplicationService() {
+		LOGGER.info("DDD:APPLICATION_SERVICE:{}", getName());
+		if (getPath().contains("application.")) {
+			setFitness(new DDDFitness().addSuccessfulCriteria(DDDIssueType.MINOR));
+		} else {
+			setFitness(new DDDFitness().addFailedCriteria(DDDIssueType.MINOR, String.format("The application service '%s' is not part of an application module", getName())));
+		}
+	}
+
+	private void evaluateInfrastructure() {
+		LOGGER.info("DDD:INFRASTRUCTUR:{}", getName());
+		if (getPath().contains("infrastructure.")) {
+			setFitness(new DDDFitness().addSuccessfulCriteria(DDDIssueType.MINOR));
+		} else {
+			setFitness(new DDDFitness().addFailedCriteria(DDDIssueType.MINOR, String.format("The infrastructure service '%s' is not part of an infrastructure module", getName())));
+		}
+	}
+	
+	private void evaluateDomainEvent(StructureService structureService) {
+		LOGGER.info("DDD:DOMAIN_EVENT:{}", getName());
+		DDDFitness fitness = new DDDFitness();
+		
+		Field.evaluateDomainEvent(this, structureService, fitness);
+				
+		setFitness(fitness);
 	}
 }

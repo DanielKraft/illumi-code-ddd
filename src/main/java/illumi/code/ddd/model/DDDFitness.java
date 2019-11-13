@@ -22,6 +22,14 @@ public class DDDFitness {
 		this.issues = new ArrayList<>();
 	}
 
+	public int getNumberOfCriteria() {
+		return numberOfCriteria;
+	}
+
+	public int getNumberOfFulfilledCriteria() {
+		return numberOfFulfilledCriteria;
+	}
+
 	public DDDFitness addFailedCriteria(DDDIssueType type, String description) {
 		numberOfCriteria += type.weight;
 		issues.add(new DDDIssue(type, description));

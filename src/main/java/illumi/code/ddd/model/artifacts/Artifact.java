@@ -33,10 +33,6 @@ public abstract class Artifact {
 		return this.name;
 	}
 	
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public String getPath() {
 		return this.path;
 	}
@@ -47,10 +43,6 @@ public abstract class Artifact {
 
 	public void setDomain(String domain) {
 		this.domain = domain;
-	}
-
-	public void setPath(String path) {
-		this.path = path;
 	}
 
 	public DDDType getType() {
