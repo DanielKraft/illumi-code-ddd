@@ -643,7 +643,7 @@ public class Class extends Artifact {
 			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The domain event '%s' does not containts an ID.",getName()));
 		}
 		
-		if (ctr < 0) {
+		if (ctr == 0) {
 			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The domain event '%s' does not containts any fields.",getName()));
 		}
 	}
