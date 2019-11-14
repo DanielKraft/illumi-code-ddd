@@ -51,10 +51,6 @@ public class StructureService {
 		this.path = split[split.length-1] + ".";
 	}
 
-	public List<Artifact> getStructure() {
-		return structure;
-	}
-
 	public void setStructure(List<Artifact> artifacts) {
 		this.structure = (ArrayList<Artifact>) artifacts;
 	}

@@ -153,7 +153,7 @@ public class AnalyseServiceImplTest {
 			service.setStructureService(new StructureService());
 			
 			JSONArray result = service.analyzeStructure("de.test");
-			
+			System.out.println(result);
 			JSONArray infrastructure = result.getJSONObject(1).getJSONArray("contains");
 			assertAll("Should return DDD-Types of infrastructure",
 				() -> assertEquals(DDDType.INFRASTRUCTUR, (DDDType) infrastructure.getJSONObject(0).get("DDD")),
@@ -173,9 +173,7 @@ public class AnalyseServiceImplTest {
 			assertEquals(true, productDomain.isEmpty());
 			
 			JSONArray personDomain = domain.getJSONObject(1).getJSONArray("contains");
-			
-			System.out.println(personDomain.toString());
-			
+						
 			assertAll("Should return DDD-Types of domain",
 			    () -> assertEquals(DDDType.VALUE_OBJECT, 	(DDDType) personDomain.getJSONObject(0).get("DDD"), 	personDomain.getJSONObject(0).getString("name")),
 			    () -> assertEquals(DDDType.DOMAIN_EVENT, 	(DDDType) personDomain.getJSONObject(1).get("DDD"), 	personDomain.getJSONObject(1).getString("name")),

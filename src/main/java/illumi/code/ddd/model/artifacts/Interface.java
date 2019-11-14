@@ -105,6 +105,16 @@ public class Interface extends Artifact {
 		this.annotations = (ArrayList<Annotation>) JavaArtifactService.getAnnotations(getPath(), driver, QUERY_INTERFACE_PARENT_ANNOTATIONS, QUERY_INTERFACE_CHILD_ANNOTATIONS, annotations);
 	}
 	
+	public void setType() {
+		if (isInfrastructur()) {
+			setType(DDDType.INFRASTRUCTUR);
+		}  
+	}
+	
+	private boolean isInfrastructur() {
+		return getName().toUpperCase().contains("JPA") || getName().toUpperCase().contains("CRUD");
+	}
+	
 	public void evaluate() {
 		switch(getType()) {
 			case REPOSITORY:

@@ -3,6 +3,7 @@ package illumi.code.ddd.model.artifacts;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.Record;
 import org.slf4j.Logger;
@@ -119,6 +120,123 @@ public class Class extends Artifact {
 	
 	public void setAnnotations(Driver driver, List<Annotation> annotations) {
 		this.annotations = (ArrayList<Annotation>) JavaArtifactService.getAnnotations(getPath(), driver, QUERY_CLASS_PARENT_ANNOTATIONS, QUERY_CLASS_CHILD_ANNOTATIONS, annotations);
+	}
+	
+	public void setType(StructureService structureService) {
+		if (isInfrastructur()) {
+			setType(DDDType.INFRASTRUCTUR);
+		} else if (getType() == null) {
+			if (isValueObject(structureService)) {
+				setType(DDDType.VALUE_OBJECT);
+			} else if (isEntity(structureService)) {
+				setType(DDDType.ENTITY);
+			} else if (isService(structureService)) { 
+				setType(DDDType.SERVICE);
+			} else {
+				setType(DDDType.INFRASTRUCTUR);
+			}
+		} 
+	}
+	
+	private boolean isInfrastructur() {
+		return getName().toUpperCase().contains("JPA") || getName().toUpperCase().contains("CRUD");
+	}
+
+	private boolean isEntity(StructureService structureService) {
+		
+		for (Field field : fields) {
+			if (isConstant(field)) {
+				return false;
+			}
+		}
+		return !fields.isEmpty() && !containsEntityName(structureService) && conatiantsGetterSetter();
+	}
+
+	private boolean isValueObject(StructureService structureService) {
+		int ctr = 0;
+		for (Field field : fields) {
+			if (isConstant(field)) {
+				return false;
+			} else if (field.getType().startsWith("java.lang.") || field.getType().contains(structureService.getPath())) {
+				ctr++;
+			}
+		}
+		return !fields.isEmpty() && ctr == fields.size() && conatiantsGetterSetter();
+	}
+
+	private boolean isConstant(Field field) {
+		return StringUtils.isAllUpperCase(field.getName());
+	}
+	
+	private boolean isService(StructureService structureService) {
+		for (Field field : fields) {
+			if (field.getType().contains(REPOSITORY)) {
+				return true;
+			}
+		}
+		return containsEntityName(structureService);
+	}
+	
+	private boolean conatiantsGetterSetter() {
+		for (Method method : methods) {
+			if (method.getName().startsWith("get") || method.getName().startsWith("set")) {
+				return true;
+			}
+		}
+		return containtsUnconventionalGetter();
+	}
+
+	private boolean containtsUnconventionalGetter() {
+		for (Method method : methods) {
+			for (Field field : fields) {
+				if (method.getSignature().startsWith(field.getType())) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	private boolean containsEntityName(StructureService structureService) {
+		for (Class artifact : structureService.getClasses()) {
+			if (this != artifact && getName().contains(artifact.getName()) && !getName().equals(artifact.getName() + "s")) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public void setDomainEvent() {
+		switch(getType()) {
+		case ENTITY:
+		case AGGREGATE_ROOT:
+		case VALUE_OBJECT:
+			if (isDomainEvent()) {
+				setType(DDDType.DOMAIN_EVENT);
+			}
+			break;
+		default:
+			break;
+	}
+	}
+	
+	private boolean isDomainEvent() {		
+		boolean containtsTimestamp = false;
+		boolean containtsIdentity = false;
+		
+		for (Field field : fields) {
+			if (field.getName().contains("time") 
+				|| field.getName().contains("date") 
+				|| field.getType().contains("java.time.")) {
+				containtsTimestamp = true;
+				
+			} else if (!field.getName().equalsIgnoreCase("id") 
+					&& field.getName().toUpperCase().endsWith("ID")) {
+				containtsIdentity = true;
+			}
+		}
+		
+		return containtsTimestamp && containtsIdentity;
 	}
 	
 	public void evaluate(StructureService structureService) {
@@ -245,15 +363,15 @@ public class Class extends Artifact {
 	}
 
 	private boolean isAggregateRootRepository(Artifact artifact) {
-		return artifact.getType() == DDDType.REPOSITORY && artifact.getName().contains(getName() + REPOSITORY);
+		return artifact.isTypeOf(DDDType.REPOSITORY) && artifact.getName().contains(getName() + REPOSITORY);
 	}
 
 	private boolean isAggregateRootFactory(Artifact artifact) {
-		return artifact.getType() == DDDType.FACTORY && artifact.getName().contains(getName() + FACTORY);
+		return artifact.isTypeOf(DDDType.FACTORY) && artifact.getName().contains(getName() + FACTORY);
 	}
 
 	private boolean isAggregateRootService(Artifact artifact) {
-		return artifact.getType() == DDDType.SERVICE && artifact.getName().contains(getName());
+		return artifact.isTypeOf(DDDType.SERVICE) && artifact.getName().contains(getName());
 	}
 
 	private ArrayList<Artifact> getDomainModule(StructureService structureService, String domain) {
