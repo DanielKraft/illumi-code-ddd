@@ -48,6 +48,10 @@ public abstract class Artifact {
 	public DDDType getType() {
 		return type;
 	}
+	
+	public boolean isTypeOf(DDDType type) {
+		return this.type == type;
+	}
 
 	public void setType(DDDType type) {
 		this.type = type;
