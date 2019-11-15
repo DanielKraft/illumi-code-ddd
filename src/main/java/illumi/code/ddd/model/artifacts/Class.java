@@ -142,30 +142,38 @@ public class Class extends Artifact {
 		return getName().toUpperCase().contains("JPA") || getName().toUpperCase().contains("CRUD");
 	}
 
-	private boolean isEntity(StructureService structureService) {
-		
-		for (Field field : fields) {
-			if (isConstant(field)) {
-				return false;
-			}
-		}
-		return !fields.isEmpty() && !containsEntityName(structureService) && conatiantsGetterSetter();
-	}
-
 	private boolean isValueObject(StructureService structureService) {
 		int ctr = 0;
 		for (Field field : fields) {
 			if (isConstant(field)) {
 				return false;
-			} else if (field.getType().startsWith("java.lang.") || field.getType().contains(structureService.getPath())) {
+			} else if (Field.isId(field) 
+					&& !(getName().toLowerCase().endsWith("id"))) {
+				return false;
+			} else if (field.getType().startsWith("java.lang.") 
+					|| field.getType().contains(structureService.getPath())) {
 				ctr++;
 			}
 		}
-		return !fields.isEmpty() && ctr == fields.size() && conatiantsGetterSetter();
+		return !fields.isEmpty() 
+				&& ctr == fields.size() 
+				&& (conatiantsGetterSetter()
+						|| methods.isEmpty());
 	}
 
-	private boolean isConstant(Field field) {
-		return StringUtils.isAllUpperCase(field.getName());
+	private boolean isEntity(StructureService structureService) {
+		
+		for (Field field : fields) {
+			if (isConstant(field)) {
+				return false;
+			} else if (Field.isId(field)) {
+				return true;
+			}
+		}
+		return !fields.isEmpty() 
+				&& !containsEntityName(structureService) 
+				&& (conatiantsGetterSetter()
+						|| methods.isEmpty());
 	}
 	
 	private boolean isService(StructureService structureService) {
@@ -176,10 +184,14 @@ public class Class extends Artifact {
 		}
 		return containsEntityName(structureService);
 	}
+
+	private boolean isConstant(Field field) {
+		return StringUtils.isAllUpperCase(field.getName());
+	}
 	
 	private boolean conatiantsGetterSetter() {
 		for (Method method : methods) {
-			if (method.getName().startsWith("get") || method.getName().startsWith("set")) {
+			if (method.getName().startsWith("get") ^ method.getName().startsWith("set")) {
 				return true;
 			}
 		}
@@ -198,8 +210,10 @@ public class Class extends Artifact {
 	}
 	
 	private boolean containsEntityName(StructureService structureService) {
-		for (Class artifact : structureService.getClasses()) {
-			if (this != artifact && getName().contains(artifact.getName()) && !getName().equals(artifact.getName() + "s")) {
+		for (Class artifact : structureService.getClasses()) {			
+			if (this != artifact 
+				&& getName().contains(artifact.getName()) 
+				&& !getName().equals(artifact.getName() + "s")) {
 				return true;
 			}
 		}
@@ -208,16 +222,16 @@ public class Class extends Artifact {
 	
 	public void setDomainEvent() {
 		switch(getType()) {
-		case ENTITY:
-		case AGGREGATE_ROOT:
-		case VALUE_OBJECT:
-			if (isDomainEvent()) {
-				setType(DDDType.DOMAIN_EVENT);
-			}
-			break;
-		default:
-			break;
-	}
+			case ENTITY:
+			case AGGREGATE_ROOT:
+			case VALUE_OBJECT:
+				if (isDomainEvent()) {
+					setType(DDDType.DOMAIN_EVENT);
+				}
+				break;
+			default:
+				break;
+		}
 	}
 	
 	private boolean isDomainEvent() {		
@@ -231,7 +245,7 @@ public class Class extends Artifact {
 				containtsTimestamp = true;
 				
 			} else if (!field.getName().equalsIgnoreCase("id") 
-					&& field.getName().toUpperCase().endsWith("ID")) {
+						&& field.getName().toUpperCase().endsWith("ID")) {
 				containtsIdentity = true;
 			}
 		}
