@@ -43,7 +43,7 @@ public class Package extends Artifact {
 	
 	public void setAggregateRoot(StructureService structureService) {
 		if (isDomain(structureService)) {
-			ArrayList<Artifact> candidates = getAggregateRootCandidates((ArrayList<Artifact>) conataints);
+			ArrayList<Artifact> candidates = getAggregateRootCandidates();
 			if (candidates.size() == 1) {
 				candidates.get(0).setType(DDDType.AGGREGATE_ROOT);
 			} else {
@@ -60,7 +60,7 @@ public class Package extends Artifact {
 		return structureService.getDomains().contains(getName());
 	}
 
-	private ArrayList<Artifact> getEntities(ArrayList<Artifact> conataints) {
+	private ArrayList<Artifact> getEntities() {
 		ArrayList<Artifact> entities = new ArrayList<>();
 		
 		for (Artifact artifact : conataints) {
@@ -72,8 +72,8 @@ public class Package extends Artifact {
 		return entities;
 	}
 	
-	private ArrayList<Artifact> getAggregateRootCandidates(ArrayList<Artifact> conataints) {
-		ArrayList<Artifact> entities = getEntities((ArrayList<Artifact>) conataints);
+	private ArrayList<Artifact> getAggregateRootCandidates() {
+		ArrayList<Artifact> entities = getEntities();
 		if (!entities.isEmpty()) {
 			ArrayList<Integer> dependencies = getDependencies(entities);
 			return getEntityWithMinmalDependencies(entities, dependencies);
