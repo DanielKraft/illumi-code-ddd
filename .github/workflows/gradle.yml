@@ -16,9 +16,7 @@ jobs:
         java-version: 1.8
     - name: Build with Gradle
       run: ./gradlew build
-    - name: Analyze with SonarCloud
-      uses: sonarsource/sonarcloud-github-action@master
+    - name: Execute sonarqube
+      run: ./gradlew sonarqube
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Execute sonarqube
-      run: ./gradlew sonarqube 
