@@ -1,4 +1,5 @@
 # illumi-code-ddd
+[![Actions Status](https://action-badges.now.sh/DanielKraft/illumi-code-ddd)](https://github.com/DanielKraft/illumi-code-ddd/actions)
 [![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=DanielKraft_illumi-code-ddd&metric=alert_status)](https://sonarcloud.io/dashboard?id=DanielKraft_illumi-code-ddd) 
 [![SonarCloud Coverage](https://sonarcloud.io/api/project_badges/measure?project=DanielKraft_illumi-code-ddd&metric=coverage)](https://sonarcloud.io/component_measures/metric/coverage/list?id=DanielKraft_illumi-code-ddd)
 [![SonarCloud Bugs](https://sonarcloud.io/api/project_badges/measure?project=DanielKraft_illumi-code-ddd&metric=bugs)](https://sonarcloud.io/component_measures/metric/reliability_rating/list?id=DanielKraft_illumi-code-ddd)
