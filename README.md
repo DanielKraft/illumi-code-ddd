@@ -1,9 +1,10 @@
 <h1 align="center">
   <br>
-    illumi-code-ddd
+  <img src="/gfx/illumi-code-ddd-logo.png?raw=true" 
+       alt="illumi-code-ddd"
+       width="400">
   <br>
-  <img src="/gfx/Workflow_eng.png?raw=true "Workflow"" 
-       alt="illumi-code-ddd">
+    illumi-code-ddd
   <br>
 </h1>
 
@@ -48,6 +49,9 @@
          alt="Lines of Code">
   </a>
 </p>
+
+## Workflow
+![Workflow of illumi-code-ddd](/gfx/Workflow_eng.png?raw=true "Workflow")
 
 ## Thesis
 The thesis is available in the following repository: [bachelor-thesis](https://github.com/DanielKraft/bachelor-thesis)
