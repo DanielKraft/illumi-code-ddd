@@ -24,12 +24,12 @@ public class Annotation extends Artifact {
 	private ArrayList<Annotation> annotations;
 
 	public Annotation(Record record) {
-		super(record, DDDType.INFRASTRUCTUR);
+		super(record, DDDType.INFRASTRUCTURE);
 		init();
 	}
 	
 	public Annotation(String name, String path) {
-		super(name, path, DDDType.INFRASTRUCTUR);
+		super(name, path, DDDType.INFRASTRUCTURE);
 		init();
 	}
 	

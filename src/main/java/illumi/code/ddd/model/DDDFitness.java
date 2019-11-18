@@ -30,6 +30,14 @@ public class DDDFitness {
 		return numberOfFulfilledCriteria;
 	}
 
+	public DDDFitness addIssue(boolean successful, DDDIssueType type, String message) {
+		if (successful) {
+			return addSuccessfulCriteria(type);
+		} else {
+			return addFailedCriteria(type, message);
+		}
+	}
+
 	public DDDFitness addFailedCriteria(DDDIssueType type, String description) {
 		numberOfCriteria += type.weight;
 		issues.add(new DDDIssue(type, description));

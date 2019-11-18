@@ -54,7 +54,7 @@ public class MetricServiceImpl implements MetricService {
 				.put("#SERVICE", countArtifact(DDDType.SERVICE, allArtifacts))
 				.put("#APPLICATION_SERVICE", countArtifact(DDDType.APPLICATION_SERVICE, allArtifacts))
 				.put("#CONTROLLER", countArtifact(DDDType.CONTROLLER, allArtifacts))
-				.put("#INFRASTRUCTUR", countArtifact(DDDType.INFRASTRUCTUR, allArtifacts));
+				.put("#INFRASTRUCTUR", countArtifact(DDDType.INFRASTRUCTURE, allArtifacts));
 	}
 	
 	private int countArtifact(DDDType type, ArrayList<Artifact> allArtifacts) {

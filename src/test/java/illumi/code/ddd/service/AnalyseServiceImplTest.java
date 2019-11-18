@@ -157,10 +157,10 @@ class AnalyseServiceImplTest {
 			System.out.println(result);
 			JSONArray infrastructure = result.getJSONObject(1).getJSONArray("contains");
 			assertAll("Should return DDD-Types of infrastructure",
-				() -> assertEquals(DDDType.INFRASTRUCTUR, infrastructure.getJSONObject(0).get("DDD"), 	" 0: " + infrastructure.getJSONObject(0).get("name")),
-				() -> assertEquals(DDDType.INFRASTRUCTUR, infrastructure.getJSONObject(1).get("DDD"), 	" 1: " + infrastructure.getJSONObject(0).get("name")),
+				() -> assertEquals(DDDType.INFRASTRUCTURE, infrastructure.getJSONObject(0).get("DDD"), 	" 0: " + infrastructure.getJSONObject(0).get("name")),
+				() -> assertEquals(DDDType.INFRASTRUCTURE, infrastructure.getJSONObject(1).get("DDD"), 	" 1: " + infrastructure.getJSONObject(0).get("name")),
 				() -> assertEquals(DDDType.CONTROLLER, infrastructure.getJSONObject(2).get("DDD"),	" 2: " + infrastructure.getJSONObject(0).get("name")),
-				() -> assertEquals(DDDType.INFRASTRUCTUR, infrastructure.getJSONObject(3).get("DDD"), 	" 3: " + infrastructure.getJSONObject(0).get("name")));
+				() -> assertEquals(DDDType.INFRASTRUCTURE, infrastructure.getJSONObject(3).get("DDD"), 	" 3: " + infrastructure.getJSONObject(0).get("name")));
 			
 			
 			JSONArray application = result.getJSONObject(0).getJSONArray("contains");
@@ -182,7 +182,7 @@ class AnalyseServiceImplTest {
 			    () -> assertEquals(DDDType.SERVICE, personDomain.getJSONObject(3).get("DDD"), 	" 3: " + personDomain.getJSONObject(3).getString("name")),
 			    () -> assertEquals(DDDType.SERVICE, personDomain.getJSONObject(4).get("DDD"), 	" 4: " + personDomain.getJSONObject(4).getString("name")),
 			    () -> assertEquals(DDDType.SERVICE, personDomain.getJSONObject(5).get("DDD"), 	" 5: " + personDomain.getJSONObject(5).getString("name")),
-			    () -> assertEquals(DDDType.INFRASTRUCTUR, personDomain.getJSONObject(6).get("DDD"), 	" 6: " + personDomain.getJSONObject(6).getString("name")),
+			    () -> assertEquals(DDDType.INFRASTRUCTURE, personDomain.getJSONObject(6).get("DDD"), 	" 6: " + personDomain.getJSONObject(6).getString("name")),
 			    () -> assertEquals(DDDType.REPOSITORY, personDomain.getJSONObject(7).get("DDD"), 	" 7: " + personDomain.getJSONObject(7).getString("name")),
 			    () -> assertEquals(DDDType.REPOSITORY, personDomain.getJSONObject(8).get("DDD"), 	" 8: " + personDomain.getJSONObject(8).getString("name")),
 			    () -> assertEquals(DDDType.FACTORY, personDomain.getJSONObject(9).get("DDD"), 	" 9: " + personDomain.getJSONObject(9).getString("name")),

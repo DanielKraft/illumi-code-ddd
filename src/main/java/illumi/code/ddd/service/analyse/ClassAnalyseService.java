@@ -24,7 +24,7 @@ public class ClassAnalyseService {
 
     public void setType() {
         if (isInfrastructur()) {
-            this.artifact.setType(DDDType.INFRASTRUCTUR);
+            this.artifact.setType(DDDType.INFRASTRUCTURE);
         } else if (this.artifact.getType() == null) {
             if (isValueObject(structureService)) {
                 this.artifact.setType(DDDType.VALUE_OBJECT);
@@ -33,7 +33,7 @@ public class ClassAnalyseService {
             } else if (isService(structureService)) {
                 this.artifact.setType(DDDType.SERVICE);
             } else {
-                this.artifact.setType(DDDType.INFRASTRUCTUR);
+                this.artifact.setType(DDDType.INFRASTRUCTURE);
             }
         }
     }

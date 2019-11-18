@@ -35,29 +35,22 @@ public class PackageFitnessService {
 
     private DDDFitness evaluateDomainModule() {
         DDDFitness fitness = new DDDFitness().addSuccessfulCriteria(DDDIssueType.MINOR);
-        if (module.getPath().contains(structureService.getPath() + "domain." + module.getName())) {
-            fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-        } else {
-            fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The module '%s' is not a submodule of the module 'domain'.", module.getName()));
-        }
 
-        if (containsOnlyDomain()) {
-            fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
-        } else {
-            fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The module '%s' dose not only containts domain artifacts.", module.getName()));
-        }
+        fitness.addIssue(module.getPath().contains(structureService.getPath() + "domain." + module.getName()), DDDIssueType.MINOR,
+                String.format("The module '%s' is not a submodule of the module 'domain'.", module.getName()));
 
-        if (containsAggregateRoot()) {
-            fitness.addSuccessfulCriteria(DDDIssueType.CRITICAL);
-        } else {
-            fitness.addFailedCriteria(DDDIssueType.CRITICAL, String.format("The module '%s' does not contain an Aggregate Root.", module.getName()));
-        }
+        fitness.addIssue(containsOnlyDomain(), DDDIssueType.MAJOR,
+                String.format("The module '%s' dose not only contains domain artifacts.", module.getName()));
+
+        fitness.addIssue(containsAggregateRoot(), DDDIssueType.CRITICAL,
+                String.format("The module '%s' does not contain an Aggregate Root.", module.getName()));
+
         return fitness;
     }
 
     private boolean containsOnlyDomain() {
         for (Artifact artifact : module.getConataints()) {
-            if (artifact.isTypeOf(DDDType.INFRASTRUCTUR)
+            if (artifact.isTypeOf(DDDType.INFRASTRUCTURE)
                     || artifact.isTypeOf(DDDType.CONTROLLER)
                     || artifact.isTypeOf(DDDType.APPLICATION_SERVICE)) {
                 return false;
@@ -77,7 +70,7 @@ public class PackageFitnessService {
 
     private boolean isInfrastructure() {
         for (Artifact artifact : module.getConataints()) {
-            if (artifact.getType() == DDDType.INFRASTRUCTUR || artifact.getType() == DDDType.CONTROLLER) {
+            if (artifact.getType() == DDDType.INFRASTRUCTURE || artifact.getType() == DDDType.CONTROLLER) {
                 return true;
             }
         }
@@ -87,24 +80,18 @@ public class PackageFitnessService {
     private DDDFitness evaluateInfrastructureModule() {
         DDDFitness fitness = new DDDFitness().addSuccessfulCriteria(DDDIssueType.MINOR);
 
-        if (module.getPath().contains(structureService.getPath() + "infrastructur")) {
-            fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-        } else {
-            fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The module '%s' is not an infrastructure module.", module.getName()));
-        }
+        fitness.addIssue(module.getPath().contains(structureService.getPath() + "infrastructure"), DDDIssueType.MINOR,
+                String.format("The module '%s' is not an infrastructure module.", module.getName()));
 
-        if (containsOnlyInfrastructure()) {
-            fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
-        } else {
-            fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The module '%s' dose not only containts infrastructure artifacts.", module.getName()));
-        }
+        fitness.addIssue(containsOnlyInfrastructure(), DDDIssueType.MAJOR,
+                String.format("The module '%s' dose not only contains infrastructure artifacts.", module.getName()));
 
         return fitness;
     }
 
     private boolean containsOnlyInfrastructure() {
         for (Artifact artifact : module.getConataints()) {
-            if (artifact.getType() != DDDType.INFRASTRUCTUR && artifact.getType() != DDDType.CONTROLLER) {
+            if (artifact.getType() != DDDType.INFRASTRUCTURE && artifact.getType() != DDDType.CONTROLLER) {
                 return false;
             }
         }
@@ -123,17 +110,11 @@ public class PackageFitnessService {
     private DDDFitness evaluateApplicationModule() {
         DDDFitness fitness = new DDDFitness().addSuccessfulCriteria(DDDIssueType.MINOR);
 
-        if (module.getPath().contains(structureService.getPath() + "application")) {
-            fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-        } else {
-            fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The module '%s' is not an application module.", module.getName()));
-        }
+        fitness.addIssue(module.getPath().contains(structureService.getPath() + "application"), DDDIssueType.MINOR,
+                String.format("The module '%s' is not an application module.", module.getName()));
 
-        if (containsOnlyApplication()) {
-            fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
-        } else {
-            fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The module '%s' dose not only containts application artifacts.", module.getName()));
-        }
+        fitness.addIssue(containsOnlyApplication(), DDDIssueType.MAJOR,
+                String.format("The module '%s' dose not only contains application artifacts.", module.getName()));
 
         return fitness;
     }

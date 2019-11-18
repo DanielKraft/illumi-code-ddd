@@ -80,7 +80,7 @@ class PackageFitnessServiceTest {
 	@Test
 	void testEvaluateInfrastructureModule() {
 		Class infra = new Class("Infra", "de.test.infrastructure.Infra");
-		infra.setType(DDDType.INFRASTRUCTUR);
+		infra.setType(DDDType.INFRASTRUCTURE);
 		
 		Package module = new Package("infrastructure", "de.test.infrastructure");
 		module.addConataints(infra);

@@ -48,19 +48,13 @@ public class InterfaceFitnessService {
     }
 
     private void evaluateRepositoryName() {
-        if (artifact.getName().endsWith(REPOSITORY)) {
-            fitness.addSuccessfulCriteria(DDDIssueType.INFO);
-        } else {
-            fitness.addFailedCriteria(DDDIssueType.INFO, String.format("The name of the repository interface '%s' should end with 'Repository'", artifact.getName()));
-        }
+        fitness.addIssue(artifact.getName().endsWith(REPOSITORY), DDDIssueType.INFO,
+                String.format("The name of the repository interface '%s' should end with 'Repository'", artifact.getName()));
     }
 
     private void evaluatePath() {
-        if (artifact.getPath().contains("domain." + artifact.getDomain() + ".model.")) {
-            fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-        } else {
-            fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The interface '%s' should be placed in 'domain.%s.model'", artifact.getName(), artifact.getDomain()));
-        }
+        fitness.addIssue(artifact.getPath().contains("domain." + artifact.getDomain() + ".model."), DDDIssueType.MINOR,
+                String.format("The interface '%s' should be placed in 'domain.%s.model'", artifact.getName(), artifact.getDomain()));
     }
 
     private void evaluateFactory() {
@@ -76,10 +70,7 @@ public class InterfaceFitnessService {
     }
 
     private void evaluateFactoryName() {
-        if (artifact.getName().endsWith(FACTORY)) {
-            fitness.addSuccessfulCriteria(DDDIssueType.INFO);
-        } else {
-            fitness.addFailedCriteria(DDDIssueType.INFO, String.format("The name of the factory interface '%s' should end with 'FactoryImpl'", artifact.getName()));
-        }
+        fitness.addIssue(artifact.getName().endsWith(FACTORY), DDDIssueType.INFO,
+                String.format("The name of the factory interface '%s' should end with 'FactoryImpl'", artifact.getName()));
     }
 }

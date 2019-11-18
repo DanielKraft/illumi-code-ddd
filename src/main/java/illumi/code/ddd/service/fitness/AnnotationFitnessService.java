@@ -21,10 +21,7 @@ public class AnnotationFitnessService {
     }
 
     private void evaluateAnnotationPath() {
-        if (annotation.getPath().contains("infrastructure.")) {
-            fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-        } else {
-            fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The annotation '%s' is not part of an infrastructure module", annotation.getName()));
-        }
+        fitness.addIssue(annotation.getPath().contains("infrastructure."), DDDIssueType.MINOR,
+                String.format("The annotation '%s' is not part of an infrastructure module", annotation.getName()));
     }
 }

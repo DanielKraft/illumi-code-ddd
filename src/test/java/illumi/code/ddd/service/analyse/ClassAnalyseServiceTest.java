@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Field;
 import illumi.code.ddd.model.artifacts.Method;
-import illumi.code.ddd.service.fitness.ClassFitnessService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -183,7 +182,7 @@ class ClassAnalyseServiceTest {
 		ClassAnalyseService service = new ClassAnalyseService(artifact, structureService);
 		service.setType();
 
-		assertEquals(DDDType.INFRASTRUCTUR, artifact.getType());
+		assertEquals(DDDType.INFRASTRUCTURE, artifact.getType());
 	}
 	
 	@Test
@@ -194,7 +193,7 @@ class ClassAnalyseServiceTest {
 		ClassAnalyseService service = new ClassAnalyseService(artifact, structureService);
 		service.setType();
 
-		assertEquals(DDDType.INFRASTRUCTUR, artifact.getType());
+		assertEquals(DDDType.INFRASTRUCTURE, artifact.getType());
 	}
 	
 	@Test
@@ -208,7 +207,7 @@ class ClassAnalyseServiceTest {
 		ClassAnalyseService service = new ClassAnalyseService(artifact, structureService);
 		service.setType();
 
-		assertEquals(DDDType.INFRASTRUCTUR, artifact.getType());
+		assertEquals(DDDType.INFRASTRUCTURE, artifact.getType());
 	}
 	
 	@Test
@@ -219,7 +218,7 @@ class ClassAnalyseServiceTest {
 		ClassAnalyseService service = new ClassAnalyseService(artifact, structureService);
 		service.setType();
 
-		assertEquals(DDDType.INFRASTRUCTUR, artifact.getType());
+		assertEquals(DDDType.INFRASTRUCTURE, artifact.getType());
 	}
 
 	@Test

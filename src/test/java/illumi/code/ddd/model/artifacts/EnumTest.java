@@ -83,7 +83,7 @@ class EnumTest {
 	    	
 	    	assertEquals("Anno", result.get(0).getName());
 	    	assertEquals("de.test.Anno", result.get(0).getPath());
-	    	assertEquals(DDDType.INFRASTRUCTUR, result.get(0).getType());
+	    	assertEquals(DDDType.INFRASTRUCTURE, result.get(0).getType());
 	    }
 	}
 	

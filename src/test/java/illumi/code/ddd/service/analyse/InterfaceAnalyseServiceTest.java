@@ -16,7 +16,7 @@ class InterfaceAnalyseServiceTest {
 		InterfaceAnalyseService service = new InterfaceAnalyseService(item);
 		service.setType();
 		
-		assertEquals(DDDType.INFRASTRUCTUR, item.getType());
+		assertEquals(DDDType.INFRASTRUCTURE, item.getType());
 	}
 	
 	@Test
@@ -26,7 +26,7 @@ class InterfaceAnalyseServiceTest {
 		InterfaceAnalyseService service = new InterfaceAnalyseService(item);
 		service.setType();
 		
-		assertEquals(DDDType.INFRASTRUCTUR, item.getType());
+		assertEquals(DDDType.INFRASTRUCTURE, item.getType());
 	}
 	
 	@Test

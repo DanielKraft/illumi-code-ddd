@@ -12,7 +12,7 @@ public class InterfaceAnalyseService {
 
     public void setType() {
         if (isInfrastructur()) {
-            artifact.setType(DDDType.INFRASTRUCTUR);
+            artifact.setType(DDDType.INFRASTRUCTURE);
         }
     }
 

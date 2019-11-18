@@ -56,7 +56,7 @@ public class ClassFitnessService {
                 evaluateApplicationService();
                 break;
             case CONTROLLER:
-            case INFRASTRUCTUR:
+            case INFRASTRUCTURE:
             default:
                 evaluateInfrastructure();
         }
@@ -84,11 +84,8 @@ public class ClassFitnessService {
                 }
             }
 
-            if (containsId) {
-                fitness.addSuccessfulCriteria(DDDIssueType.CRITICAL);
-            } else if (item.getSuperClass() == null) {
-                fitness.addFailedCriteria(DDDIssueType.CRITICAL, String.format("The Entity '%s' does not containts an ID.", item.getName()));
-            }
+            fitness.addIssue(containsId, DDDIssueType.CRITICAL,
+                    String.format("The Entity '%s' does not contains an ID.", item.getName()));
 
             Method.evaluateEntity(item, fitness);
 
@@ -125,23 +122,14 @@ public class ClassFitnessService {
             }
         }
 
-        if (repoAvailable) {
-            fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
-        } else {
-            fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("No repository of the aggregate root '%s' is available", artifact.getName()));
-        }
+        fitness.addIssue(repoAvailable, DDDIssueType.MAJOR,
+                String.format("No repository of the aggregate root '%s' is available", artifact.getName()));
 
-        if (factoryAvailable) {
-            fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
-        } else {
-            fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("No factory of the aggregate root '%s' is available", artifact.getName()));
-        }
+        fitness.addIssue(factoryAvailable, DDDIssueType.MAJOR,
+                String.format("No factory of the aggregate root '%s' is available", artifact.getName()));
 
-        if (serviceAvailable) {
-            fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
-        } else {
-            fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("No service of the aggregate root '%s' is available", artifact.getName()));
-        }
+        fitness.addIssue(serviceAvailable, DDDIssueType.MAJOR,
+                String.format("No service of the aggregate root '%s' is available", artifact.getName()));
     }
 
     private boolean isAggregateRootRepository(Artifact artifact) {
@@ -175,27 +163,20 @@ public class ClassFitnessService {
     }
 
     private void evaluateRepositoryName() {
-        if (artifact.getName().endsWith("RepositoryImpl")) {
-            fitness.addSuccessfulCriteria(DDDIssueType.INFO);
-        } else {
-            fitness.addFailedCriteria(DDDIssueType.INFO, String.format("The name of the repsitory '%s' should end with 'RepositoryImpl'", artifact.getName()));
-        }
+        fitness.addIssue(artifact.getName().endsWith("RepositoryImpl"), DDDIssueType.INFO,
+                String.format("The name of the repository '%s' should end with 'RepositoryImpl'", artifact.getName()));
     }
 
     private void evaluateRepositoryInterfaces() {
-        boolean containtsInterface = false;
+        boolean containsInterface = false;
         for (Interface i : artifact.getInterfaces()) {
             if (i.getName().endsWith(REPOSITORY)) {
-                containtsInterface = true;
+                containsInterface = true;
                 break;
             }
         }
-
-        if (containtsInterface) {
-            fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-        } else {
-            fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The repsitory '%s' does not implement an interface.", artifact.getName()));
-        }
+        fitness.addIssue(containsInterface, DDDIssueType.MINOR,
+                String.format("The repository '%s' does not implement an interface.", artifact.getName()));
     }
 
     private void evaluateFactory() {
@@ -211,11 +192,8 @@ public class ClassFitnessService {
     }
 
     private void evaluateFactoryName() {
-        if (artifact.getName().endsWith("FactoryImpl")) {
-            fitness.addSuccessfulCriteria(DDDIssueType.INFO);
-        } else {
-            fitness.addFailedCriteria(DDDIssueType.INFO, String.format("The name of the factory '%s' should end with 'FactoryImpl'", artifact.getName()));
-        }
+        fitness.addIssue(artifact.getName().endsWith("FactoryImpl"), DDDIssueType.INFO,
+                String.format("The name of the factory '%s' should end with 'FactoryImpl'", artifact.getName()));
     }
 
     private void evaluateFactoryInterfaces() {
@@ -226,44 +204,19 @@ public class ClassFitnessService {
                 break;
             }
         }
-
-        if (containtsInterface) {
-            fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-        } else {
-            fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The factory '%s' does not implement an interface.", artifact.getName()));
-        }
+        fitness.addIssue(containtsInterface, DDDIssueType.MINOR,
+                String.format("The factory '%s' does not implement an interface.", artifact.getName()));
     }
 
     private void evaluateService() {
         LOGGER.info("DDD:SERVICE:{}", artifact.getName());
 
-        evaluateServiceName();
-
-        evaluateServiceInterfaces();
+        evaluatePath(artifact.getPath(), "application." + artifact.getDomain() + ".",
+                String.format("The service '%s' should be placed at 'application.%s'", artifact.getName(), artifact.getDomain()));
     }
 
-    private void evaluateServiceName() {
-        if (artifact.getName().endsWith("Impl")) {
-            fitness.addSuccessfulCriteria(DDDIssueType.INFO);
-        } else {
-            fitness.addFailedCriteria(DDDIssueType.INFO, String.format("The name of the service '%s' should end with 'Impl'", artifact.getName()));
-        }
-    }
-
-    private void evaluateServiceInterfaces() {
-        boolean containtsInterface = false;
-        for (Interface i : artifact.getInterfaces()) {
-            if (artifact.getName().startsWith(i.getName())) {
-                containtsInterface = true;
-                break;
-            }
-        }
-
-        if (containtsInterface) {
-            fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-        } else {
-            fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The service '%s' does not implement an interface.", artifact.getName()));
-        }
+    private void evaluatePath(String path, String filter, String message) {
+        fitness.addIssue(path.contains(filter), DDDIssueType.MINOR, message);
     }
 
     private void evaluateApplicationService() {
@@ -271,30 +224,23 @@ public class ClassFitnessService {
 
         evaluateName();
 
-        evaluatePath(artifact.getPath(), "application.", "The application service '%s' is not part of an application module");
+        evaluatePath(artifact.getPath(), "application.",
+                String.format("The application service '%s' is not part of an application module", artifact.getName()));
 
     }
 
     private void evaluateName() {
-        if (artifact.getName().contains("Application")) {
-            fitness.addSuccessfulCriteria(DDDIssueType.INFO);
-        } else {
-            fitness.addFailedCriteria(DDDIssueType.INFO, String.format("The name of the application service '%s' does not contains 'Application' ", artifact.getName()));
-        }
+        fitness.addIssue(artifact.getName().contains("Application"), DDDIssueType.INFO,
+                String.format("The name of the application service '%s' does not contains 'Application' ", artifact.getName()));
     }
 
-    private void evaluatePath(String path, String filter, String message) {
-        if (path.contains(filter)) {
-            fitness.addSuccessfulCriteria( DDDIssueType.MINOR);
-        } else {
-            fitness.addFailedCriteria( DDDIssueType.MINOR, String.format(message, artifact.getName()));
-        }
-    }
+
 
     private void evaluateInfrastructure() {
-        LOGGER.info("DDD:INFRASTRUCTUR:{}", artifact.getName());
+        LOGGER.info("DDD:INFRASTRUCTURE:{}", artifact.getName());
 
-        evaluatePath(artifact.getPath(), "infrastructure.", "The infrastructure service '%s' is not part of an infrastructure module");
+        evaluatePath(artifact.getPath(), "infrastructure.",
+                String.format("The infrastructure service '%s' is not part of an infrastructure module", artifact.getName()));
     }
 
     private void evaluateDomainEvent() {

@@ -40,7 +40,7 @@ private FitnessServiceImpl service;
 		structure.addInterfaces(artifact3);
 		
 		Annotation artifact4 = new Annotation("Annotation", "de.test.Annotation");
-		artifact4.setType(DDDType.INFRASTRUCTUR);
+		artifact4.setType(DDDType.INFRASTRUCTURE);
 		structure.addAnnotations(artifact4);
 		
 		ArrayList<Artifact> data = new ArrayList<>();

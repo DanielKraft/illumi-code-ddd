@@ -61,32 +61,26 @@ public class Method {
 	}
 	
 	static void evaluateValueObject(Class artifact, Field field, DDDFitness fitness) {
-		boolean containtsSetter = false;
-		boolean containtsGetter = false;
+		boolean containsSetter = false;
+		boolean containsGetter = false;
 		for (Method method : artifact.getMethods()) {
 			if (method.getName().equalsIgnoreCase("set" + field.getName())) {
-				containtsSetter = true;
+				containsSetter = true;
 				if (isMethodImmutable(artifact, method)) {
 					fitness.addSuccessfulCriteria(DDDIssueType.CRITICAL);
 				} else {
 					fitness.addFailedCriteria(DDDIssueType.CRITICAL, String.format("The method '%s(...)' is not immutable.", method.getName()));
 				}
 			} else if (method.getName().equalsIgnoreCase("get" + field.getName())) {
-				containtsGetter = true;
+				containsGetter = true;
 			}
 		}
-		
-		if (containtsSetter) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The field '%s' does not have a setter.", field.getName()));
-		}
-		
-		if (containtsGetter) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The field '%s' does not have a Getter.", field.getName()));
-		}
+		fitness.addIssue(containsGetter, DDDIssueType.MINOR,
+				String.format("The field '%s' of the Value Object '%s' has no Getter.", field.getName(), artifact.getName()));
+
+
+		fitness.addIssue(containsSetter, DDDIssueType.MINOR,
+				String.format("The field '%s' of the Value Object '%s' has no setter.", field.getName(), artifact.getName()));
 	}
 	
 	private static boolean isMethodImmutable(Class artifact, Method method) {
@@ -94,28 +88,22 @@ public class Method {
 	}
 
 	static void evaluateDomainEvent(Class artifact, Field field, DDDFitness fitness) {
-		boolean containtsGetter = false;
-		boolean containtsSetter = false;
+		boolean containsGetter = false;
+		boolean containsSetter = false;
 		
 		for (Method method : artifact.getMethods()) {
 			if (method.getName().toUpperCase().startsWith("GET" + field.getName().toUpperCase())) {
-				containtsGetter = true;
+				containsGetter = true;
 			} else if (method.getName().toUpperCase().startsWith("SET" + field.getName().toUpperCase())) {
-				containtsSetter = true;
+				containsSetter = true;
 			}
 		}
-		
-		if (containtsGetter) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, "");
-		}
-		
-		if (!containtsSetter) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The domain event '%s' containats a setter for the field '%s'.", artifact.getName(), field.getName()));
-		}
+
+		fitness.addIssue(containsGetter, DDDIssueType.MINOR,
+				String.format("The field '%s' of the Domain Event '%s' has no getter.", field.getName(), artifact.getName()));
+
+		fitness.addIssue(!containsSetter, DDDIssueType.MAJOR,
+				String.format("The domain event '%s' containats a setter for the field '%s'.", artifact.getName(), field.getName()));
 	}
 	
 	public static void evaluateRepository(String name, List<Method> methods, DDDFitness fitness) {
@@ -135,54 +123,25 @@ public class Method {
 				containsSave = true;
 			} else if (isDelete(method)) {
 				containsDelete = true;
-			} else if (isContaints(method)) {
+			} else if (isContains(method)) {
 				containsContains = true;
 			} else if (isUpdate(method)) {
 				containsUpdate = true;
 			}
 		}
-		
-		createIssues(name, fitness, containsNextIdentity, containsFind, containsSave, containsDelete, containsContains, containsUpdate);
-	}
 
-	private static void createIssues(String name, DDDFitness fitness, boolean containsNextIdentity, boolean containsFind, boolean containsSave,
-			boolean containsDelete, boolean containsContains, boolean containsUpdate) {
-
-		if (containsNextIdentity) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The Repository '%s' has no nextIdentity method.", name));
-		}
-
-		if (containsFind) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The Repository '%s' has no findBy/get method.", name));
-		}
-		
-		if (containsSave) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The Repository '%s' has no save/add/insert method.", name));
-		}
-		
-		if (containsDelete) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The Repository '%s' has no delete/remove method.", name));
-		}
-		
-		if (containsContains) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The Repository '%s' has no contains/exists method.", name));
-		}
-		
-		if (containsUpdate) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The Repository '%s' has no update method.", name));
-		}
+		fitness.addIssue(containsNextIdentity, 	DDDIssueType.MAJOR,
+				String.format("The Repository '%s' has no nextIdentity method.", name));
+		fitness.addIssue(containsFind, 			DDDIssueType.MAJOR,
+				String.format("The Repository '%s' has no findBy/get method.", name));
+		fitness.addIssue(containsSave, 			DDDIssueType.MAJOR,
+				String.format("The Repository '%s' has no save/add/insert/put method.", name));
+		fitness.addIssue(containsDelete, 		DDDIssueType.MAJOR,
+				String.format("The Repository '%s' has no delete/remove method.", name));
+		fitness.addIssue(containsContains, 		DDDIssueType.MINOR,
+				String.format("The Repository '%s' has no contains/exists method.", name));
+		fitness.addIssue(containsUpdate, 		DDDIssueType.MINOR,
+				String.format("The Repository '%s' has no update method.", name));
 	}
 
 	private static boolean isNextIdentity(Method method) {
@@ -206,7 +165,7 @@ public class Method {
 				|| method.getName().startsWith("remove");
 	}
 
-	private static boolean isContaints(Method method) {
+	private static boolean isContains(Method method) {
 		return method.getName().startsWith("contains")
 				|| method.getName().startsWith("exists");
 	}
@@ -216,19 +175,16 @@ public class Method {
 	}
 	
 	public static void evaluateFactory(String name, List<Method> methods, DDDFitness fitness) {
-		boolean conataintsCreate = false;
+		boolean containsCreate = false;
 		for (Method method : methods) {
 			if (isCreate(method)) {
-				conataintsCreate = true;
+				containsCreate = true;
 				break;
 			} 
 		}
-		
-		if (conataintsCreate) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The factory '%s' does not containts a create method.", name));
-		}
+
+		fitness.addIssue(containsCreate, DDDIssueType.MAJOR,
+				String.format("The factory '%s' does not containts a create method.", name));
 	}
 	
 	private static boolean isCreate(Method method) {
