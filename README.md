@@ -33,7 +33,7 @@
 
 <p align="center">
   <a href="https://github.com/DanielKraft/illumi-code-ddd/actions">
-    <img src="https://action-badges.now.sh/DanielKraft/illumi-code-ddd"
+    <img src="https://github.com/DanielKraft/illumi-code-ddd/workflows/Java%20CI/badge.svg"
          alt="Actions Status">
   </a>
   <a href="https://sonarcloud.io/dashboard?id=DanielKraft_illumi-code-ddd">
