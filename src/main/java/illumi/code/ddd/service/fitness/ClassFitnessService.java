@@ -63,12 +63,19 @@ public class ClassFitnessService {
         return fitness;
     }
 
+    private void evaluatePath(String filter, String message) {
+        fitness.addIssue(artifact.getPath().contains(filter), DDDIssueType.MINOR, message);
+    }
+
     private void evaluateEntity() {
         LOGGER.info("DDD:ENTITY:{}", artifact.getName());
 
+        evaluatePath("domain." + artifact.getDomain() + ".model.",
+                String.format("The Entity '%s' is not placed at 'domain.%s.model'", artifact.getName(), artifact.getDomain()));
+
         Field.evaluateEntity(artifact, structureService, fitness);
 
-        Method.evaluateEntity(artifact, fitness);
+        Method.evaluateNeededMethods(artifact, fitness);
 
         evaluateSuperClass(artifact.getSuperClass());
     }
@@ -87,7 +94,7 @@ public class ClassFitnessService {
             fitness.addIssue(containsId, DDDIssueType.CRITICAL,
                     String.format("The Entity '%s' does not contains an ID.", item.getName()));
 
-            Method.evaluateEntity(item, fitness);
+            Method.evaluateNeededMethods(item, fitness);
 
             evaluateSuperClass(item.getSuperClass());
         }
@@ -96,8 +103,14 @@ public class ClassFitnessService {
 
     private void evaluateValueObject() {
         LOGGER.info("DDD:VALUE_OBJECT:{}", artifact.getName());
+
+        evaluatePath("domain." + artifact.getDomain() + ".model.",
+                String.format("The Value Object '%s' is not placed at 'domain.%s.model'", artifact.getName(), artifact.getDomain()));
+
         // Must have criteria of Entity: no ID
         Field.evaluateValueObject(artifact, structureService, fitness);
+
+        Method.evaluateNeededMethods(artifact, fitness);
     }
 
     private void evaluateAggregateRoot() {
@@ -153,9 +166,21 @@ public class ClassFitnessService {
         return new ArrayList<>();
     }
 
+    private void evaluateDomainEvent() {
+        LOGGER.info("DDD:DOMAIN_EVENT:{}", artifact.getName());
+
+        evaluatePath("domain." + artifact.getDomain() + ".model.",
+                String.format("The Domain Event '%s' is not placed at 'domain.%s.model'", artifact.getName(), artifact.getDomain()));
+
+        Field.evaluateDomainEvent(artifact, fitness);
+    }
+
     private void evaluateRepository() {
         LOGGER.info("DDD:REPOSITORY:{}", artifact.getName());
         evaluateRepositoryName();
+
+        evaluatePath("domain." + artifact.getDomain() + ".model.impl.",
+                String.format("The repository '%s' is not placed at 'domain.%s.model.impl'", artifact.getName(), artifact.getDomain()));
 
         evaluateRepositoryInterfaces();
 
@@ -184,6 +209,9 @@ public class ClassFitnessService {
 
         evaluateFactoryName();
 
+        evaluatePath("domain." + artifact.getDomain() + ".model.impl.",
+                String.format("The factory '%s' is not placed at 'domain.%s.model.impl'", artifact.getName(), artifact.getDomain()));
+
         evaluateFactoryInterfaces();
 
         Field.evaluateFactory(artifact.getName(), artifact.getFields(), fitness);
@@ -197,26 +225,22 @@ public class ClassFitnessService {
     }
 
     private void evaluateFactoryInterfaces() {
-        boolean containtsInterface = false;
+        boolean containsInterface = false;
         for (Interface i : artifact.getInterfaces()) {
             if (i.getName().endsWith(FACTORY)) {
-                containtsInterface = true;
+                containsInterface = true;
                 break;
             }
         }
-        fitness.addIssue(containtsInterface, DDDIssueType.MINOR,
+        fitness.addIssue(containsInterface, DDDIssueType.MINOR,
                 String.format("The factory '%s' does not implement an interface.", artifact.getName()));
     }
 
     private void evaluateService() {
         LOGGER.info("DDD:SERVICE:{}", artifact.getName());
 
-        evaluatePath(artifact.getPath(), "application." + artifact.getDomain() + ".",
+        evaluatePath("application." + artifact.getDomain() + ".",
                 String.format("The service '%s' should be placed at 'application.%s'", artifact.getName(), artifact.getDomain()));
-    }
-
-    private void evaluatePath(String path, String filter, String message) {
-        fitness.addIssue(path.contains(filter), DDDIssueType.MINOR, message);
     }
 
     private void evaluateApplicationService() {
@@ -224,9 +248,8 @@ public class ClassFitnessService {
 
         evaluateName();
 
-        evaluatePath(artifact.getPath(), "application.",
+        evaluatePath("application.",
                 String.format("The application service '%s' is not part of an application module", artifact.getName()));
-
     }
 
     private void evaluateName() {
@@ -234,18 +257,10 @@ public class ClassFitnessService {
                 String.format("The name of the application service '%s' does not contains 'Application' ", artifact.getName()));
     }
 
-
-
     private void evaluateInfrastructure() {
         LOGGER.info("DDD:INFRASTRUCTURE:{}", artifact.getName());
 
-        evaluatePath(artifact.getPath(), "infrastructure.",
+        evaluatePath("infrastructure.",
                 String.format("The infrastructure service '%s' is not part of an infrastructure module", artifact.getName()));
-    }
-
-    private void evaluateDomainEvent() {
-        LOGGER.info("DDD:DOMAIN_EVENT:{}", artifact.getName());
-
-        Field.evaluateDomainEvent(artifact, fitness);
     }
 }

@@ -1,8 +1,8 @@
 package illumi.code.ddd.model;
 
 public enum DDDIssueType {
-	BLOCKER(4),
-	CRITICAL(3),
+	BLOCKER(8),
+	CRITICAL(4),
 	MAJOR(2),
 	MINOR(1),
 	INFO(0);

@@ -48,9 +48,9 @@ class PackageFitnessServiceTest {
 		PackageFitnessService service = new PackageFitnessService(module, structureService);
 		final DDDFitness result = service.evaluate();
 		
-		assertAll(	() -> assertEquals(42.86, 	result.calculateFitness(), 				"Fitness"),
+		assertAll(	() -> assertEquals(37.5, 	result.calculateFitness(), 				"Fitness"),
 				 	() -> assertEquals(DDDRating.F, 	result.getscore(), 						"Rating"),
-				 	() -> assertEquals(7, 		result.getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(8, 		result.getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(3, 		result.getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
 				 	() -> assertEquals(2, 		result.getIssues().size(), 				"#Issues"));
 	}
@@ -72,9 +72,75 @@ class PackageFitnessServiceTest {
 		
 		assertAll(	() -> assertEquals(100.0, 	result.calculateFitness(), 				"Fitness"),
 				 	() -> assertEquals(DDDRating.A,		result.getscore(), 						"Rating"),
-				 	() -> assertEquals(7, 		result.getNumberOfCriteria(), 			"#Total Criteria"),
-				 	() -> assertEquals(7, 		result.getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
+				 	() -> assertEquals(8, 		result.getNumberOfCriteria(), 			"#Total Criteria"),
+				 	() -> assertEquals(8, 		result.getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
 				 	() -> assertEquals(0, 		result.getIssues().size(), 				"#Issues"));
+	}
+
+	@Test
+	void testEvaluateDomainModuleWithInfrastructure() {
+		Class entity = new Class("Entity", "de.test.domain.domain1.Entity");
+		entity.setType(DDDType.ENTITY);
+
+		Class infra = new Class("Infra", "de.test.domain.domain1.Infra");
+		infra.setType(DDDType.INFRASTRUCTURE);
+
+		Package module = new Package("domain1", "de.test.domain.domain1");
+		module.addConataints(entity);
+		module.addConataints(infra);
+
+		PackageFitnessService service = new PackageFitnessService(module, structureService);
+		final DDDFitness result = service.evaluate();
+
+		assertAll(	() -> assertEquals(25.0, 	result.calculateFitness(), 				"Fitness"),
+				() -> assertEquals(DDDRating.F,		result.getscore(), 						"Rating"),
+				() -> assertEquals(8, 		result.getNumberOfCriteria(), 			"#Total Criteria"),
+				() -> assertEquals(2, 		result.getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
+				() -> assertEquals(2, 		result.getIssues().size(), 				"#Issues"));
+	}
+
+	@Test
+	void testEvaluateDomainModuleWithApplicationService() {
+		Class entity = new Class("Entity", "de.test.domain.domain1.Entity");
+		entity.setType(DDDType.ENTITY);
+
+		Class app = new Class("App", "de.test.domain.domain1.App");
+		app.setType(DDDType.APPLICATION_SERVICE);
+
+		Package module = new Package("domain1", "de.test.domain.domain1");
+		module.addConataints(entity);
+		module.addConataints(app);
+
+		PackageFitnessService service = new PackageFitnessService(module, structureService);
+		final DDDFitness result = service.evaluate();
+
+		assertAll(	() -> assertEquals(25.0, 	result.calculateFitness(), 				"Fitness"),
+				() -> assertEquals(DDDRating.F,		result.getscore(), 						"Rating"),
+				() -> assertEquals(8, 		result.getNumberOfCriteria(), 			"#Total Criteria"),
+				() -> assertEquals(2, 		result.getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
+				() -> assertEquals(2, 		result.getIssues().size(), 				"#Issues"));
+	}
+
+	@Test
+	void testEvaluateDomainModuleWithController() {
+		Class entity = new Class("Entity", "de.test.domain.domain1.Entity");
+		entity.setType(DDDType.ENTITY);
+
+		Class controller = new Class("Controller", "de.test.domain.domain1.Controller");
+		controller.setType(DDDType.CONTROLLER);
+
+		Package module = new Package("domain1", "de.test.domain.domain1");
+		module.addConataints(entity);
+		module.addConataints(controller);
+
+		PackageFitnessService service = new PackageFitnessService(module, structureService);
+		final DDDFitness result = service.evaluate();
+
+		assertAll(	() -> assertEquals(25.0, 	result.calculateFitness(), 				"Fitness"),
+				() -> assertEquals(DDDRating.F,		result.getscore(), 						"Rating"),
+				() -> assertEquals(8, 		result.getNumberOfCriteria(), 			"#Total Criteria"),
+				() -> assertEquals(2, 		result.getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
+				() -> assertEquals(2, 		result.getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test

@@ -43,7 +43,9 @@ public class Field {
 			if (isId(field)) {
 				containsId = true;
 			}
-			
+
+			Method.evaluateEntity(artifact, field, fitness);
+
 			// Is type of field Entity or Value Object?
 			fitness.addIssue(field.getType().contains(structureService.getPath()), DDDIssueType.MAJOR,
 					String.format("The Field '%s' of the Entity '%s' is not a type of an Entity or a Value Object", field.getName(), artifact.getName()));

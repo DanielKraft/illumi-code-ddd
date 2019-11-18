@@ -41,7 +41,7 @@ public class Method {
 		return signature;
 	}
 
-	public static void evaluateEntity(Class artifact, DDDFitness fitness) {
+	public static void evaluateNeededMethods(Class artifact, DDDFitness fitness) {
 		int ctr = 0;
 		for (Method method : artifact.getMethods()) {
 			if (isNeededMethod(method)) {
@@ -59,20 +59,42 @@ public class Method {
 		// equals() or hashCode()? 
 		return method.getName().equals("equals") || method.getName().equals("hashCode");
 	}
-	
+
+	static void evaluateEntity(Class artifact, Field field, DDDFitness fitness) {
+		boolean containsSetter = false;
+		boolean containsGetter = false;
+		for (Method method : artifact.getMethods()) {
+			if (method.getName().equalsIgnoreCase("set" + field.getName())) {
+				containsSetter = true;
+
+			} else if (method.getName().equalsIgnoreCase("get" + field.getName())) {
+				containsGetter = true;
+			}
+		}
+		fitness.addIssue(containsGetter, DDDIssueType.MINOR,
+				String.format("The field '%s' of the Entity '%s' has no Getter.", field.getName(), artifact.getName()));
+
+
+		fitness.addIssue(containsSetter, DDDIssueType.MINOR,
+				String.format("The field '%s' of the Entity '%s' has no setter.", field.getName(), artifact.getName()));
+	}
+
 	static void evaluateValueObject(Class artifact, Field field, DDDFitness fitness) {
 		boolean containsSetter = false;
 		boolean containsGetter = false;
 		for (Method method : artifact.getMethods()) {
 			if (method.getName().equalsIgnoreCase("set" + field.getName())) {
 				containsSetter = true;
-				if (isMethodImmutable(artifact, method)) {
-					fitness.addSuccessfulCriteria(DDDIssueType.CRITICAL);
-				} else {
-					fitness.addFailedCriteria(DDDIssueType.CRITICAL, String.format("The method '%s(...)' is not immutable.", method.getName()));
-				}
+
+				fitness.addIssue(isMethodImmutable(artifact, method), DDDIssueType.CRITICAL,
+						String.format("The method '%s(...)' is not immutable.", method.getName()));
+
 			} else if (method.getName().equalsIgnoreCase("get" + field.getName())) {
 				containsGetter = true;
+				fitness.addFailedCriteria(DDDIssueType.INFO, String.format("The getter '%s()' should be named '%s'.", method.getName(), field.getName()));
+			} else if (method.getName().equalsIgnoreCase(field.getName())) {
+				containsGetter = true;
+				fitness.addSuccessfulCriteria(DDDIssueType.INFO);
 			}
 		}
 		fitness.addIssue(containsGetter, DDDIssueType.MINOR,
@@ -84,7 +106,8 @@ public class Method {
 	}
 	
 	private static boolean isMethodImmutable(Class artifact, Method method) {
-		return method.getSignature().split(" ")[0].contains(artifact.getPath());
+		return method.getSignature().split(" ")[0].contains(artifact.getPath())
+				|| method.getVisibility().equals("private");
 	}
 
 	static void evaluateDomainEvent(Class artifact, Field field, DDDFitness fitness) {
