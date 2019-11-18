@@ -24,7 +24,7 @@ jobs:
       with:
         java-version: 1.8
     - name: Build with Gradle
-      run: ./gradlew build -x test check
+      run: ./gradlew build -x test checkstyleTest checkstyleTest
       
   test:
     needs: [checkstyle, build]
