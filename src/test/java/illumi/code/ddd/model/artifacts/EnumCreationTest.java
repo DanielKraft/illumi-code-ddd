@@ -15,11 +15,11 @@ import org.neo4j.harness.TestServerBuilders;
 import illumi.code.ddd.model.DDDType;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class EnumCreationTest {
+class EnumCreationTest {
 	private ServerControls embeddedDatabaseServer;
 		
 	@BeforeAll
-	public void initializeNeo4j() {
+	void initializeNeo4j() {
 		this.embeddedDatabaseServer = TestServerBuilders
 	        .newInProcessBuilder()
 	        .withFixture( "CREATE(e:Java:Enum{fqn: 'de.test.Type', name: 'Type'})"
@@ -37,9 +37,9 @@ public class EnumCreationTest {
     }
 	
 	@Test
-	public void testSetFields() {
+	void testSetFields() {
 		Enum artifact = new Enum("Type", "de.test.Type");
-	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
+	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
 	    	artifact.setFields(driver);
 	    	
 	    	ArrayList<Field> result = (ArrayList<Field>) artifact.getFields();
@@ -57,7 +57,7 @@ public class EnumCreationTest {
 	}
 	
 	@Test
-	public void testSetFieldsFailed() {
+	void testSetFieldsFailed() {
 		Enum artifact = new Enum("Type", "de.test.Type");
     	
 		artifact.setFields(null);
@@ -68,9 +68,9 @@ public class EnumCreationTest {
 	}
 
 	@Test
-	public void testSetAnnotations() {
+	void testSetAnnotations() {
 		Enum artifact = new Enum("Type", "de.test.Type");
-	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
+	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
 	    	ArrayList<Annotation> annotations = new ArrayList<>();
 	    	annotations.add(new Annotation("NoAnno", "de.other.NoAnno"));
 	    	annotations.add(new Annotation("Anno", "de.test.Anno"));
@@ -88,9 +88,9 @@ public class EnumCreationTest {
 	}
 	
 	@Test
-	public void testSetNoAnnotations() {
+	void testSetNoAnnotations() {
 		Enum artifact = new Enum("Type", "de.test.Type");
-	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
+	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
 	    	ArrayList<Annotation> annotations = new ArrayList<>();
 	    	
 	    	artifact.setAnnotations(driver, annotations);
@@ -102,7 +102,7 @@ public class EnumCreationTest {
 	}
 	
 	@Test
-	public void testSetNoAnnotationsFailed() {
+	void testSetNoAnnotationsFailed() {
 		Enum artifact = new Enum("Type", "de.test.Type");
     	
 		artifact.setAnnotations(null, null);

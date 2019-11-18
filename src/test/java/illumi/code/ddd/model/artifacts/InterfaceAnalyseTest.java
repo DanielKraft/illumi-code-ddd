@@ -6,10 +6,10 @@ import org.junit.jupiter.api.Test;
 
 import illumi.code.ddd.model.DDDType;
 
-public class InterfaceAnalyseTest {
+class InterfaceAnalyseTest {
 	
 	@Test
-	public void testSetTypeOfJPA() {
+	void testSetTypeOfJPA() {
 		Interface item = new Interface("JpaTest", "de.test.JpaTest");
 		
 		item.setType();
@@ -18,7 +18,7 @@ public class InterfaceAnalyseTest {
 	}
 	
 	@Test
-	public void testSetTypeOfCRUD() {
+	void testSetTypeOfCRUD() {
 		Interface item = new Interface("CrudTest", "de.test.CrudTest");
 		
 		item.setType();
@@ -27,7 +27,7 @@ public class InterfaceAnalyseTest {
 	}
 	
 	@Test
-	public void testSetTypeWithUnknownType() {
+	void testSetTypeWithUnknownType() {
 		Interface item = new Interface("Test", "de.test.Test");
 		
 		item.setType();

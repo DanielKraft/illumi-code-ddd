@@ -25,7 +25,7 @@ import io.micronaut.test.annotation.MicronautTest;
 import io.micronaut.test.annotation.MockBean;
 
 @MicronautTest
-public class DDDControllerTest {
+class DDDControllerTest {
 
 	@Inject AnalyseService analyseService; 
 	@Inject FitnessService fitnessService;
@@ -36,22 +36,22 @@ public class DDDControllerTest {
     RxHttpClient client;
 	
 	@MockBean(AnalyseServiceImpl.class) 
-    public AnalyseService analyseService() {
+    AnalyseService analyseService() {
         return mock(AnalyseService.class); 
     }
 	
 	@MockBean(FitnessServiceImpl.class) 
-    public FitnessService fitnessService() {
+    FitnessService fitnessService() {
         return mock(FitnessService.class); 
     }
-	
-	@MockBean(MetricServiceImpl.class) 
-    public MetricService metricService() {
-        return mock(MetricService.class); 
+
+	@MockBean(MetricServiceImpl.class)
+    MetricService metricService() {
+        return mock(MetricService.class);
     }
 
 	@Test
-    public void testAnalyzeStructure() {
+    void testAnalyzeStructure() {
 		
 		JSONArray data = new JSONArray();
 		data.put(new JSONObject()
@@ -78,7 +78,7 @@ public class DDDControllerTest {
 	}
 	
 	@Test
-    public void testCreatingMetrics() {
+    void testCreatingMetrics() {
 		JSONObject data = new JSONObject()
 				.put("metric", new JSONObject()
 						.put("score", "F")

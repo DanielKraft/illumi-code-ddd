@@ -1,6 +1,7 @@
 package illumi.code.ddd.model.artifacts;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.ArrayList;
 
@@ -15,11 +16,11 @@ import org.neo4j.harness.TestServerBuilders;
 import illumi.code.ddd.model.DDDType;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class ClassCreationTest {
+class ClassCreationTest {
 	private ServerControls embeddedDatabaseServer;
 	
 	@BeforeAll
-	public void initializeNeo4j() {
+	void initializeNeo4j() {
 		this.embeddedDatabaseServer = TestServerBuilders
 	        .newInProcessBuilder()
 	        .withFixture( "CREATE(c:Java:Class{fqn: 'de.test.Class', name: 'Class'})"
@@ -52,44 +53,44 @@ public class ClassCreationTest {
     }
 	
 	@Test
-	public void testInitFactory() {
+	void testInitFactory() {
 		Class artifact = new Class("ClassFactory", "de.test.ClassFactory");
 		
 		assertEquals(DDDType.FACTORY, artifact.getType());
 	}
 	
 	@Test
-	public void testInitRepository() {
+	void testInitRepository() {
 		Class artifact = new Class("ClassRepository", "de.test.ClassRepository");
 		
 		assertEquals(DDDType.REPOSITORY, artifact.getType());
 	}
 	
 	@Test
-	public void testInitService() {
+	void testInitService() {
 		Class artifact = new Class("ClassService", "de.test.ClassService");
 		
 		assertEquals(DDDType.SERVICE, artifact.getType());
 	}
 	
 	@Test
-	public void testInitApplicationService() {
+	void testInitApplicationService() {
 		Class artifact = new Class("ClassApplicationService", "de.test.ClassApplicationService");
 		
 		assertEquals(DDDType.APPLICATION_SERVICE, artifact.getType());
 	}
 	
 	@Test
-	public void testInitController() {
+	void testInitController() {
 		Class artifact = new Class("ClassController", "de.test.ClassController");
 		
 		assertEquals(DDDType.CONTROLLER, artifact.getType());
 	}
 	
 	@Test
-	public void testSetFields() {
+	void testSetFields() {
 		Class artifact = new Class("Class", "de.test.Class");
-		try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
+		try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
 			artifact.setFields(driver);
 			
 			ArrayList<Field> result = (ArrayList<Field>) artifact.getFields();
@@ -108,7 +109,7 @@ public class ClassCreationTest {
 	}
 	
 	@Test
-	public void testSetFieldsFailed() {
+	void testSetFieldsFailed() {
 		Class artifact = new Class("Class", "de.test.Class");
     	
 		artifact.setFields(null);
@@ -119,9 +120,9 @@ public class ClassCreationTest {
 	}
 
 	@Test
-	public void testSetMethods() {
+	void testSetMethods() {
 		Class artifact = new Class("Class", "de.test.Class");
-		try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
+		try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
 			artifact.setMethods(driver);
 			
 			ArrayList<Method> result = (ArrayList<Method>) artifact.getMethods();
@@ -139,7 +140,7 @@ public class ClassCreationTest {
 	}
 	
 	@Test
-	public void testSetMethodsFailed() {
+	void testSetMethodsFailed() {
 		Class artifact = new Class("Class", "de.test.Class");
     	
 		artifact.setMethods(null);
@@ -150,9 +151,9 @@ public class ClassCreationTest {
 	}
 	
 	@Test
-	public void testSetImplInterfaces() {
+	void testSetImplInterfaces() {
 		Class artifact = new Class("Class", "de.test.Class");
-	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
+	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
 	    	ArrayList<Interface> interfaces = new ArrayList<>();
 	    	interfaces.add(new Interface("OtherInterface", "de.other.OtherInterface"));
 	    	interfaces.add(new Interface("Interface", "de.test.Interface"));
@@ -169,9 +170,9 @@ public class ClassCreationTest {
 	}
 	
 	@Test
-	public void testSetNoImplInterfaces() {
+	void testSetNoImplInterfaces() {
 		Class artifact = new Class("Class", "de.test.Class");
-	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
+	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
 	    	ArrayList<Interface> interfaces = new ArrayList<>();
 	    	
 	    	artifact.setImplInterfaces(driver, interfaces);
@@ -183,7 +184,7 @@ public class ClassCreationTest {
 	}
 	
 	@Test
-	public void testSetImplInterfacesFailed() {
+	void testSetImplInterfacesFailed() {
 		Class artifact = new Class("Class", "de.test.Class");
 		
 		artifact.setImplInterfaces(null, null);
@@ -194,9 +195,9 @@ public class ClassCreationTest {
 	}
 	
 	@Test
-	public void testSetSuperClass() {
+	void testSetSuperClass() {
 		Class artifact = new Class("Class", "de.test.Class");
-	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
+	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
 	    	ArrayList<Class> classes = new ArrayList<>();
 	    	classes.add(new Class("OtherClass", "de.test.OtherClass"));
 	    	classes.add(new Class("SuperClass", "de.test.SuperClass"));
@@ -211,48 +212,48 @@ public class ClassCreationTest {
 	}
 	
 	@Test
-	public void testSetNoSuperClass() {
+	void testSetNoSuperClass() {
 		Class artifact = new Class("OtherClass", "de.test.OtherClass");
-	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
+	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
 	    	ArrayList<Class> classes = new ArrayList<>();
 	    	
 	    	artifact.setSuperClass(driver, classes);
 	    	
 	    	Class result = artifact.getSuperClass();
-	    	
-	    	assertEquals(null, result);
+
+			assertNull(result);
 	    }
 	}
 	
 	@Test
-	public void testSetNoAvalibleSuperClass() {
+	void testSetNoAvalibleSuperClass() {
 		Class artifact = new Class("Class", "de.test.Class");
-	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
+	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
 	    	ArrayList<Class> classes = new ArrayList<>();
 	    	
 	    	artifact.setSuperClass(driver, classes);
 	    	
 	    	Class result = artifact.getSuperClass();
-	    	
-	    	assertEquals(null, result);
+
+			assertNull(result);
 	    }
 	}
 	
 	@Test
-	public void testSetSuperClassFailed() {
+	void testSetSuperClassFailed() {
 		Class artifact = new Class("Class", "de.test.Class");
     	
 		artifact.setSuperClass(null, null);
 		
 		Class result = artifact.getSuperClass();
-    	
-    	assertEquals(null, result);
+
+		assertNull(result);
 	}
 	
 	@Test
-	public void testSetAnnotations() {
+	void testSetAnnotations() {
 		Class artifact = new Class("Class", "de.test.Class");
-	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
+	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
 	    	ArrayList<Annotation> annotations = new ArrayList<>();
 	    	annotations.add(new Annotation("NoAnno", "de.other.NoAnno"));
 	    	annotations.add(new Annotation("Anno", "de.test.Anno"));
@@ -270,9 +271,9 @@ public class ClassCreationTest {
 	}
 	
 	@Test
-	public void testSetNoAnnotations() {
+	void testSetNoAnnotations() {
 		Class artifact = new Class("Class", "de.test.Class");
-	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
+	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
 	    	ArrayList<Annotation> annotations = new ArrayList<>();
 	    	
 	    	artifact.setAnnotations(driver, annotations);
@@ -284,7 +285,7 @@ public class ClassCreationTest {
 	}
 	
 	@Test
-	public void testSetAnnotationsFailed() {
+	void testSetAnnotationsFailed() {
 		Class artifact = new Class("Class", "de.test.Class");
     	
 		artifact.setAnnotations(null, null);

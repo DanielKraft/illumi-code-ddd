@@ -18,12 +18,12 @@ import illumi.code.ddd.model.artifacts.Interface;
 import illumi.code.ddd.model.artifacts.Package;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class FitnessServiceImplTest {
+class FitnessServiceImplTest {
 
 private FitnessServiceImpl service;
 	
 	@BeforeAll
-	public void init() {
+	void init() {
 		StructureService structure = new StructureService();
 		structure.setPath("de.test");
 		
@@ -56,7 +56,7 @@ private FitnessServiceImpl service;
 	}
 	
 	@Test
-	public void testFitnessOfModules() {
+	void testFitnessOfModules() {
 		final JSONArray result = service.getStructureWithFitness();	
 		
 		assertAll("Should return fitness of classes",

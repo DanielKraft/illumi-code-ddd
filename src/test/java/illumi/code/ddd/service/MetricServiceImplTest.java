@@ -18,12 +18,12 @@ import illumi.code.ddd.model.artifacts.Artifact;
 import illumi.code.ddd.model.artifacts.Class;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class MetricServiceImplTest {
+class MetricServiceImplTest {
 	
 	private MetricServiceImpl service;
 	
 	@BeforeAll
-	public void init() {
+	void init() {
 		StructureService structure = new StructureService();
 		Package domain = new Package("domain", "de.test.domain");
 		domain.setType(DDDType.MODULE);
@@ -63,7 +63,7 @@ public class MetricServiceImplTest {
 	}
 	
 	@Test
-	public void testGetMetric() {
+	void testGetMetric() {
 		final JSONObject expected = new JSONObject()
 				.put("metric", new JSONObject()
 						.put("score", DDDRating.D)

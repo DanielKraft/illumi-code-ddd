@@ -9,7 +9,7 @@ public enum DDDIssueType {
 	
 	public final int weight;
 	 
-    private DDDIssueType(int weight) {
+    DDDIssueType(int weight) {
         this.weight = weight;
     }
 }

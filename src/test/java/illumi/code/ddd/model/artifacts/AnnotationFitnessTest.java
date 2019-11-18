@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Test;
 
 import illumi.code.ddd.model.DDDRating;
 
-public class AnnotationFitnessTest {
+class AnnotationFitnessTest {
 	
 	@Test
-	public void testEvaluateAnnotation() {
+	void testEvaluateAnnotation() {
 		Annotation annotation = new Annotation("Annotation", "de.test.infrastructure.Annotation");
 		
 		annotation.evaluate();
@@ -23,7 +23,7 @@ public class AnnotationFitnessTest {
 	}
 	
 	@Test
-	public void testEvaluateInvalidAnnotation() {
+	void testEvaluateInvalidAnnotation() {
 		Annotation annotation = new Annotation("Annotation", "de.test.Annotation");
 		
 		annotation.evaluate();

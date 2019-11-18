@@ -12,18 +12,18 @@ import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.service.StructureService;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class ClassFitnessTest {
+class ClassFitnessTest {
 
 	private StructureService structureService;
 	
 	@BeforeEach
-	public void init() {
+	void init() {
 		structureService = new StructureService();
 		structureService.setPath("de.test");
 	}
 	
 	@Test
-	public void testEvaluateEntity() {
+	void testEvaluateEntity() {
 		Class superClass = new Class("Super", "de.test.Super");
 		superClass.addField(new Field("private", "id", "de.test.EntityId"));
 		superClass.addField(new Field("private", "name", "string"));
@@ -43,15 +43,15 @@ public class ClassFitnessTest {
 		
 		artifact.evaluate(structureService);
 		
-		assertAll(	() -> assertEquals(87.5, 		artifact.getFitness(), 										"Fitness"),
+		assertAll(	() -> assertEquals(83.33, 		artifact.getFitness(), 										"Fitness"),
 				 	() -> assertEquals(DDDRating.B, artifact.getDDDFitness().getscore(), 						"Rating"),
-				 	() -> assertEquals(8, 			artifact.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
-				 	() -> assertEquals(7, 			artifact.getDDDFitness().getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
+				 	() -> assertEquals(12, 			artifact.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(10, 			artifact.getDDDFitness().getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
 				 	() -> assertEquals(1, 			artifact.getDDDFitness().getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test
-	public void testEvaluateEmptyEntity() {	
+	void testEvaluateEmptyEntity() {
 		Class superSuperClass = new Class("SuperSuper", "de.test.SuperSuper");
 		superSuperClass.addField(new Field("private", "name", "string"));
 		
@@ -67,13 +67,13 @@ public class ClassFitnessTest {
 		
 		assertAll(	() -> assertEquals(0.0, 		artifact.getFitness(), 										"Fitness"),
 				 	() -> assertEquals(DDDRating.F, artifact.getDDDFitness().getscore(), 						"Rating"),
-				 	() -> assertEquals(3, 			artifact.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(4, 			artifact.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(0, 			artifact.getDDDFitness().getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
 				 	() -> assertEquals(2, 			artifact.getDDDFitness().getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test
-	public void testEvaluateInvalidEntity() {	
+	void testEvaluateInvalidEntity() {
 		Class artifact = new Class("Entity", "de.test.Entity");
 		artifact.setType(DDDType.ENTITY);
 				
@@ -82,13 +82,13 @@ public class ClassFitnessTest {
 		
 		assertAll(	() -> assertEquals(0.0, 		artifact.getFitness(), 										"Fitness"),
 				 	() -> assertEquals(DDDRating.F, artifact.getDDDFitness().getscore(), 						"Rating"),
-				 	() -> assertEquals(3, 			artifact.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(4, 			artifact.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(0, 			artifact.getDDDFitness().getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
 				 	() -> assertEquals(2, 			artifact.getDDDFitness().getIssues().size(), 				"#Issues"));
 	}
 
 	@Test
-	public void testEvaluateValueObjects() {	
+	void testEvaluateValueObjects() {
 		Class valueObject = new Class("ValueObject", "de.test.ValueObject");
 		valueObject.setType(DDDType.VALUE_OBJECT);
 		valueObject.addField(new Field("private", "name", "java.lang.string"));
@@ -101,15 +101,15 @@ public class ClassFitnessTest {
 		
 		valueObject.evaluate(structureService);
 		
-		assertAll(	() -> assertEquals(78.57, 		valueObject.getFitness(), 									"Fitness"),
+		assertAll(	() -> assertEquals(77.78, 		valueObject.getFitness(), 									"Fitness"),
 				 	() -> assertEquals(DDDRating.C, valueObject.getDDDFitness().getscore(), 					"Rating"),
-				 	() -> assertEquals(14, 			valueObject.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
-				 	() -> assertEquals(11, 			valueObject.getDDDFitness().getNumberOfFulfilledCriteria(), "Fulfilled Criteria"),
+				 	() -> assertEquals(18, 			valueObject.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(14, 			valueObject.getDDDFitness().getNumberOfFulfilledCriteria(), "Fulfilled Criteria"),
 				 	() -> assertEquals(2, 			valueObject.getDDDFitness().getIssues().size(), 			"#Issues"));
 	}
 	
 	@Test
-	public void testEvaluateInvalidValueObjects() {	
+	void testEvaluateInvalidValueObjects() {
 		Class valueObject = new Class("ValueObject", "de.test.ValueObject");
 		valueObject.setType(DDDType.VALUE_OBJECT);
 		valueObject.addField(new Field("private", "id", "long"));
@@ -119,13 +119,13 @@ public class ClassFitnessTest {
 		
 		assertAll(	() -> assertEquals(0.0, 		valueObject.getFitness(), 									"Fitness"),
 				 	() -> assertEquals(DDDRating.F, valueObject.getDDDFitness().getscore(), 					"Rating"),
-				 	() -> assertEquals(6, 			valueObject.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(8, 			valueObject.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(0, 			valueObject.getDDDFitness().getNumberOfFulfilledCriteria(), "Fulfilled Criteria"),
 				 	() -> assertEquals(4, 			valueObject.getDDDFitness().getIssues().size(), 			"#Issues"));
 	}
 	
 	@Test
-	public void testEvaluateAggregateRoot() {
+	void testEvaluateAggregateRoot() {
 		Package infra = new Package("infrastructure", "de.test.infrastructure");
 		infra.setType(DDDType.MODULE);
 		structureService.addPackage(infra);
@@ -156,15 +156,15 @@ public class ClassFitnessTest {
 		
 		aggregate.evaluate(structureService);
 		
-		assertAll(	() -> assertEquals(66.67, 		aggregate.getFitness(), 									"Fitness"),
+		assertAll(	() -> assertEquals(60.0, 		aggregate.getFitness(), 									"Fitness"),
 				 	() -> assertEquals(DDDRating.D, aggregate.getDDDFitness().getscore(), 						"Rating"),
-				 	() -> assertEquals(9, 			aggregate.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(10, 			aggregate.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(6, 			aggregate.getDDDFitness().getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
 				 	() -> assertEquals(2, 			aggregate.getDDDFitness().getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test
-	public void testEvaluateInvalidAggregateRoot() {
+	void testEvaluateInvalidAggregateRoot() {
 		Package domain = new Package("aggregate", "de.test.aggregate");
 		domain.setType(DDDType.MODULE);
 		structureService.addPackage(domain);
@@ -193,13 +193,13 @@ public class ClassFitnessTest {
 		
 		assertAll(	() -> assertEquals(0.0, 		aggregate.getFitness(), 									"Fitness"),
 				 	() -> assertEquals(DDDRating.F, aggregate.getDDDFitness().getscore(), 						"Rating"),
-				 	() -> assertEquals(9, 			aggregate.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(10, 			aggregate.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(0, 			aggregate.getDDDFitness().getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
 				 	() -> assertEquals(5, 			aggregate.getDDDFitness().getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test
-	public void testEvaluateEmptyAggregateRoot() {
+	void testEvaluateEmptyAggregateRoot() {
 		Class aggregate = new Class("Aggregate", "de.test.aggregate.Aggregate");
 		aggregate.setType(DDDType.AGGREGATE_ROOT);
 		aggregate.setDomain("aggregate");
@@ -208,13 +208,13 @@ public class ClassFitnessTest {
 		
 		assertAll(	() -> assertEquals(0.0, 		aggregate.getFitness(), 									"Fitness"),
 				 	() -> assertEquals(DDDRating.F, aggregate.getDDDFitness().getscore(), 						"Rating"),
-				 	() -> assertEquals(9, 			aggregate.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(10, 			aggregate.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(0, 			aggregate.getDDDFitness().getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
 				 	() -> assertEquals(5, 			aggregate.getDDDFitness().getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test
-	public void testEvaluateRepository() {
+	void testEvaluateRepository() {
 		Class repository = new Class("TestRepositoryImpl", "de.test.domain.TestRepositoryImpl");
 		repository.setType(DDDType.REPOSITORY);
 		repository.setDomain("domain");
@@ -244,13 +244,13 @@ public class ClassFitnessTest {
 		
 		assertAll(	() -> assertEquals(100.0, 		repository.getFitness(), 									"Fitness"),
 				 	() -> assertEquals(DDDRating.A, repository.getDDDFitness().getscore(), 						"Rating"),
-				 	() -> assertEquals(6, 			repository.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
-				 	() -> assertEquals(6, 			repository.getDDDFitness().getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
+				 	() -> assertEquals(9, 			repository.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(9, 			repository.getDDDFitness().getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
 				 	() -> assertEquals(0, 			repository.getDDDFitness().getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test
-	public void testEvaluateInvalidRepository() {
+	void testEvaluateInvalidRepository() {
 		Class repository = new Class("TestRepository", "de.test.domain.TestRepository");
 		repository.setType(DDDType.REPOSITORY);
 		repository.setDomain("domain");
@@ -259,13 +259,13 @@ public class ClassFitnessTest {
 		
 		assertAll(	() -> assertEquals(0.0, 		repository.getFitness(), 									"Fitness"),
 				 	() -> assertEquals(DDDRating.F, repository.getDDDFitness().getscore(), 						"Rating"),
-				 	() -> assertEquals(6, 			repository.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(9, 			repository.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(0, 			repository.getDDDFitness().getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
 				 	() -> assertEquals(7, 			repository.getDDDFitness().getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test
-	public void testEvaluateFactory() {
+	void testEvaluateFactory() {
 		Class factoryImpl = new Class("TestFactoryImpl", "de.test.TestFactoryImpl");
 		factoryImpl.setType(DDDType.FACTORY);
 		factoryImpl.addField(new Field("private", "repository", "de.test.Repository"));
@@ -287,13 +287,13 @@ public class ClassFitnessTest {
 		
 		assertAll(	() -> assertEquals(100.0, 		factoryImpl.getFitness(), 									"Fitness"),
 				 	() -> assertEquals(DDDRating.A, factoryImpl.getDDDFitness().getscore(), 					"Rating"),
-				 	() -> assertEquals(3, 			factoryImpl.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
-				 	() -> assertEquals(3, 			factoryImpl.getDDDFitness().getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
+				 	() -> assertEquals(5, 			factoryImpl.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(5, 			factoryImpl.getDDDFitness().getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
 				 	() -> assertEquals(0, 			factoryImpl.getDDDFitness().getIssues().size(), 			"#Issues"));
 	}
 	
 	@Test
-	public void testEvaluateInvalidFactory() {
+	void testEvaluateInvalidFactory() {
 		Class factoryImpl = new Class("Fac", "de.test.Fac");
 		factoryImpl.setType(DDDType.FACTORY);
 		factoryImpl.addField(new Field("private", "name", "string"));
@@ -303,13 +303,13 @@ public class ClassFitnessTest {
 		
 		assertAll(	() -> assertEquals(0.0, 		factoryImpl.getFitness(), 									"Fitness"),
 				 	() -> assertEquals(DDDRating.F, factoryImpl.getDDDFitness().getscore(), 					"Rating"),
-				 	() -> assertEquals(3, 			factoryImpl.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(5, 			factoryImpl.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(0, 			factoryImpl.getDDDFitness().getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
 				 	() -> assertEquals(4, 			factoryImpl.getDDDFitness().getIssues().size(), 			"#Issues"));
 	}
 	
 	@Test
-	public void testEvaluateService() {
+	void testEvaluateService() {
 		Class serviceImpl = new Class("TestImpl", "de.test.TestImpl");
 		serviceImpl.setType(DDDType.SERVICE);
 		
@@ -333,7 +333,7 @@ public class ClassFitnessTest {
 	}
 	
 	@Test
-	public void testEvaluateInvalidService() {
+	void testEvaluateInvalidService() {
 		Class serviceImpl = new Class("Test", "de.test.Test");
 		serviceImpl.setType(DDDType.SERVICE);
 		
@@ -347,8 +347,8 @@ public class ClassFitnessTest {
 	}
 	
 	@Test
-	public void testEvaluateApplicationService() {
-		Class app = new Class("Test", "de.test.application.Test");
+	void testEvaluateApplicationServiceWithInvalidName() {
+		Class app = new Class("TestApplication", "de.test.application.TestApplication");
 		app.setType(DDDType.APPLICATION_SERVICE);
 		
 		app.evaluate(structureService);
@@ -361,7 +361,7 @@ public class ClassFitnessTest {
 	}
 	
 	@Test
-	public void testEvaluateInvalidApplicationService() {
+	void testEvaluateInvalidApplicationService() {
 		Class app = new Class("Test", "de.test.Test");
 		app.setType(DDDType.APPLICATION_SERVICE);
 		
@@ -371,11 +371,11 @@ public class ClassFitnessTest {
 				 	() -> assertEquals(DDDRating.F, app.getDDDFitness().getscore(), 					"Rating"),
 				 	() -> assertEquals(1, 			app.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(0, 			app.getDDDFitness().getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
-				 	() -> assertEquals(1, 			app.getDDDFitness().getIssues().size(), 			"#Issues"));
+				 	() -> assertEquals(2, 			app.getDDDFitness().getIssues().size(), 			"#Issues"));
 	}
 
 	@Test
-	public void testEvaluateInfrastructure() {
+	void testEvaluateInfrastructure() {
 		Class app = new Class("Test", "de.test.infrastructure.Test");
 		app.setType(DDDType.INFRASTRUCTUR);
 		
@@ -389,7 +389,7 @@ public class ClassFitnessTest {
 	}
 	
 	@Test
-	public void testEvaluateInvalidInfrastructure() {
+	void testEvaluateInvalidInfrastructure() {
 		Class app = new Class("Test", "de.test.Test");
 		app.setType(DDDType.INFRASTRUCTUR);
 		
@@ -403,7 +403,7 @@ public class ClassFitnessTest {
 	}
 	
 	@Test
-	public void testEvaluateDomainEvent() {
+	void testEvaluateDomainEvent() {
 		Class event = new Class("Event", "de.test.domain.Event");
 		event.setType(DDDType.DOMAIN_EVENT);
 		event.addField(new Field("private", "name", "java.lang.String"));
@@ -418,15 +418,15 @@ public class ClassFitnessTest {
 		
 		event.evaluate(structureService);
 		
-		assertAll(	() -> assertEquals(72.73, 		event.getFitness(), 									"Fitness"),
-				 	() -> assertEquals(DDDRating.C, event.getDDDFitness().getscore(), 						"Rating"),
-				 	() -> assertEquals(22, 			event.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
-				 	() -> assertEquals(16, 			event.getDDDFitness().getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
-				 	() -> assertEquals(5, 			event.getDDDFitness().getIssues().size(), 				"#Issues"));
+		assertAll(	() -> assertEquals(68.75, 		event.getFitness(), 									"Fitness"),
+				 	() -> assertEquals(DDDRating.D, event.getDDDFitness().getscore(), 						"Rating"),
+				 	() -> assertEquals(16, 			event.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(11, 			event.getDDDFitness().getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
+				 	() -> assertEquals(4, 			event.getDDDFitness().getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test
-	public void testEvaluateInvalidDomainEvent() {
+	void testEvaluateInvalidDomainEvent() {
 		Class event = new Class("Event", "de.test.domain.Event");
 		event.setType(DDDType.DOMAIN_EVENT);
 		

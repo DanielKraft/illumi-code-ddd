@@ -10,7 +10,7 @@ public enum DDDRating {
 
 	public final double lowerBorder;
 	 
-    private DDDRating(double lowerBorder) {
+    DDDRating(double lowerBorder) {
         this.lowerBorder = lowerBorder;
     }
 }

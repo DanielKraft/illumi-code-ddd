@@ -9,12 +9,12 @@ import org.junit.jupiter.api.Test;
 import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.service.StructureService;
 
-public class PackageAnalyseTest {
+class PackageAnalyseTest {
 
 	private StructureService structureService;
 	
 	@BeforeEach
-	public void init() {
+	void init() {
 		
 		structureService = new StructureService();
 		structureService.setPath("de.test");
@@ -22,7 +22,7 @@ public class PackageAnalyseTest {
 	}
 	
 	@Test
-	public void testSetAggragateRoot() {
+	void testSetAggragateRoot() {
 		Package module = new Package("domain", "de.test.domain");
 		
 		Class entity1 = new Class("Entity1", "de.test.domain.Entity1");
@@ -59,16 +59,16 @@ public class PackageAnalyseTest {
 		
 
 		assertAll("Should find aggregate root",
-			() -> assertEquals(DDDType.VALUE_OBJECT,	(DDDType) value.getType(), 		"Value Object"),
-			() -> assertEquals(DDDType.ENTITY, 			(DDDType) entity1.getType(), 	"Entity 1"),
-			() -> assertEquals(DDDType.ENTITY, 			(DDDType) entity2.getType(), 	"Entity 1"),
-			() -> assertEquals(DDDType.ENTITY, 			(DDDType) entity3.getType(), 	"Entity 1"),
-			() -> assertEquals(DDDType.ENTITY, 			(DDDType) entity4.getType(), 	"Entity 1"),
-			() -> assertEquals(DDDType.AGGREGATE_ROOT, 	(DDDType) root.getType(), 		"Aggregate Root"));
+			() -> assertEquals(DDDType.VALUE_OBJECT, value.getType(), 		"Value Object"),
+			() -> assertEquals(DDDType.ENTITY, 			entity1.getType(), 	"Entity 1"),
+			() -> assertEquals(DDDType.ENTITY, 			entity2.getType(), 	"Entity 1"),
+			() -> assertEquals(DDDType.ENTITY, 			entity3.getType(), 	"Entity 1"),
+			() -> assertEquals(DDDType.ENTITY, 			entity4.getType(), 	"Entity 1"),
+			() -> assertEquals(DDDType.AGGREGATE_ROOT, 	root.getType(), 		"Aggregate Root"));
 	}
 	
 	@Test
-	public void testSetAggragateRootWithMultipeCandidates() {
+	void testSetAggragateRootWithMultipeCandidates() {
 		Package module = new Package("domain", "de.test.domain");
 
 		Class entity = new Class("Entity", "de.test.domain.Entity");
@@ -83,12 +83,12 @@ public class PackageAnalyseTest {
 		
 
 		assertAll("Should find aggregate root",
-			() -> assertEquals(DDDType.ENTITY, 			(DDDType) entity.getType(), 	"Entity"),
-			() -> assertEquals(DDDType.AGGREGATE_ROOT, 	(DDDType) root.getType(), 	"Aggregate Root"));
+			() -> assertEquals(DDDType.ENTITY,			entity.getType(), 	"Entity"),
+			() -> assertEquals(DDDType.AGGREGATE_ROOT,	root.getType(), 	"Aggregate Root"));
 	}
 	
 	@Test
-	public void testSetAggragateRootWithOneCandidate() {
+	void testSetAggragateRootWithOneCandidate() {
 		Package module = new Package("domain", "de.test.domain");
 		
 		Class root = new Class("Root", "de.test.domain.Root");
@@ -101,11 +101,11 @@ public class PackageAnalyseTest {
 		
 
 		assertAll("Should find aggregate root",
-			() -> assertEquals(DDDType.AGGREGATE_ROOT, 	(DDDType) root.getType()));
+			() -> assertEquals(DDDType.AGGREGATE_ROOT, root.getType()));
 	}
 	
 	@Test
-	public void testSetAggragateRootWithNoEntities() {
+	void testSetAggragateRootWithNoEntities() {
 		Package module = new Package("domain", "de.test.domain");
 		
 		module.setAggregateRoot(structureService);
@@ -116,7 +116,7 @@ public class PackageAnalyseTest {
 	}
 	
 	@Test
-	public void testSetAggragateRootOfNoDomain() {
+	void testSetAggragateRootOfNoDomain() {
 		Package module = new Package("infra", "de.test.infra");
 		
 		Class root = new Class("Root", "de.test.infra.Root");
@@ -127,6 +127,6 @@ public class PackageAnalyseTest {
 		
 
 		assertAll("Should find aggregate root",
-			() -> assertEquals(DDDType.ENTITY, 	(DDDType) root.getType()));
+			() -> assertEquals(DDDType.ENTITY, root.getType()));
 	}
 }

@@ -187,7 +187,7 @@ public class AnalyseServiceImpl implements AnalyseService {
 		item.setDomain(domain);
 	}
     
-    public void analyseDomains() {
+    private void analyseDomains() {
     	structureService.getPackages().stream()
     		.parallel()
     		.forEach(item -> item.setAggregateRoot(structureService));

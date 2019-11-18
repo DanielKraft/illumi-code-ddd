@@ -21,7 +21,7 @@ import io.micronaut.test.annotation.MicronautTest;
 import io.micronaut.test.annotation.MockBean;
 
 @MicronautTest
-public class DDDControllerFailedTest {
+class DDDControllerFailedTest {
 
 	@Inject AnalyseService analyseService; 
 	@Inject FitnessService fitnessService;
@@ -32,22 +32,22 @@ public class DDDControllerFailedTest {
     RxHttpClient client;
 	
 	@MockBean(AnalyseServiceImpl.class) 
-    public AnalyseService analyseService() {
+    AnalyseService analyseService() {
         return mock(AnalyseService.class); 
     }
 	
 	@MockBean(FitnessServiceImpl.class) 
-    public FitnessService fitnessService() {
+    FitnessService fitnessService() {
         return mock(FitnessService.class); 
     }
 	
 	@MockBean(MetricServiceImpl.class) 
-    public MetricService metricService() {
+    MetricService metricService() {
         return mock(MetricService.class); 
     }
 	
 	@Test
-    public void testCreatingMetrics() {		
+    void testCreatingMetrics() {
 		Assertions.assertThrows(HttpClientResponseException.class, () -> client.toBlocking().retrieve(HttpRequest.GET("/metric")));
 	}
 }

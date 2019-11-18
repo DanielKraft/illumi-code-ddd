@@ -15,11 +15,11 @@ import org.neo4j.harness.TestServerBuilders;
 import illumi.code.ddd.model.DDDType;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class InterfaceCreationTest {
+class InterfaceCreationTest {
 	private ServerControls embeddedDatabaseServer;
 	
 	@BeforeAll
-	public void initializeNeo4j() {
+	void initializeNeo4j() {
 		this.embeddedDatabaseServer = TestServerBuilders
 	        .newInProcessBuilder()
 	        .withFixture( "CREATE(i:Java:Interface{fqn: 'de.test.Interface', name: 'Interface'})"
@@ -49,30 +49,30 @@ public class InterfaceCreationTest {
     }
 	
 	@Test
-	public void testInitFactory() {
+	void testInitFactory() {
 		Interface artifact = new Interface("InterfaceFactory", "de.test.InterfaceFactory");
 		
 		assertEquals(DDDType.FACTORY, artifact.getType());
 	}
 	
 	@Test
-	public void testInitRepository() {
+	void testInitRepository() {
 		Interface artifact = new Interface("InterfaceRepository", "de.test.InterfaceRepository");
 		
 		assertEquals(DDDType.REPOSITORY, artifact.getType());
 	}
 	
 	@Test
-	public void testInitService() {
+	void testInitService() {
 		Interface artifact = new Interface("InterfaceService", "de.test.InterfaceService");
 		
 		assertEquals(DDDType.SERVICE, artifact.getType());
 	}
 	
 	@Test
-	public void testSetFields() {
+	void testSetFields() {
 		Interface artifact = new Interface("Interface", "de.test.Interface");
-		try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
+		try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
 			artifact.setFields(driver);
 			
 			ArrayList<Field> result = (ArrayList<Field>) artifact.getFields();
@@ -91,7 +91,7 @@ public class InterfaceCreationTest {
 	}
 	
 	@Test
-	public void testSetFieldsFailed() {
+	void testSetFieldsFailed() {
 		Interface artifact = new Interface("Interface", "de.test.Interface");
     	
 		artifact.setFields(null);
@@ -102,9 +102,9 @@ public class InterfaceCreationTest {
 	}
 	
 	@Test
-	public void testSetMethods() {
+	void testSetMethods() {
 		Interface artifact = new Interface("Interface", "de.test.Interface");
-		try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
+		try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
 			artifact.setMethods(driver);
 			
 			ArrayList<Method> result = (ArrayList<Method>) artifact.getMethods();
@@ -122,7 +122,7 @@ public class InterfaceCreationTest {
 	}
 	
 	@Test
-	public void testSetMethodsFailed() {
+	void testSetMethodsFailed() {
 		Interface artifact = new Interface("Interface", "de.test.Interface");
     	
 		artifact.setMethods(null);
@@ -133,9 +133,9 @@ public class InterfaceCreationTest {
 	}
 	
 	@Test
-	public void testSetImplInterfaces() {
+	void testSetImplInterfaces() {
 		Interface artifact = new Interface("Interface", "de.test.Interface");
-	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
+	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
 	    	ArrayList<Interface> interfaces = new ArrayList<>();
 	    	interfaces.add(new Interface("OtherInterface", "de.other.OtherInterface"));
 	    	interfaces.add(new Interface("ImplInterface", "de.test.ImplInterface"));
@@ -152,9 +152,9 @@ public class InterfaceCreationTest {
 	}
 	
 	@Test
-	public void testSetNoImplInterfaces() {
+	void testSetNoImplInterfaces() {
 		Interface artifact = new Interface("Interface", "de.test.Interface");
-	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
+	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
 	    	ArrayList<Interface> interfaces = new ArrayList<>();
 	    	
 	    	artifact.setImplInterfaces(driver, interfaces);
@@ -166,7 +166,7 @@ public class InterfaceCreationTest {
 	}
 	
 	@Test
-	public void testSetImplInterfacesFailed() {
+	void testSetImplInterfacesFailed() {
 		Interface artifact = new Interface("Interface", "de.test.Interface");
 		
 		artifact.setImplInterfaces(null, null);
@@ -177,9 +177,9 @@ public class InterfaceCreationTest {
 	}
 	
 	@Test
-	public void testSetAnnotations() {
+	void testSetAnnotations() {
 		Interface artifact = new Interface("Interface", "de.test.Interface");
-	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
+	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
 	    	ArrayList<Annotation> annotations = new ArrayList<>();
 	    	annotations.add(new Annotation("NoAnno", "de.other.NoAnno"));
 	    	annotations.add(new Annotation("Anno", "de.test.Anno"));
@@ -197,21 +197,21 @@ public class InterfaceCreationTest {
 	}
 	
 	@Test
-	public void testSetNoAnnotations() {
+	void testSetNoAnnotations() {
 		Interface artifact = new Interface("Interface", "de.test.Interface");
-	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
-	    	ArrayList<Annotation> annotations = new ArrayList<>();
-	    	
-	    	artifact.setAnnotations(driver, annotations);
-	    	
-	    	ArrayList<Annotation> result = (ArrayList<Annotation>) artifact.getAnnotations();
-	    	
-	    	assertEquals(0, result.size());
-	    }
+		try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
+			ArrayList<Annotation> annotations = new ArrayList<>();
+
+			artifact.setAnnotations(driver, annotations);
+
+			ArrayList<Annotation> result = (ArrayList<Annotation>) artifact.getAnnotations();
+
+			assertEquals(0, result.size());
+		}
 	}
 	
 	@Test
-	public void testSetAnnotationsFailed() {
+	void testSetAnnotationsFailed() {
 		Interface artifact = new Interface("Interface", "de.test.Interface");
     	
 		artifact.setAnnotations(null, null);

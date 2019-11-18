@@ -15,12 +15,12 @@ import org.neo4j.harness.TestServerBuilders;
 import illumi.code.ddd.model.DDDType;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AnnotationCreationTest {
+class AnnotationCreationTest {
 	
 	private ServerControls embeddedDatabaseServer;
 	
 	@BeforeAll
-	public void initializeNeo4j() {
+	void initializeNeo4j() {
 		this.embeddedDatabaseServer = TestServerBuilders
 	        .newInProcessBuilder()
 	        .withFixture( "CREATE(a:Java:Annotation{fqn: 'de.test.Annotation', name: 'Annotation'})"
@@ -47,9 +47,9 @@ public class AnnotationCreationTest {
     }
 	
 	@Test
-	public void testSetFields() {
+	void testSetFields() {
 		Annotation artifact = new Annotation("Annotation", "de.test.Annotation");
-		try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
+		try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
 			artifact.setFields(driver);
 			
 			ArrayList<Field> result = (ArrayList<Field>) artifact.getFields();
@@ -68,7 +68,7 @@ public class AnnotationCreationTest {
 	}
 	
 	@Test
-	public void testSetFieldsFailed() {
+	void testSetFieldsFailed() {
 		Annotation artifact = new Annotation("Annotation", "de.test.Annotation");
     	
 		artifact.setFields(null);
@@ -79,9 +79,9 @@ public class AnnotationCreationTest {
 	}
 	
 	@Test
-	public void testSetMethods() {
+	void testSetMethods() {
 		Annotation artifact = new Annotation("Annotation", "de.test.Annotation");
-		try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
+		try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
 			artifact.setMethods(driver);
 			
 			ArrayList<Method> result = (ArrayList<Method>) artifact.getMethods();
@@ -99,7 +99,7 @@ public class AnnotationCreationTest {
 	}
 	
 	@Test
-	public void testSetMethodsFailed() {
+	void testSetMethodsFailed() {
 		Annotation artifact = new Annotation("Annotation", "de.test.Annotation");
     	
 		artifact.setMethods(null);
@@ -110,9 +110,9 @@ public class AnnotationCreationTest {
 	}
 	
 	@Test
-	public void testSetAnnotations() {
+	void testSetAnnotations() {
 		Annotation artifact = new Annotation("Annotation", "de.test.Annotation");
-	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
+	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
 	    	ArrayList<Annotation> annotations = new ArrayList<>();
 	    	annotations.add(new Annotation("NoAnno", "de.other.NoAnno"));
 	    	annotations.add(new Annotation("Anno", "de.test.Anno"));
@@ -130,9 +130,9 @@ public class AnnotationCreationTest {
 	}
 	
 	@Test
-	public void testSetNoAnnotations() {
+	void testSetNoAnnotations() {
 		Annotation artifact = new Annotation("Annotation", "de.test.Annotation");
-	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
+	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
 	    	ArrayList<Annotation> annotations = new ArrayList<>();
 	    	
 	    	artifact.setAnnotations(driver, annotations);
@@ -144,7 +144,7 @@ public class AnnotationCreationTest {
 	}
 	
 	@Test
-	public void testSetAnnotationsFailed() {
+	void testSetAnnotationsFailed() {
 		Annotation artifact = new Annotation("Annotation", "de.test.Annotation");
     	
 		artifact.setAnnotations(null, null);

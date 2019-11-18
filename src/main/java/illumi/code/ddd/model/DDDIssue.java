@@ -6,7 +6,7 @@ public class DDDIssue {
 	
 	private String description;
 
-	public DDDIssue(DDDIssueType type, String description) {
+	DDDIssue(DDDIssueType type, String description) {
 		super();
 		this.type = type;
 		this.description = description;

@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test;
 import illumi.code.ddd.model.DDDRating;
 import illumi.code.ddd.model.DDDType;
 
-public class InterfaceFitnessTest {
+class InterfaceFitnessTest {
 
 	@Test
-	public void testEvaluateRepositoryInterface() {
+	void testEvaluateRepositoryInterface() {
 		Interface artifact = new Interface("Repository", "de.test.Repository");
 		artifact.setType(DDDType.REPOSITORY);
 		artifact.addMethod(new Method("public", "findById", "test findById()"));
@@ -30,13 +30,13 @@ public class InterfaceFitnessTest {
 		
 		assertAll(	() -> assertEquals(100.0, 		artifact.getFitness(), 										"Fitness"),
 				 	() -> assertEquals(DDDRating.A, artifact.getDDDFitness().getscore(), 						"Rating"),
-				 	() -> assertEquals(5, 			artifact.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
-				 	() -> assertEquals(5, 			artifact.getDDDFitness().getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
+				 	() -> assertEquals(8, 			artifact.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(8, 			artifact.getDDDFitness().getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
 				 	() -> assertEquals(0, 			artifact.getDDDFitness().getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test
-	public void testEvaluateInvalidRepositoryInterface() {
+	void testEvaluateInvalidRepositoryInterface() {
 		Interface artifact = new Interface("Repo", "de.test.Repo");
 		artifact.setType(DDDType.REPOSITORY);
 		artifact.addMethod(new Method("public", "toString", "test toString()"));
@@ -45,13 +45,13 @@ public class InterfaceFitnessTest {
 		
 		assertAll(	() -> assertEquals(0.0, 		artifact.getFitness(), 										"Fitness"),
 				 	() -> assertEquals(DDDRating.F, artifact.getDDDFitness().getscore(), 						"Rating"),
-				 	() -> assertEquals(5, 			artifact.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(8, 			artifact.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(0, 			artifact.getDDDFitness().getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
 				 	() -> assertEquals(6, 			artifact.getDDDFitness().getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test
-	public void testEvaluateFactoryInterface() {
+	void testEvaluateFactoryInterface() {
 		Interface artifact = new Interface("Factory", "de.test.Factory");
 		artifact.setType(DDDType.FACTORY);
 		artifact.addField(new Field("private", "repository", "de.test.Repository"));
@@ -63,13 +63,13 @@ public class InterfaceFitnessTest {
 		
 		assertAll(	() -> assertEquals(100.0, 		artifact.getFitness(), 										"Fitness"),
 				 	() -> assertEquals(DDDRating.A, artifact.getDDDFitness().getscore(), 						"Rating"),
-				 	() -> assertEquals(2, 			artifact.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
-				 	() -> assertEquals(2, 			artifact.getDDDFitness().getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
+				 	() -> assertEquals(4, 			artifact.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(4, 			artifact.getDDDFitness().getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
 				 	() -> assertEquals(0, 			artifact.getDDDFitness().getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test
-	public void testEvaluateInvalidFactoryInterface() {
+	void testEvaluateInvalidFactoryInterface() {
 		Interface artifact = new Interface("Fac", "de.test.Fac");
 		artifact.setType(DDDType.FACTORY);
 		artifact.addField(new Field("private", "name", "string"));
@@ -79,13 +79,13 @@ public class InterfaceFitnessTest {
 		
 		assertAll(	() -> assertEquals(0.0, 		artifact.getFitness(), 										"Fitness"),
 				 	() -> assertEquals(DDDRating.F, artifact.getDDDFitness().getscore(), 						"Rating"),
-				 	() -> assertEquals(2, 			artifact.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(4, 			artifact.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(0, 			artifact.getDDDFitness().getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
 				 	() -> assertEquals(3, 			artifact.getDDDFitness().getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test
-	public void testEvaluateServiceInterface() {
+	void testEvaluateServiceInterface() {
 		Interface artifact = new Interface("Service", "de.test.Service");
 		artifact.setType(DDDType.SERVICE);
 		

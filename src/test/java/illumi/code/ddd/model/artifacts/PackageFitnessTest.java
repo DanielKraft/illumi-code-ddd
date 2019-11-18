@@ -12,12 +12,12 @@ import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.service.StructureService;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class PackageFitnessTest {
+class PackageFitnessTest {
 	
 	private StructureService structureService;
 	
 	@BeforeAll
-	public void init() {
+	void init() {
 		structureService = new StructureService();
 		structureService.setPath("de.test");
 		structureService.addDomain("domain0");
@@ -25,7 +25,7 @@ public class PackageFitnessTest {
 	}
 	
 	@Test
-	public void testEvaluateModule() {
+	void testEvaluateModule() {
 		Package module = new Package("domain", "de.test.domain");
 		
 		module.evaluate(structureService);
@@ -38,20 +38,20 @@ public class PackageFitnessTest {
 	}
 	
 	@Test
-	public void testEvaluateEmptyDomainModule() {
+	void testEvaluateEmptyDomainModule() {
 		Package module = new Package("domain1", "de.test.domain1");
 		
 		module.evaluate(structureService);
 		
-		assertAll(	() -> assertEquals(25.0, 		module.getFitness(), 									"Fitness"),
+		assertAll(	() -> assertEquals(42.86, 		module.getFitness(), 									"Fitness"),
 				 	() -> assertEquals(DDDRating.F, module.getDDDFitness().getscore(), 						"Rating"),
-				 	() -> assertEquals(4, 			module.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
-				 	() -> assertEquals(1, 			module.getDDDFitness().getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
+				 	() -> assertEquals(7, 			module.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(3, 			module.getDDDFitness().getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
 				 	() -> assertEquals(2, 			module.getDDDFitness().getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test
-	public void testEvaluateDomainModuleWithRoot() {
+	void testEvaluateDomainModuleWithRoot() {
 		Class entity = new Class("Entity", "de.test.domain.domain1.Entity");
 		entity.setType(DDDType.ENTITY);
 		
@@ -66,13 +66,13 @@ public class PackageFitnessTest {
 		
 		assertAll(	() -> assertEquals(100.0, 		module.getFitness(), 									"Fitness"),
 				 	() -> assertEquals(DDDRating.A,	module.getDDDFitness().getscore(), 						"Rating"),
-				 	() -> assertEquals(4, 			module.getDDDFitness().getNumberOfCriteria(), 			"#Total Criteria"),
-				 	() -> assertEquals(4, 			module.getDDDFitness().getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
+				 	() -> assertEquals(7, 			module.getDDDFitness().getNumberOfCriteria(), 			"#Total Criteria"),
+				 	() -> assertEquals(7, 			module.getDDDFitness().getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
 				 	() -> assertEquals(0, 			module.getDDDFitness().getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test
-	public void testEvaluateInfrastructureModule() {
+	void testEvaluateInfrastructureModule() {
 		Class infra = new Class("Infra", "de.test.infrastructure.Infra");
 		infra.setType(DDDType.INFRASTRUCTUR);
 		
@@ -89,7 +89,7 @@ public class PackageFitnessTest {
 	}
 	
 	@Test
-	public void testEvaluateInvalidInfrastructureModule() {
+	void testEvaluateInvalidInfrastructureModule() {
 		Class controller = new Class("Controller", "de.test.infra.Controller");
 		controller.setType(DDDType.CONTROLLER);
 		
@@ -110,7 +110,7 @@ public class PackageFitnessTest {
 	}
 
 	@Test
-	public void testEvaluateApplicationModule() {
+	void testEvaluateApplicationModule() {
 		Class app = new Class("ApplicationService", "de.test.application.ApplicationService");
 		app.setType(DDDType.APPLICATION_SERVICE);
 		
@@ -127,7 +127,7 @@ public class PackageFitnessTest {
 	}
 	
 	@Test
-	public void testEvaluateInvalidApplicationModule() {
+	void testEvaluateInvalidApplicationModule() {
 		Class app = new Class("ApplicationService", "de.test.app.ApplicationService");
 		app.setType(DDDType.APPLICATION_SERVICE);
 		

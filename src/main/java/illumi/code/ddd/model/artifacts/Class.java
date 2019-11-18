@@ -274,7 +274,7 @@ public class Class extends Artifact {
 				evaluateService();
 				break;
 			case DOMAIN_EVENT:
-				evaluateDomainEvent(structureService);
+				evaluateDomainEvent();
 				break;
 			case APPLICATION_SERVICE:
 				evaluateApplicationService();
@@ -311,9 +311,9 @@ public class Class extends Artifact {
 			}
 			
 			if (containtsId) {
-				fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
+				fitness.addSuccessfulCriteria(DDDIssueType.CRITICAL);
 			} else if (item.getSuperClass() == null) {
-				fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The Entity '%s' does not containts an ID.", item.getName()));
+				fitness.addFailedCriteria(DDDIssueType.CRITICAL, String.format("The Entity '%s' does not containts an ID.", item.getName()));
 			}
 			
 			Method.evaluateEntity(item, fitness);
@@ -423,6 +423,7 @@ public class Class extends Artifact {
 		for (Interface i : getInterfaces()) {
 			if (i.getName().endsWith(REPOSITORY)) {
 				containtsInterface = true;
+				break;
 			}
 		}
 		
@@ -461,6 +462,7 @@ public class Class extends Artifact {
 		for (Interface i : getInterfaces()) {
 			if (i.getName().endsWith(FACTORY)) {
 				containtsInterface = true;
+				break;
 			}
 		}
 		
@@ -495,6 +497,7 @@ public class Class extends Artifact {
 		for (Interface i : getInterfaces()) {
 			if (getName().startsWith(i.getName())) {
 				containtsInterface = true;
+				break;
 			}
 		}
 		
@@ -507,11 +510,21 @@ public class Class extends Artifact {
 
 	private void evaluateApplicationService() {
 		LOGGER.info("DDD:APPLICATION_SERVICE:{}", getName());
-		if (getPath().contains("application.")) {
-			setFitness(new DDDFitness().addSuccessfulCriteria(DDDIssueType.MINOR));
+		DDDFitness fitness = new DDDFitness();
+		
+		if (getName().contains("Application")) {
+			fitness.addSuccessfulCriteria(DDDIssueType.INFO);
 		} else {
-			setFitness(new DDDFitness().addFailedCriteria(DDDIssueType.MINOR, String.format("The application service '%s' is not part of an application module", getName())));
+			fitness.addFailedCriteria(DDDIssueType.INFO, String.format("The name of the application service '%s' does not containts 'Application' ", getName()));
 		}
+		
+		if (getPath().contains("application.")) {
+			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
+		} else {
+			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The application service '%s' is not part of an application module", getName()));
+		}
+		
+		setFitness(fitness);
 	}
 
 	private void evaluateInfrastructure() {
@@ -523,11 +536,11 @@ public class Class extends Artifact {
 		}
 	}
 	
-	private void evaluateDomainEvent(StructureService structureService) {
+	private void evaluateDomainEvent() {
 		LOGGER.info("DDD:DOMAIN_EVENT:{}", getName());
 		DDDFitness fitness = new DDDFitness();
 		
-		Field.evaluateDomainEvent(this, structureService, fitness);
+		Field.evaluateDomainEvent(this, fitness);
 				
 		setFitness(fitness);
 	}
