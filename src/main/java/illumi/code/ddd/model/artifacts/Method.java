@@ -41,7 +41,7 @@ public class Method {
 		return signature;
 	}
 
-	static void evaluateEntity(Class artifact, DDDFitness fitness) {
+	public static void evaluateEntity(Class artifact, DDDFitness fitness) {
 		int ctr = 0;
 		for (Method method : artifact.getMethods()) {
 			if (isNeededMethod(method)) {
@@ -118,7 +118,7 @@ public class Method {
 		}
 	}
 	
-	static void evaluateRepository(String name, List<Method> methods, DDDFitness fitness) {
+	public static void evaluateRepository(String name, List<Method> methods, DDDFitness fitness) {
 		boolean containtsFind = false;
 		boolean containtsSave = false;
 		boolean containtsDelete = false;
@@ -200,7 +200,7 @@ public class Method {
 		return method.getName().startsWith("update");
 	}
 	
-	static void evaluateFactory(String name, List<Method> methods, DDDFitness fitness) {
+	public static void evaluateFactory(String name, List<Method> methods, DDDFitness fitness) {
 		boolean conataintsCreate = false;
 		for (Method method : methods) {
 			if (isCreate(method)) {

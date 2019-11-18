@@ -37,7 +37,7 @@ public class Field {
 	public String getType() {
 		return type;
 	}
-	static void evaluateEntity(Class artifact, StructureService structureService, DDDFitness fitness) {
+	public static void evaluateEntity(Class artifact, StructureService structureService, DDDFitness fitness) {
 		boolean containtsId = false;
 		for (Field field : artifact.getFields()) {
 			if (isId(field)) {
@@ -59,11 +59,11 @@ public class Field {
 		}
 	}
 	
-	static boolean isId(Field field) {
+	public static boolean isId(Field field) {
 		return field.getName().toUpperCase().endsWith("ID");
 	}
 	
-	static void evaluateValueObject(Class artifact, StructureService structureService, DDDFitness fitness) {
+	public static void evaluateValueObject(Class artifact, StructureService structureService, DDDFitness fitness) {
 		boolean containtsId = false;
 		for (Field field : artifact.getFields()) {
 			if (Field.isId(field)) {
@@ -88,7 +88,7 @@ public class Field {
 		}
 	}
 	
-	static void evaluateDomainEvent(Class artifact, DDDFitness fitness) {
+	public static void evaluateDomainEvent(Class artifact, DDDFitness fitness) {
 		boolean containtsTime = false;
 		boolean containtsId = false;
 		
@@ -117,7 +117,7 @@ public class Field {
 		}
 	}
 	
-	static void evaluateFactory(String name, List<Field> fields, DDDFitness fitness) {
+	public static void evaluateFactory(String name, List<Field> fields, DDDFitness fitness) {
 		boolean containtsRepo = false;
 		for (Field field : fields) {
 			if (field.getType().contains("Repository")) {

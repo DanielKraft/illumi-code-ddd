@@ -3,6 +3,7 @@ package illumi.code.ddd.model.artifacts;
 import java.util.ArrayList;
 import java.util.List;
 
+import illumi.code.ddd.service.fitness.InterfaceFitnessService;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.Record;
 import org.slf4j.Logger;
@@ -116,57 +117,6 @@ public class Interface extends Artifact {
 	}
 	
 	public void evaluate() {
-		switch(getType()) {
-			case REPOSITORY:
-				evaluateRepository();
-				break;
-			case FACTORY:
-				evaluateFactory();
-				break;
-			case SERVICE:
-			default:
-				LOGGER.info("DDD:SERVICE:{}", getName());
-				setFitness(new DDDFitness());
-		}
-	}
-	
-	private void evaluateRepository() {
-		LOGGER.info("DDD:REPOSITORY:{}", getName());
-		DDDFitness fitness = new DDDFitness();
-		
-		evaluateRepositoryName(fitness);
-		
-		Method.evaluateRepository(getName(), methods, fitness);
-		
-		setFitness(fitness);
-	}
-	
-	private void evaluateRepositoryName(DDDFitness fitness) {
-		if (getName().endsWith(REPOSITORY)) {
-			fitness.addSuccessfulCriteria(DDDIssueType.INFO);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.INFO, String.format("The name of the repsitory interface '%s' should end with 'Repository'", getName()));
-		}
-	}
-	
-	private void evaluateFactory() {
-		LOGGER.info("DDD:FACTORY:{}", getName());
-		DDDFitness fitness = new DDDFitness();
-		
-		evaluateFactoryName(fitness);
-		
-		Field.evaluateFactory(getName(), fields, fitness);
-				
-		Method.evaluateFactory(getName(), methods, fitness);
-		
-		setFitness(fitness);
-	}
-	
-	private void evaluateFactoryName(DDDFitness fitness) {
-		if (getName().endsWith(FACTORY)) {
-			fitness.addSuccessfulCriteria(DDDIssueType.INFO);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.INFO, String.format("The name of the factory interface '%s' should end with 'FactoryImpl'", getName()));
-		}
+		new InterfaceFitnessService(this).evaluate();
 	}
 }
