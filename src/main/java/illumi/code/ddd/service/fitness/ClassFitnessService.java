@@ -121,12 +121,12 @@ public class ClassFitnessService {
         boolean factoryAvailable = false;
         boolean serviceAvailable = false;
 
-        for (Artifact artifact : getDomainModule(artifact.getDomain())) {
-            if (isAggregateRootRepository(artifact)) {
+        for (Artifact tmpArtifact : getDomainModule(artifact.getDomain())) {
+            if (isAggregateRootRepository(tmpArtifact)) {
                 repoAvailable = true;
-            } else if(isAggregateRootFactory(artifact) ) {
+            } else if(isAggregateRootFactory(tmpArtifact) ) {
                 factoryAvailable = true;
-            } else if(isAggregateRootService(artifact)) {
+            } else if(isAggregateRootService(tmpArtifact)) {
                 serviceAvailable = true;
             }
         }

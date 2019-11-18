@@ -7,8 +7,6 @@ import illumi.code.ddd.service.fitness.AnnotationFitnessService;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.Record;
 
-import illumi.code.ddd.model.DDDFitness;
-import illumi.code.ddd.model.DDDIssueType;
 import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.service.JavaArtifactService;
 

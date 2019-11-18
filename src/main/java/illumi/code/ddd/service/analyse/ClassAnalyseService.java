@@ -110,10 +110,10 @@ public class ClassAnalyseService {
     }
 
     private boolean containsEntityName(StructureService structureService) {
-        for (Class artifact : structureService.getClasses()) {
-            if (this.artifact != artifact
-                    && this.artifact.getName().contains(artifact.getName())
-                    && !this.artifact.getName().equals(artifact.getName() + "s")) {
+        for (Class aClass : structureService.getClasses()) {
+            if (this.artifact != aClass
+                    && this.artifact.getName().contains(aClass.getName())
+                    && !this.artifact.getName().equals(aClass.getName() + "s")) {
                 return true;
             }
         }
