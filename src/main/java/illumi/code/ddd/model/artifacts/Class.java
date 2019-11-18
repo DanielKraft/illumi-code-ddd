@@ -119,7 +119,7 @@ public class Class extends Artifact {
 		this.annotations = (ArrayList<Annotation>) JavaArtifactService.getAnnotations(getPath(), driver, QUERY_CLASS_PARENT_ANNOTATIONS, QUERY_CLASS_CHILD_ANNOTATIONS, annotations);
 	}
 
-	public ArrayList<String> getDependencies() {
+	public List<String> getDependencies() {
 		return dependencies;
 	}
 
@@ -131,7 +131,7 @@ public class Class extends Artifact {
 		this.dependencies.add(path);
 	}
 
-	public ArrayList<String> getUsed() {
+	public List<String> getUsed() {
 		return used;
 	}
 

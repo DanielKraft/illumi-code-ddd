@@ -24,7 +24,6 @@ public class PackageAnalyseService {
                 candidates.get(0).setType(DDDType.AGGREGATE_ROOT);
             } else {
                 for (Artifact artifact : candidates) {
-                    System.out.println( module.getName() + " " + artifact.getName());
                     if (structureService.getDomains().contains(artifact.getName().toLowerCase())) {
                         artifact.setType(DDDType.AGGREGATE_ROOT);
                     }
