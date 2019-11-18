@@ -123,6 +123,6 @@ public class Class extends Artifact {
 	}
 	
 	public void evaluate(StructureService structureService) {
-		new ClassFitnessService(this, structureService).evaluate();
+		setFitness(new ClassFitnessService(this, structureService).evaluate());
 	}
 }

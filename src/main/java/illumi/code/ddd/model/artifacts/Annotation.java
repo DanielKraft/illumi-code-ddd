@@ -64,6 +64,6 @@ public class Annotation extends Artifact {
 	}
 	
 	public void evaluate() {
-		new AnnotationFitnessService(this).evaluate();
+		setFitness(new AnnotationFitnessService(this).evaluate());
 	}
 }

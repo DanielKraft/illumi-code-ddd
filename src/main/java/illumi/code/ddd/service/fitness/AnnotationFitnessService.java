@@ -7,16 +7,24 @@ import illumi.code.ddd.model.artifacts.Annotation;
 public class AnnotationFitnessService {
 
     private Annotation annotation;
+    private DDDFitness fitness;
 
     public AnnotationFitnessService(Annotation annotation) {
         this.annotation = annotation;
+        this.fitness = new DDDFitness();
     }
 
-    public void evaluate() {
+    public DDDFitness evaluate() {
+        evaluateAnnotationPath();
+
+        return fitness;
+    }
+
+    private void evaluateAnnotationPath() {
         if (annotation.getPath().contains("infrastructure.")) {
-            annotation.setFitness(new DDDFitness().addSuccessfulCriteria(DDDIssueType.MINOR));
+            fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
         } else {
-            annotation.setFitness(new DDDFitness().addFailedCriteria(DDDIssueType.MINOR, String.format("The annotation '%s' is not part of an infrastructure module", annotation.getName())));
+            fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The annotation '%s' is not part of an infrastructure module", annotation.getName()));
         }
     }
 }

@@ -17,15 +17,15 @@ public class PackageFitnessService {
         this.structureService = structureService;
     }
 
-    public void evaluate() {
+    public DDDFitness evaluate() {
         if (isDomainModule()) {
-            module.setFitness(evaluateDomainModule());
+            return evaluateDomainModule();
         } else if (isInfrastructure()) {
-            module.setFitness(evaluateInfrastructureModule());
+            return evaluateInfrastructureModule();
         } else if (isApplication()) {
-            module.setFitness(evaluateApplicationModule());
+            return evaluateApplicationModule();
         } else {
-            module.setFitness(new DDDFitness().addFailedCriteria(DDDIssueType.INFO, String.format("The module '%s' is no DDD-Module.", module.getName())));
+            return new DDDFitness().addFailedCriteria(DDDIssueType.INFO, String.format("The module '%s' is no DDD-Module.", module.getName()));
         }
     }
 

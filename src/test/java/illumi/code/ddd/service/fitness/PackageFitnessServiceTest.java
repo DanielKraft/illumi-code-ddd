@@ -3,6 +3,7 @@ package illumi.code.ddd.service.fitness;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import illumi.code.ddd.model.DDDFitness;
 import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Package;
 import org.junit.jupiter.api.BeforeAll;
@@ -31,13 +32,13 @@ class PackageFitnessServiceTest {
 		Package module = new Package("domain", "de.test.domain");
 
 		PackageFitnessService service = new PackageFitnessService(module, structureService);
-		service.evaluate();
+		final DDDFitness result = service.evaluate();
 		
-		assertAll(	() -> assertEquals(100.0, 	module.getFitness(), 									"Fitness"),
-				 	() -> assertEquals(DDDRating.A, 	module.getDDDFitness().getscore(), 						"Rating"),
-				 	() -> assertEquals(0, 		module.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
-				 	() -> assertEquals(0, 		module.getDDDFitness().getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
-				 	() -> assertEquals(1, 		module.getDDDFitness().getIssues().size(), 				"#Issues"));
+		assertAll(	() -> assertEquals(100.0, 	result.calculateFitness(), 				"Fitness"),
+				 	() -> assertEquals(DDDRating.A, 	result.getscore(), 						"Rating"),
+				 	() -> assertEquals(0, 		result.getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(0, 		result.getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
+				 	() -> assertEquals(1, 		result.getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test
@@ -45,13 +46,13 @@ class PackageFitnessServiceTest {
 		Package module = new Package("domain1", "de.test.domain1");
 
 		PackageFitnessService service = new PackageFitnessService(module, structureService);
-		service.evaluate();
+		final DDDFitness result = service.evaluate();
 		
-		assertAll(	() -> assertEquals(42.86, 	module.getFitness(), 									"Fitness"),
-				 	() -> assertEquals(DDDRating.F, 	module.getDDDFitness().getscore(), 						"Rating"),
-				 	() -> assertEquals(7, 		module.getDDDFitness().getNumberOfCriteria(), 			"Total Criteria"),
-				 	() -> assertEquals(3, 		module.getDDDFitness().getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
-				 	() -> assertEquals(2, 		module.getDDDFitness().getIssues().size(), 				"#Issues"));
+		assertAll(	() -> assertEquals(42.86, 	result.calculateFitness(), 				"Fitness"),
+				 	() -> assertEquals(DDDRating.F, 	result.getscore(), 						"Rating"),
+				 	() -> assertEquals(7, 		result.getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(3, 		result.getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
+				 	() -> assertEquals(2, 		result.getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test
@@ -67,13 +68,13 @@ class PackageFitnessServiceTest {
 		module.addConataints(aggregate);
 
 		PackageFitnessService service = new PackageFitnessService(module, structureService);
-		service.evaluate();
+		final DDDFitness result = service.evaluate();
 		
-		assertAll(	() -> assertEquals(100.0, 	module.getFitness(), 									"Fitness"),
-				 	() -> assertEquals(DDDRating.A,		module.getDDDFitness().getscore(), 						"Rating"),
-				 	() -> assertEquals(7, 		module.getDDDFitness().getNumberOfCriteria(), 			"#Total Criteria"),
-				 	() -> assertEquals(7, 		module.getDDDFitness().getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
-				 	() -> assertEquals(0, 		module.getDDDFitness().getIssues().size(), 				"#Issues"));
+		assertAll(	() -> assertEquals(100.0, 	result.calculateFitness(), 				"Fitness"),
+				 	() -> assertEquals(DDDRating.A,		result.getscore(), 						"Rating"),
+				 	() -> assertEquals(7, 		result.getNumberOfCriteria(), 			"#Total Criteria"),
+				 	() -> assertEquals(7, 		result.getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
+				 	() -> assertEquals(0, 		result.getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test
@@ -85,13 +86,13 @@ class PackageFitnessServiceTest {
 		module.addConataints(infra);
 
 		PackageFitnessService service = new PackageFitnessService(module, structureService);
-		service.evaluate();
+		final DDDFitness result = service.evaluate();
 		
-		assertAll(	() -> assertEquals(100.0, 	module.getFitness(), 									"Fitness"),
-				 	() -> assertEquals(DDDRating.A,		module.getDDDFitness().getscore(), 						"Rating"),
-				 	() -> assertEquals(4, 		module.getDDDFitness().getNumberOfCriteria(), 			"#Total Criteria"),
-				 	() -> assertEquals(4, 		module.getDDDFitness().getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
-				 	() -> assertEquals(0, 		module.getDDDFitness().getIssues().size(), 				"#Issues"));
+		assertAll(	() -> assertEquals(100.0, 	result.calculateFitness(), 				"Fitness"),
+				 	() -> assertEquals(DDDRating.A,		result.getscore(), 						"Rating"),
+				 	() -> assertEquals(4, 		result.getNumberOfCriteria(), 			"#Total Criteria"),
+				 	() -> assertEquals(4, 		result.getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
+				 	() -> assertEquals(0, 		result.getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test
@@ -107,13 +108,13 @@ class PackageFitnessServiceTest {
 		module.addConataints(entity);
 
 		PackageFitnessService service = new PackageFitnessService(module, structureService);
-		service.evaluate();
+		final DDDFitness result = service.evaluate();
 		
-		assertAll(	() -> assertEquals(25.0, 	module.getFitness(), 									"Fitness"),
-				 	() -> assertEquals(DDDRating.F,		module.getDDDFitness().getscore(), 						"Rating"),
-				 	() -> assertEquals(4, 		module.getDDDFitness().getNumberOfCriteria(), 			"#Total Criteria"),
-				 	() -> assertEquals(1, 		module.getDDDFitness().getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
-				 	() -> assertEquals(2, 		module.getDDDFitness().getIssues().size(), 				"#Issues"));
+		assertAll(	() -> assertEquals(25.0, 	result.calculateFitness(), 				"Fitness"),
+				 	() -> assertEquals(DDDRating.F,		result.getscore(), 						"Rating"),
+				 	() -> assertEquals(4, 		result.getNumberOfCriteria(), 			"#Total Criteria"),
+				 	() -> assertEquals(1, 		result.getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
+				 	() -> assertEquals(2, 		result.getIssues().size(), 				"#Issues"));
 	}
 
 	@Test
@@ -125,13 +126,13 @@ class PackageFitnessServiceTest {
 		module.addConataints(app);
 
 		PackageFitnessService service = new PackageFitnessService(module, structureService);
-		service.evaluate();
+		final DDDFitness result = service.evaluate();
 		
-		assertAll(	() -> assertEquals(100.0, 	module.getFitness(), 									"Fitness"),
-				 	() -> assertEquals(DDDRating.A,		module.getDDDFitness().getscore(), 						"Rating"),
-				 	() -> assertEquals(4, 		module.getDDDFitness().getNumberOfCriteria(), 			"#Total Criteria"),
-				 	() -> assertEquals(4, 		module.getDDDFitness().getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
-				 	() -> assertEquals(0, 		module.getDDDFitness().getIssues().size(), 				"#Issues"));
+		assertAll(	() -> assertEquals(100.0, 	result.calculateFitness(), 				"Fitness"),
+				 	() -> assertEquals(DDDRating.A,		result.getscore(), 						"Rating"),
+				 	() -> assertEquals(4, 		result.getNumberOfCriteria(), 			"#Total Criteria"),
+				 	() -> assertEquals(4, 		result.getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
+				 	() -> assertEquals(0, 		result.getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test
@@ -147,13 +148,13 @@ class PackageFitnessServiceTest {
 		module.addConataints(app);
 
 		PackageFitnessService service = new PackageFitnessService(module, structureService);
-		service.evaluate();
+		final DDDFitness result = service.evaluate();
 		
-		assertAll(	() -> assertEquals(25.0, 	module.getFitness(), 									"Fitness"),
-				 	() -> assertEquals(DDDRating.F,		module.getDDDFitness().getscore(), 						"Rating"),
-				 	() -> assertEquals(4, 		module.getDDDFitness().getNumberOfCriteria(), 			"#Total Criteria"),
-				 	() -> assertEquals(1, 		module.getDDDFitness().getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
-				 	() -> assertEquals(2, 		module.getDDDFitness().getIssues().size(), 				"#Issues"));
+		assertAll(	() -> assertEquals(25.0, 	result.calculateFitness(), 				"Fitness"),
+				 	() -> assertEquals(DDDRating.F,		result.getscore(), 						"Rating"),
+				 	() -> assertEquals(4, 		result.getNumberOfCriteria(), 			"#Total Criteria"),
+				 	() -> assertEquals(1, 		result.getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
+				 	() -> assertEquals(2, 		result.getIssues().size(), 				"#Issues"));
 	}
 }
 

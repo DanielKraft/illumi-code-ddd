@@ -46,6 +46,6 @@ public class Package extends Artifact {
 	}
 
 	public void evaluate(StructureService structureService) {
-		new PackageFitnessService(this, structureService).evaluate();
+		setFitness(new PackageFitnessService(this, structureService).evaluate());
 	}
 }

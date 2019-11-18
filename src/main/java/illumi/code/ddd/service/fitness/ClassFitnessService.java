@@ -21,13 +21,15 @@ public class ClassFitnessService {
 
     private Class artifact;
     private StructureService structureService;
+    private DDDFitness fitness;
 
     public ClassFitnessService(Class artifact, StructureService structureService) {
         this.artifact = artifact;
         this.structureService = structureService;
+        this.fitness = new DDDFitness();
     }
 
-    public void evaluate() {
+    public DDDFitness evaluate() {
         switch(artifact.getType()) {
             case ENTITY:
                 evaluateEntity();
@@ -58,22 +60,20 @@ public class ClassFitnessService {
             default:
                 evaluateInfrastructure();
         }
+        return fitness;
     }
 
     private void evaluateEntity() {
         LOGGER.info("DDD:ENTITY:{}", artifact.getName());
-        DDDFitness fitness = new DDDFitness();
 
         Field.evaluateEntity(artifact, structureService, fitness);
 
         Method.evaluateEntity(artifact, fitness);
 
-        evaluateSuperClass(artifact.getSuperClass(), fitness);
-
-        artifact.setFitness(fitness);
+        evaluateSuperClass(artifact.getSuperClass());
     }
 
-    private void evaluateSuperClass(Class item, DDDFitness fitness) {
+    private void evaluateSuperClass(Class item) {
         if (item != null) {
             boolean containsId = false;
 
@@ -92,7 +92,7 @@ public class ClassFitnessService {
 
             Method.evaluateEntity(item, fitness);
 
-            evaluateSuperClass(item.getSuperClass(), fitness);
+            evaluateSuperClass(item.getSuperClass());
         }
 
     }
@@ -100,23 +100,17 @@ public class ClassFitnessService {
     private void evaluateValueObject() {
         LOGGER.info("DDD:VALUE_OBJECT:{}", artifact.getName());
         // Must have criteria of Entity: no ID
-        DDDFitness fitness = new DDDFitness();
-
         Field.evaluateValueObject(artifact, structureService, fitness);
-
-        artifact.setFitness(fitness);
     }
 
     private void evaluateAggregateRoot() {
         LOGGER.info("DDD:AGGREGATE_ROOT:{}", artifact.getName());
         evaluateEntity();
-        DDDFitness fitness = artifact.getDDDFitness();
 
-        evaluateDomainStructure(fitness);
-
+        evaluateDomainStructure();
     }
 
-    private void evaluateDomainStructure(DDDFitness fitness) {
+    private void evaluateDomainStructure() {
         boolean repoAvailable = false;
         boolean factoryAvailable = false;
         boolean serviceAvailable = false;
@@ -173,18 +167,14 @@ public class ClassFitnessService {
 
     private void evaluateRepository() {
         LOGGER.info("DDD:REPOSITORY:{}", artifact.getName());
-        DDDFitness fitness = new DDDFitness();
+        evaluateRepositoryName();
 
-        evaluateRepositoryName(fitness);
-
-        evaluateRepositoryInterfaces(fitness);
+        evaluateRepositoryInterfaces();
 
         Method.evaluateRepository(artifact.getName(), artifact.getMethods(), fitness);
-
-        artifact.setFitness(fitness);
     }
 
-    private void evaluateRepositoryName(DDDFitness fitness) {
+    private void evaluateRepositoryName() {
         if (artifact.getName().endsWith("RepositoryImpl")) {
             fitness.addSuccessfulCriteria(DDDIssueType.INFO);
         } else {
@@ -192,7 +182,7 @@ public class ClassFitnessService {
         }
     }
 
-    private void evaluateRepositoryInterfaces(DDDFitness fitness) {
+    private void evaluateRepositoryInterfaces() {
         boolean containtsInterface = false;
         for (Interface i : artifact.getInterfaces()) {
             if (i.getName().endsWith(REPOSITORY)) {
@@ -210,20 +200,17 @@ public class ClassFitnessService {
 
     private void evaluateFactory() {
         LOGGER.info("DDD:FACTORY:{}", artifact.getName());
-        DDDFitness fitness = new DDDFitness();
 
-        evaluateFactoryName(fitness);
+        evaluateFactoryName();
 
-        evaluateFactoryInterfaces(fitness);
+        evaluateFactoryInterfaces();
 
         Field.evaluateFactory(artifact.getName(), artifact.getFields(), fitness);
 
         Method.evaluateFactory(artifact.getName(), artifact.getMethods(), fitness);
-
-        artifact.setFitness(fitness);
     }
 
-    private void evaluateFactoryName(DDDFitness fitness) {
+    private void evaluateFactoryName() {
         if (artifact.getName().endsWith("FactoryImpl")) {
             fitness.addSuccessfulCriteria(DDDIssueType.INFO);
         } else {
@@ -231,7 +218,7 @@ public class ClassFitnessService {
         }
     }
 
-    private void evaluateFactoryInterfaces(DDDFitness fitness) {
+    private void evaluateFactoryInterfaces() {
         boolean containtsInterface = false;
         for (Interface i : artifact.getInterfaces()) {
             if (i.getName().endsWith(FACTORY)) {
@@ -249,16 +236,13 @@ public class ClassFitnessService {
 
     private void evaluateService() {
         LOGGER.info("DDD:SERVICE:{}", artifact.getName());
-        DDDFitness fitness = new DDDFitness();
 
-        evaluateServiceName(fitness);
+        evaluateServiceName();
 
-        evaluateServiceInterfaces(fitness);
-
-        artifact.setFitness(fitness);
+        evaluateServiceInterfaces();
     }
 
-    private void evaluateServiceName(DDDFitness fitness) {
+    private void evaluateServiceName() {
         if (artifact.getName().endsWith("Impl")) {
             fitness.addSuccessfulCriteria(DDDIssueType.INFO);
         } else {
@@ -266,7 +250,7 @@ public class ClassFitnessService {
         }
     }
 
-    private void evaluateServiceInterfaces(DDDFitness fitness) {
+    private void evaluateServiceInterfaces() {
         boolean containtsInterface = false;
         for (Interface i : artifact.getInterfaces()) {
             if (artifact.getName().startsWith(i.getName())) {
@@ -284,38 +268,38 @@ public class ClassFitnessService {
 
     private void evaluateApplicationService() {
         LOGGER.info("DDD:APPLICATION_SERVICE:{}", artifact.getName());
-        DDDFitness fitness = new DDDFitness();
 
+        evaluateName();
+
+        evaluatePath(artifact.getPath(), "application.", "The application service '%s' is not part of an application module");
+
+    }
+
+    private void evaluateName() {
         if (artifact.getName().contains("Application")) {
             fitness.addSuccessfulCriteria(DDDIssueType.INFO);
         } else {
-            fitness.addFailedCriteria(DDDIssueType.INFO, String.format("The name of the application service '%s' does not containts 'Application' ", artifact.getName()));
+            fitness.addFailedCriteria(DDDIssueType.INFO, String.format("The name of the application service '%s' does not contains 'Application' ", artifact.getName()));
         }
+    }
 
-        if (artifact.getPath().contains("application.")) {
-            fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
+    private void evaluatePath(String path, String filter, String message) {
+        if (path.contains(filter)) {
+            fitness.addSuccessfulCriteria( DDDIssueType.MINOR);
         } else {
-            fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The application service '%s' is not part of an application module", artifact.getName()));
+            fitness.addFailedCriteria( DDDIssueType.MINOR, String.format(message, artifact.getName()));
         }
-
-        artifact.setFitness(fitness);
     }
 
     private void evaluateInfrastructure() {
         LOGGER.info("DDD:INFRASTRUCTUR:{}", artifact.getName());
-        if (artifact.getPath().contains("infrastructure.")) {
-            artifact.setFitness(new DDDFitness().addSuccessfulCriteria(DDDIssueType.MINOR));
-        } else {
-            artifact.setFitness(new DDDFitness().addFailedCriteria(DDDIssueType.MINOR, String.format("The infrastructure service '%s' is not part of an infrastructure module", artifact.getName())));
-        }
+
+        evaluatePath(artifact.getPath(), "infrastructure.", "The infrastructure service '%s' is not part of an infrastructure module");
     }
 
     private void evaluateDomainEvent() {
         LOGGER.info("DDD:DOMAIN_EVENT:{}", artifact.getName());
-        DDDFitness fitness = new DDDFitness();
 
         Field.evaluateDomainEvent(artifact, fitness);
-
-        artifact.setFitness(fitness);
     }
 }

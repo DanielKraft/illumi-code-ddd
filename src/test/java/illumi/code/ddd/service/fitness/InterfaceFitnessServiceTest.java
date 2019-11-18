@@ -38,8 +38,8 @@ class InterfaceFitnessServiceTest {
 		
 		assertAll(	() -> assertEquals(100.0, 	result.calculateFitness(), 				"Fitness"),
 				 	() -> assertEquals(DDDRating.A, 	result.getscore(), 						"Rating"),
-				 	() -> assertEquals(11, 		result.getNumberOfCriteria(), 			"Total Criteria"),
-				 	() -> assertEquals(11, 		result.getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
+				 	() -> assertEquals(11, 	result.getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(11, 	result.getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
 				 	() -> assertEquals(0, 		result.getIssues().size(), 				"#Issues"));
 	}
 	
@@ -55,7 +55,7 @@ class InterfaceFitnessServiceTest {
 		
 		assertAll(	() -> assertEquals(0.0, 	result.calculateFitness(), 				"Fitness"),
 				 	() -> assertEquals(DDDRating.F, 	result.getscore(), 						"Rating"),
-				 	() -> assertEquals(11, 		result.getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(11, 	result.getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(0, 		result.getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
 				 	() -> assertEquals(8, 		result.getIssues().size(), 				"#Issues"));
 	}
