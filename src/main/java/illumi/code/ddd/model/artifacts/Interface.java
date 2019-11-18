@@ -3,14 +3,11 @@ package illumi.code.ddd.model.artifacts;
 import java.util.ArrayList;
 import java.util.List;
 
+import illumi.code.ddd.service.analyse.InterfaceAnalyseService;
 import illumi.code.ddd.service.fitness.InterfaceFitnessService;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.Record;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import illumi.code.ddd.model.DDDFitness;
-import illumi.code.ddd.model.DDDIssueType;
 import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.service.JavaArtifactService;
 
@@ -19,11 +16,6 @@ import illumi.code.ddd.service.JavaArtifactService;
  * @author Daniel Kraft
  */
 public class Interface extends Artifact {
-		
-	private static final Logger LOGGER = LoggerFactory.getLogger(Interface.class);
-	
-	private static final String FACTORY = "Factory";
-	private static final String REPOSITORY = "Repository";
 	
 	private static final String QUERY_INTERFACE_FIELDS 				= "MATCH (i:Interface)-[:DECLARES]->(f:Field) WHERE i.fqn= {path} RETURN DISTINCT f.name as name, f.signature as type, f.visibility as visibility";
 	private static final String QUERY_INTERFACE_METHODS				= "MATCH (i:Interface)-[:DECLARES]->(m:Method) WHERE i.fqn = {path} RETURN DISTINCT m.visibility as visibility, m.name as name, m.signature as signature";
@@ -107,13 +99,7 @@ public class Interface extends Artifact {
 	}
 	
 	public void setType() {
-		if (isInfrastructur()) {
-			setType(DDDType.INFRASTRUCTUR);
-		}  
-	}
-	
-	private boolean isInfrastructur() {
-		return getName().toUpperCase().contains("JPA") || getName().toUpperCase().contains("CRUD");
+		new InterfaceAnalyseService(this).setType();
 	}
 	
 	public void evaluate() {
