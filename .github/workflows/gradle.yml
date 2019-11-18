@@ -24,9 +24,9 @@ jobs:
       with:
         java-version: 1.8
     - name: Build with Gradle
-      run: ./gradlew build
+      run: ./gradlew build -x test 
       
-  sonarqube:
+  test & sonarqube:
     needs: [checkstyle, build]
     runs-on: ubuntu-latest
     steps:
@@ -35,6 +35,10 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+    - name: Test with Gradle
+      run: ./gradlew test 
+    - name: Jacoco with Gradle
+      run: ./gradlew jacocoTestReport
     - name: Execute sonarqube
       run: ./gradlew sonarqube
       env:
