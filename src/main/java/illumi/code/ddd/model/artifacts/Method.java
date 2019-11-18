@@ -119,60 +119,74 @@ public class Method {
 	}
 	
 	public static void evaluateRepository(String name, List<Method> methods, DDDFitness fitness) {
-		boolean containtsFind = false;
-		boolean containtsSave = false;
-		boolean containtsDelete = false;
-		boolean containtsContains = false;
-		boolean containtsUpdate = false;
+		boolean containsNextIdentity = false;
+		boolean containsFind = false;
+		boolean containsSave = false;
+		boolean containsDelete = false;
+		boolean containsContains = false;
+		boolean containsUpdate = false;
 		
 		for (Method method : methods) {
-			if (isFind(method)) {
-				containtsFind = true;
+			if (isNextIdentity(method)) {
+				containsNextIdentity = true;
+			} else if (isFind(method)) {
+				containsFind = true;
 			} else if (isSave(method)) {
-				containtsSave = true;
+				containsSave = true;
 			} else if (isDelete(method)) {
-				containtsDelete = true;
+				containsDelete = true;
 			} else if (isContaints(method)) {
-				containtsContains = true;
+				containsContains = true;
 			} else if (isUpdate(method)) {
-				containtsUpdate = true;
+				containsUpdate = true;
 			}
 		}
 		
-		createIssues(name, fitness, containtsFind, containtsSave, containtsDelete, containtsContains, containtsUpdate);
+		createIssues(name, fitness, containsNextIdentity, containsFind, containsSave, containsDelete, containsContains, containsUpdate);
 	}
 
-	private static void createIssues(String name, DDDFitness fitness, boolean containtsFind, boolean containtsSave,
-			boolean containtsDelete, boolean containtsContains, boolean containtsUpdate) {
-		if (containtsFind) {
+	private static void createIssues(String name, DDDFitness fitness, boolean containsNextIdentity, boolean containsFind, boolean containsSave,
+			boolean containsDelete, boolean containsContains, boolean containsUpdate) {
+
+		if (containsNextIdentity) {
+			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
+		} else {
+			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The Repository '%s' has no nextIdentity method.", name));
+		}
+
+		if (containsFind) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
 		} else {
 			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The Repository '%s' has no findBy/get method.", name));
 		}
 		
-		if (containtsSave) {
+		if (containsSave) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
 		} else {
 			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The Repository '%s' has no save/add/insert method.", name));
 		}
 		
-		if (containtsDelete) {
+		if (containsDelete) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
 		} else {
 			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The Repository '%s' has no delete/remove method.", name));
 		}
 		
-		if (containtsContains) {
+		if (containsContains) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
 		} else {
 			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The Repository '%s' has no contains/exists method.", name));
 		}
 		
-		if (containtsUpdate) {
+		if (containsUpdate) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
 		} else {
 			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The Repository '%s' has no update method.", name));
 		}
+	}
+
+	private static boolean isNextIdentity(Method method) {
+		return method.getName().startsWith("nextIdentity");
 	}
 	
 	private static boolean isFind(Method method) {
@@ -183,7 +197,8 @@ public class Method {
 	private static boolean isSave(Method method) {
 		return method.getName().startsWith("save") 
 				|| method.getName().startsWith("add") 
-				|| method.getName().startsWith("insert");
+				|| method.getName().startsWith("insert")
+				|| method.getName().startsWith("put");
 	}
 
 	private static boolean isDelete(Method method) {

@@ -15,12 +15,14 @@ public class InterfaceFitnessService {
     private static final String FACTORY = "Factory";
 
     private Interface artifact;
+    private DDDFitness fitness;
 
     public InterfaceFitnessService(Interface artifact) {
         this.artifact = artifact;
+        this.fitness = new DDDFitness();
     }
 
-    public void evaluate() {
+    public DDDFitness evaluate() {
         switch(artifact.getType()) {
             case REPOSITORY:
                 evaluateRepository();
@@ -31,43 +33,49 @@ public class InterfaceFitnessService {
             case SERVICE:
             default:
                 LOGGER.info("DDD:SERVICE:{}", artifact.getName());
-                artifact.setFitness(new DDDFitness());
         }
+        return fitness;
     }
 
     private void evaluateRepository() {
         LOGGER.info("DDD:REPOSITORY:{}", artifact.getName());
-        DDDFitness fitness = new DDDFitness();
 
-        evaluateRepositoryName(fitness);
+        evaluateRepositoryName();
+
+        evaluatePath();
 
         Method.evaluateRepository(artifact.getName(), artifact.getMethods(), fitness);
-
-        artifact.setFitness(fitness);
     }
 
-    private void evaluateRepositoryName(DDDFitness fitness) {
+    private void evaluateRepositoryName() {
         if (artifact.getName().endsWith(REPOSITORY)) {
             fitness.addSuccessfulCriteria(DDDIssueType.INFO);
         } else {
-            fitness.addFailedCriteria(DDDIssueType.INFO, String.format("The name of the repsitory interface '%s' should end with 'Repository'", artifact.getName()));
+            fitness.addFailedCriteria(DDDIssueType.INFO, String.format("The name of the repository interface '%s' should end with 'Repository'", artifact.getName()));
+        }
+    }
+
+    private void evaluatePath() {
+        if (artifact.getPath().contains("domain." + artifact.getDomain() + ".model.")) {
+            fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
+        } else {
+            fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The interface '%s' should be placed in 'domain.%s.model'", artifact.getName(), artifact.getDomain()));
         }
     }
 
     private void evaluateFactory() {
         LOGGER.info("DDD:FACTORY:{}", artifact.getName());
-        DDDFitness fitness = new DDDFitness();
 
-        evaluateFactoryName(fitness);
+        evaluateFactoryName();
+
+        evaluatePath();
 
         Field.evaluateFactory(artifact.getName(), artifact.getFields(), fitness);
 
         Method.evaluateFactory(artifact.getName(), artifact.getMethods(), fitness);
-
-        artifact.setFitness(fitness);
     }
 
-    private void evaluateFactoryName(DDDFitness fitness) {
+    private void evaluateFactoryName() {
         if (artifact.getName().endsWith(FACTORY)) {
             fitness.addSuccessfulCriteria(DDDIssueType.INFO);
         } else {

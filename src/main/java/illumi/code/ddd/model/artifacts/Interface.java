@@ -103,6 +103,6 @@ public class Interface extends Artifact {
 	}
 	
 	public void evaluate() {
-		new InterfaceFitnessService(this).evaluate();
+		setFitness(new InterfaceFitnessService(this).evaluate());
 	}
 }
