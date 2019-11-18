@@ -49,7 +49,7 @@ public class PackageFitnessService {
     }
 
     private boolean containsOnlyDomain() {
-        for (Artifact artifact : module.getConataints()) {
+        for (Artifact artifact : module.getContains()) {
             if (artifact.isTypeOf(DDDType.INFRASTRUCTURE)
                     || artifact.isTypeOf(DDDType.CONTROLLER)
                     || artifact.isTypeOf(DDDType.APPLICATION_SERVICE)) {
@@ -60,7 +60,7 @@ public class PackageFitnessService {
     }
 
     private boolean containsAggregateRoot() {
-        for (Artifact artifact : module.getConataints()) {
+        for (Artifact artifact : module.getContains()) {
             if (artifact.getType() == DDDType.AGGREGATE_ROOT) {
                 return true;
             }
@@ -69,7 +69,7 @@ public class PackageFitnessService {
     }
 
     private boolean isInfrastructure() {
-        for (Artifact artifact : module.getConataints()) {
+        for (Artifact artifact : module.getContains()) {
             if (artifact.getType() == DDDType.INFRASTRUCTURE || artifact.getType() == DDDType.CONTROLLER) {
                 return true;
             }
@@ -90,7 +90,7 @@ public class PackageFitnessService {
     }
 
     private boolean containsOnlyInfrastructure() {
-        for (Artifact artifact : module.getConataints()) {
+        for (Artifact artifact : module.getContains()) {
             if (artifact.getType() != DDDType.INFRASTRUCTURE && artifact.getType() != DDDType.CONTROLLER) {
                 return false;
             }
@@ -99,7 +99,7 @@ public class PackageFitnessService {
     }
 
     private boolean isApplication() {
-        for (Artifact artifact : module.getConataints()) {
+        for (Artifact artifact : module.getContains()) {
             if (artifact.getType() == DDDType.APPLICATION_SERVICE) {
                 return true;
             }
@@ -120,7 +120,7 @@ public class PackageFitnessService {
     }
 
     private boolean containsOnlyApplication() {
-        for (Artifact artifact : module.getConataints()) {
+        for (Artifact artifact : module.getContains()) {
             if (artifact.getType() != DDDType.APPLICATION_SERVICE) {
                 return false;
             }

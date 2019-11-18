@@ -23,7 +23,7 @@ public class ClassAnalyseService {
     }
 
     public void setType() {
-        if (isInfrastructur()) {
+        if (isInfrastructure()) {
             this.artifact.setType(DDDType.INFRASTRUCTURE);
         } else if (this.artifact.getType() == null) {
             if (isValueObject(structureService)) {
@@ -38,7 +38,7 @@ public class ClassAnalyseService {
         }
     }
 
-    private boolean isInfrastructur() {
+    private boolean isInfrastructure() {
         return this.artifact.getName().toUpperCase().contains("JPA") || this.artifact.getName().toUpperCase().contains("CRUD");
     }
 
@@ -57,7 +57,7 @@ public class ClassAnalyseService {
         }
         return !this.artifact.getFields().isEmpty()
                 && ctr == this.artifact.getFields().size()
-                && (conatiantsGetterSetter()
+                && (canadiansGetterSetter()
                 || this.artifact.getMethods().isEmpty());
     }
 
@@ -72,7 +72,7 @@ public class ClassAnalyseService {
         }
         return !this.artifact.getFields().isEmpty()
                 && !containsEntityName(structureService)
-                && (conatiantsGetterSetter()
+                && (canadiansGetterSetter()
                 || this.artifact.getMethods().isEmpty());
     }
 
@@ -89,16 +89,16 @@ public class ClassAnalyseService {
         return StringUtils.isAllUpperCase(field.getName());
     }
 
-    private boolean conatiantsGetterSetter() {
+    private boolean canadiansGetterSetter() {
         for (Method method : this.artifact.getMethods()) {
             if (method.getName().startsWith("get") ^ method.getName().startsWith("set")) {
                 return true;
             }
         }
-        return containtsUnconventionalGetter();
+        return containsUnconventionalGetter();
     }
 
-    private boolean containtsUnconventionalGetter() {
+    private boolean containsUnconventionalGetter() {
         for (Method method : this.artifact.getMethods()) {
             for (Field field : this.artifact.getFields()) {
                 if (method.getSignature().startsWith(field.getType())) {

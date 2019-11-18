@@ -38,8 +38,8 @@ class InterfaceFitnessServiceTest {
 		
 		assertAll(	() -> assertEquals(100.0, 	result.calculateFitness(), 				"Fitness"),
 				 	() -> assertEquals(DDDRating.A, 	result.getscore(), 						"Rating"),
-				 	() -> assertEquals(11, 	result.getNumberOfCriteria(), 			"Total Criteria"),
-				 	() -> assertEquals(11, 	result.getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
+				 	() -> assertEquals(15, 	result.getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(15, 	result.getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
 				 	() -> assertEquals(0, 		result.getIssues().size(), 				"#Issues"));
 	}
 	
@@ -55,7 +55,7 @@ class InterfaceFitnessServiceTest {
 		
 		assertAll(	() -> assertEquals(0.0, 	result.calculateFitness(), 				"Fitness"),
 				 	() -> assertEquals(DDDRating.F, 	result.getscore(), 						"Rating"),
-				 	() -> assertEquals(11, 	result.getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(15, 	result.getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(0, 		result.getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
 				 	() -> assertEquals(8, 		result.getIssues().size(), 				"#Issues"));
 	}
@@ -73,10 +73,10 @@ class InterfaceFitnessServiceTest {
 		InterfaceFitnessService service = new InterfaceFitnessService(artifact);
 		final DDDFitness result = service.evaluate();
 		
-		assertAll(	() -> assertEquals(80.0, 	result.calculateFitness(), 				"Fitness"),
+		assertAll(	() -> assertEquals(85.71, 	result.calculateFitness(), 				"Fitness"),
 				 	() -> assertEquals(DDDRating.B, 	result.getscore(), 						"Rating"),
-				 	() -> assertEquals(5, 		result.getNumberOfCriteria(), 			"Total Criteria"),
-				 	() -> assertEquals(4, 		result.getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
+				 	() -> assertEquals(7, 		result.getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(6, 		result.getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
 				 	() -> assertEquals(1, 		result.getIssues().size(), 				"#Issues"));
 	}
 	
@@ -93,7 +93,7 @@ class InterfaceFitnessServiceTest {
 		
 		assertAll(	() -> assertEquals(0.0, 	result.calculateFitness(), 				"Fitness"),
 				 	() -> assertEquals(DDDRating.F, 	result.getscore(), 						"Rating"),
-				 	() -> assertEquals(5, 		result.getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(7, 		result.getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(0, 		result.getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
 				 	() -> assertEquals(4, 		result.getIssues().size(), 				"#Issues"));
 	}

@@ -16,29 +16,29 @@ import illumi.code.ddd.service.StructureService;
  */
 public class Package extends Artifact {
 		
-	private ArrayList<Artifact> conataints;
+	private ArrayList<Artifact> contains;
 	
 	public Package(Record record) {
 		super(record, DDDType.MODULE);
 		
-		this.conataints = new ArrayList<>();
+		this.contains = new ArrayList<>();
 	}
 
 	public Package(String name, String path) {
 		super(name, path, DDDType.MODULE);
-		this.conataints = new ArrayList<>();
+		this.contains = new ArrayList<>();
 	}
 
-	public List<Artifact> getConataints() {
-		return conataints;
+	public List<Artifact> getContains() {
+		return contains;
 	}
 
-	public void setConataints(List<Artifact> conataints) {
-		this.conataints = (ArrayList<Artifact>) conataints;
+	public void setContains(List<Artifact> contains) {
+		this.contains = (ArrayList<Artifact>) contains;
 	}
 
-	public void addConataints(Artifact artifact) {
-		this.conataints.add(artifact);
+	public void addContains(Artifact artifact) {
+		this.contains.add(artifact);
 	}
 	
 	public void setAggregateRoot(StructureService structureService) {

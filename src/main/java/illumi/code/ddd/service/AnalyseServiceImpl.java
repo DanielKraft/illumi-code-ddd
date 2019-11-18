@@ -73,28 +73,28 @@ public class AnalyseServiceImpl implements AnalyseService {
 			.parallel()
 			.forEach(item -> {
 				List<Object> types = item.get( "types" ).asList();
+				Artifact artifact;
+
 				if (types.contains("Package")) {
-					Package newPackage = new Package(item);
-					newPackage.setConataints(getArtifacts(newPackage.getPath()));
-					structureService.addPackage(newPackage);
-					artifacts.add(newPackage);
+					artifact = new Package(item);
+					((Package) artifact).setContains(getArtifacts(artifact.getPath()));
+					structureService.addPackage((Package) artifact);
 				} else if (types.contains("Class")) {
-					Class newClass = new Class(item);
-					structureService.addClasses(newClass);
-					artifacts.add(newClass);
+					artifact = new Class(item);
+					((Class) artifact).setDependencies(driver, structureService.getPath());
+					structureService.addClasses((Class) artifact);
 				} else if (types.contains("Interface")) {
-					Interface newInterface = new Interface(item);
-					structureService.addInterfaces(newInterface);
-					artifacts.add(newInterface);
+					artifact = new Interface(item);
+					structureService.addInterfaces((Interface) artifact);
 				} else if (types.contains("Enum")) {
-					Enum newEnum = new Enum(item);
-					structureService.addEnums(newEnum);
-					artifacts.add(newEnum);
+					artifact = new Enum(item);
+					structureService.addEnums((Enum) artifact);
 				} else {
-					Annotation newAnnotation = new Annotation(item);
-					structureService.addAnnotations(newAnnotation);
-					artifacts.add(newAnnotation);
+					artifact = new Annotation(item);
+					structureService.addAnnotations((Annotation) artifact);
 				}
+
+				artifacts.add(artifact);
 			});
 		return artifacts;
 	}
@@ -158,7 +158,6 @@ public class AnalyseServiceImpl implements AnalyseService {
 			.forEach(item -> {
 				if (item.isTypeOf(DDDType.ENTITY)
 					|| item.isTypeOf(DDDType.VALUE_OBJECT)
-					|| item.isTypeOf(DDDType.SERVICE) 
 					|| item.isTypeOf(DDDType.REPOSITORY) 
 					|| item.isTypeOf(DDDType.FACTORY)) {
 					addDomain(item);
@@ -168,8 +167,7 @@ public class AnalyseServiceImpl implements AnalyseService {
 		structureService.getInterfaces().stream()
 			.parallel()
 			.forEach(item -> {
-				if (item.isTypeOf(DDDType.SERVICE)
-					|| item.isTypeOf(DDDType.REPOSITORY)
+				if (item.isTypeOf(DDDType.REPOSITORY)
 					|| item.isTypeOf(DDDType.FACTORY)) {
 					addDomain(item);
 				}

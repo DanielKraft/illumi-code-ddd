@@ -6,13 +6,16 @@ import org.neo4j.driver.v1.Record;
 import illumi.code.ddd.model.DDDFitness;
 import illumi.code.ddd.model.DDDType;
 
+import java.util.ArrayList;
+
 public abstract class Artifact {
 
 	private String name;
 	private String path;
-	
+
+
 	private String domain;
-	
+
 	private DDDType type;
 	private DDDFitness fitness;
 	

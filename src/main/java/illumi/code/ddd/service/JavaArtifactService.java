@@ -1,8 +1,12 @@
 package illumi.code.ddd.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import illumi.code.ddd.model.artifacts.*;
+import illumi.code.ddd.model.artifacts.Class;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
@@ -10,20 +14,37 @@ import org.neo4j.driver.v1.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import illumi.code.ddd.model.artifacts.Annotation;
-import illumi.code.ddd.model.artifacts.Class;
-import illumi.code.ddd.model.artifacts.Field;
-import illumi.code.ddd.model.artifacts.Interface;
-import illumi.code.ddd.model.artifacts.Method;
-
 public class JavaArtifactService {
-	
+
+	private static final String QUERY_DEPENDENCIES = "MATCH (artifact:Java)-[:DEPENDS_ON]->(dependency:Java) WHERE artifact.fqn={path} AND dependency.fqn CONTAINS {rootPath} RETURN dependency.fqn as dependencies";
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(JavaArtifactService.class);
-	
+
+
 	private JavaArtifactService() {
 		throw new IllegalStateException("JavaArtifactService class");
 	}
-	
+
+	public static List<String> getDependencies(String rootPath, String path, Driver driver) {
+		try ( Session session = driver.session() ) {
+			Map<String, Object> params = new HashMap<>();
+			params.put("rootPath", rootPath);
+			params.put("path", path);
+			StatementResult result = session.run( QUERY_DEPENDENCIES, params);
+
+			ArrayList<String> dependencies = new ArrayList<>();
+
+			result.stream()
+				.parallel()
+				.forEach(item -> dependencies.add(item.get("dependencies").asString()));
+
+			return dependencies;
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+		return new ArrayList<>();
+	}
+
 	public static List<Field> getFields(String path, Driver driver, String query) {
     	try ( Session session = driver.session() ) {
     		StatementResult result = session.run( query, Values.parameters( "path", path ) );

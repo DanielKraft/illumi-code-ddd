@@ -3,7 +3,6 @@ package illumi.code.ddd.service.analyse;
 import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.artifacts.Artifact;
 import illumi.code.ddd.model.artifacts.Class;
-import illumi.code.ddd.model.artifacts.Field;
 import illumi.code.ddd.model.artifacts.Package;
 import illumi.code.ddd.service.StructureService;
 
@@ -20,11 +19,12 @@ public class PackageAnalyseService {
 
     public void setAggregateRoot() {
         if (isDomain()) {
-            ArrayList<Artifact> candidates = getAggregateRootCandidates();
+            ArrayList<Class> candidates = getAggregateRootCandidates();
             if (candidates.size() == 1) {
                 candidates.get(0).setType(DDDType.AGGREGATE_ROOT);
             } else {
                 for (Artifact artifact : candidates) {
+                    System.out.println( module.getName() + " " + artifact.getName());
                     if (structureService.getDomains().contains(artifact.getName().toLowerCase())) {
                         artifact.setType(DDDType.AGGREGATE_ROOT);
                     }
@@ -37,64 +37,56 @@ public class PackageAnalyseService {
         return structureService.getDomains().contains(module.getName());
     }
 
-    private ArrayList<Artifact> getEntities() {
-        ArrayList<Artifact> entities = new ArrayList<>();
+    private ArrayList<Class> getAggregateRootCandidates() {
+        ArrayList<Class> entities = getEntities();
+        setUsed(entities);
+        if (!entities.isEmpty()) {
+            return getEntityWithMinimalDependencies(entities);
+        } else {
+            return new ArrayList<>();
+        }
+    }
 
-        for (Artifact artifact : module.getConataints()) {
+    private ArrayList<Class> getEntities() {
+        ArrayList<Class> entities = new ArrayList<>();
+
+        for (Artifact artifact : module.getContains()) {
             if (artifact.isTypeOf(DDDType.ENTITY)) {
-                entities.add(artifact);
+                entities.add((Class) artifact);
             }
         }
 
         return entities;
     }
 
-    private ArrayList<Artifact> getAggregateRootCandidates() {
-        ArrayList<Artifact> entities = getEntities();
-        if (!entities.isEmpty()) {
-            ArrayList<Integer> dependencies = getDependencies(entities);
-            return getEntityWithMinmalDependencies(entities, dependencies);
-        } else {
-            return new ArrayList<>();
-        }
-    }
-
-    private ArrayList<Integer> getDependencies(ArrayList<Artifact> entities) {
-        ArrayList<Integer> dependencies = new ArrayList<>();
+    private void setUsed(ArrayList<Class> entities) {
         entities.stream()
-                .parallel()
-                .forEachOrdered(artifact -> dependencies.add(countDependencies(entities, artifact)));
-        return dependencies;
-    }
-
-    private Integer countDependencies(ArrayList<Artifact> entities, Artifact artifact) {
-        int ctr = 0;
-        for (Artifact entity : entities) {
-            if (entity != artifact) {
-                for (Field field : ((Class) entity).getFields()) {
-                    if (field.getType().equals(artifact.getPath())) {
-                        ctr++;
+            .parallel()
+            .forEach(artifact -> {
+                for (Class entity: entities) {
+                    if (entity != artifact && entity.getDependencies().contains(artifact.getPath())) {
+                        artifact.addUsed(entity.getPath());
                     }
                 }
-            }
-        }
-        return ctr;
+            });
     }
 
-    private ArrayList<Artifact> getEntityWithMinmalDependencies(ArrayList<Artifact> entities, ArrayList<Integer> dependencies) {
-        ArrayList<Artifact> result = new ArrayList<>();
+    private ArrayList<Class> getEntityWithMinimalDependencies(ArrayList<Class> entities) {
+        ArrayList<Class> result = new ArrayList<>();
         result.add(entities.get(0));
 
-        int highscore = dependencies.get(0);
-        for (int i = 1; i < dependencies.size(); i++) {
-            if (dependencies.get(i) == highscore) {
+        int highscore = entities.get(0).getUsed().size();
+
+        for (int i = 1; i < entities.size(); i++) {
+            if (entities.get(i).getUsed().size() == highscore) {
                 result.add(entities.get(i));
-            } else if (dependencies.get(i) < highscore) {
-                highscore = dependencies.get(i);
+            } else if (entities.get(i).getUsed().size() < highscore) {
+                highscore = entities.get(i).getUsed().size();
                 result = new ArrayList<>();
                 result.add(entities.get(i));
             }
         }
+
         return result;
     }
 }

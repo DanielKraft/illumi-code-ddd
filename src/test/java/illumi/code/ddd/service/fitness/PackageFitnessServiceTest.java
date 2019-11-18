@@ -48,10 +48,10 @@ class PackageFitnessServiceTest {
 		PackageFitnessService service = new PackageFitnessService(module, structureService);
 		final DDDFitness result = service.evaluate();
 		
-		assertAll(	() -> assertEquals(37.5, 	result.calculateFitness(), 				"Fitness"),
-				 	() -> assertEquals(DDDRating.F, 	result.getscore(), 						"Rating"),
-				 	() -> assertEquals(8, 		result.getNumberOfCriteria(), 			"Total Criteria"),
-				 	() -> assertEquals(3, 		result.getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
+		assertAll(	() -> assertEquals(40.0, 	result.calculateFitness(), 				"Fitness"),
+				 	() -> assertEquals(DDDRating.D, 	result.getscore(), 						"Rating"),
+				 	() -> assertEquals(10, 	result.getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(4, 		result.getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
 				 	() -> assertEquals(2, 		result.getIssues().size(), 				"#Issues"));
 	}
 	
@@ -64,17 +64,17 @@ class PackageFitnessServiceTest {
 		aggregate.setType(DDDType.AGGREGATE_ROOT);
 		
 		Package module = new Package("domain1", "de.test.domain.domain1");
-		module.addConataints(entity);
-		module.addConataints(aggregate);
+		module.addContains(entity);
+		module.addContains(aggregate);
 
 		PackageFitnessService service = new PackageFitnessService(module, structureService);
 		final DDDFitness result = service.evaluate();
 		
-		assertAll(	() -> assertEquals(100.0, 	result.calculateFitness(), 				"Fitness"),
-				 	() -> assertEquals(DDDRating.A,		result.getscore(), 						"Rating"),
-				 	() -> assertEquals(8, 		result.getNumberOfCriteria(), 			"#Total Criteria"),
-				 	() -> assertEquals(8, 		result.getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
-				 	() -> assertEquals(0, 		result.getIssues().size(), 				"#Issues"));
+		assertAll(	() -> assertEquals(100.0, 	result.calculateFitness(), 					"Fitness"),
+				 	() -> assertEquals(DDDRating.A,		result.getscore(), 							"Rating"),
+				 	() -> assertEquals(10, 	result.getNumberOfCriteria(), 				"#Total Criteria"),
+				 	() -> assertEquals(10, 	result.getNumberOfFulfilledCriteria(),		"#Fulfilled Criteria"),
+				 	() -> assertEquals(0, 		result.getIssues().size(), 					"#Issues"));
 	}
 
 	@Test
@@ -86,17 +86,17 @@ class PackageFitnessServiceTest {
 		infra.setType(DDDType.INFRASTRUCTURE);
 
 		Package module = new Package("domain1", "de.test.domain.domain1");
-		module.addConataints(entity);
-		module.addConataints(infra);
+		module.addContains(entity);
+		module.addContains(infra);
 
 		PackageFitnessService service = new PackageFitnessService(module, structureService);
 		final DDDFitness result = service.evaluate();
 
-		assertAll(	() -> assertEquals(25.0, 	result.calculateFitness(), 				"Fitness"),
-				() -> assertEquals(DDDRating.F,		result.getscore(), 						"Rating"),
-				() -> assertEquals(8, 		result.getNumberOfCriteria(), 			"#Total Criteria"),
-				() -> assertEquals(2, 		result.getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
-				() -> assertEquals(2, 		result.getIssues().size(), 				"#Issues"));
+		assertAll(	() -> assertEquals(20.0, 	result.calculateFitness(), 				"Fitness"),
+					() -> assertEquals(DDDRating.E,		result.getscore(), 						"Rating"),
+					() -> assertEquals(10, 	result.getNumberOfCriteria(), 			"#Total Criteria"),
+					() -> assertEquals(2, 		result.getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
+					() -> assertEquals(2, 		result.getIssues().size(), 				"#Issues"));
 	}
 
 	@Test
@@ -108,17 +108,17 @@ class PackageFitnessServiceTest {
 		app.setType(DDDType.APPLICATION_SERVICE);
 
 		Package module = new Package("domain1", "de.test.domain.domain1");
-		module.addConataints(entity);
-		module.addConataints(app);
+		module.addContains(entity);
+		module.addContains(app);
 
 		PackageFitnessService service = new PackageFitnessService(module, structureService);
 		final DDDFitness result = service.evaluate();
 
-		assertAll(	() -> assertEquals(25.0, 	result.calculateFitness(), 				"Fitness"),
-				() -> assertEquals(DDDRating.F,		result.getscore(), 						"Rating"),
-				() -> assertEquals(8, 		result.getNumberOfCriteria(), 			"#Total Criteria"),
-				() -> assertEquals(2, 		result.getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
-				() -> assertEquals(2, 		result.getIssues().size(), 				"#Issues"));
+		assertAll(	() -> assertEquals(20.0, 	result.calculateFitness(), 				"Fitness"),
+					() -> assertEquals(DDDRating.E,		result.getscore(), 						"Rating"),
+					() -> assertEquals(10, 	result.getNumberOfCriteria(), 			"#Total Criteria"),
+					() -> assertEquals(2, 		result.getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
+					() -> assertEquals(2, 		result.getIssues().size(), 				"#Issues"));
 	}
 
 	@Test
@@ -130,17 +130,17 @@ class PackageFitnessServiceTest {
 		controller.setType(DDDType.CONTROLLER);
 
 		Package module = new Package("domain1", "de.test.domain.domain1");
-		module.addConataints(entity);
-		module.addConataints(controller);
+		module.addContains(entity);
+		module.addContains(controller);
 
 		PackageFitnessService service = new PackageFitnessService(module, structureService);
 		final DDDFitness result = service.evaluate();
 
-		assertAll(	() -> assertEquals(25.0, 	result.calculateFitness(), 				"Fitness"),
-				() -> assertEquals(DDDRating.F,		result.getscore(), 						"Rating"),
-				() -> assertEquals(8, 		result.getNumberOfCriteria(), 			"#Total Criteria"),
-				() -> assertEquals(2, 		result.getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
-				() -> assertEquals(2, 		result.getIssues().size(), 				"#Issues"));
+		assertAll(	() -> assertEquals(20.0, 	result.calculateFitness(), 				"Fitness"),
+					() -> assertEquals(DDDRating.E,		result.getscore(), 						"Rating"),
+					() -> assertEquals(10, 	result.getNumberOfCriteria(), 			"#Total Criteria"),
+					() -> assertEquals(2, 		result.getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
+					() -> assertEquals(2, 		result.getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test
@@ -149,15 +149,15 @@ class PackageFitnessServiceTest {
 		infra.setType(DDDType.INFRASTRUCTURE);
 		
 		Package module = new Package("infrastructure", "de.test.infrastructure");
-		module.addConataints(infra);
+		module.addContains(infra);
 
 		PackageFitnessService service = new PackageFitnessService(module, structureService);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(100.0, 	result.calculateFitness(), 				"Fitness"),
 				 	() -> assertEquals(DDDRating.A,		result.getscore(), 						"Rating"),
-				 	() -> assertEquals(4, 		result.getNumberOfCriteria(), 			"#Total Criteria"),
-				 	() -> assertEquals(4, 		result.getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
+				 	() -> assertEquals(5, 		result.getNumberOfCriteria(), 			"#Total Criteria"),
+				 	() -> assertEquals(5, 		result.getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
 				 	() -> assertEquals(0, 		result.getIssues().size(), 				"#Issues"));
 	}
 	
@@ -170,15 +170,15 @@ class PackageFitnessServiceTest {
 		entity.setType(DDDType.ENTITY);
 		
 		Package module = new Package("infra", "de.test.infra");
-		module.addConataints(controller);
-		module.addConataints(entity);
+		module.addContains(controller);
+		module.addContains(entity);
 
 		PackageFitnessService service = new PackageFitnessService(module, structureService);
 		final DDDFitness result = service.evaluate();
 		
-		assertAll(	() -> assertEquals(25.0, 	result.calculateFitness(), 				"Fitness"),
-				 	() -> assertEquals(DDDRating.F,		result.getscore(), 						"Rating"),
-				 	() -> assertEquals(4, 		result.getNumberOfCriteria(), 			"#Total Criteria"),
+		assertAll(	() -> assertEquals(20.0, 	result.calculateFitness(), 				"Fitness"),
+				 	() -> assertEquals(DDDRating.E,		result.getscore(), 						"Rating"),
+				 	() -> assertEquals(5, 		result.getNumberOfCriteria(), 			"#Total Criteria"),
 				 	() -> assertEquals(1, 		result.getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
 				 	() -> assertEquals(2, 		result.getIssues().size(), 				"#Issues"));
 	}
@@ -189,15 +189,15 @@ class PackageFitnessServiceTest {
 		app.setType(DDDType.APPLICATION_SERVICE);
 		
 		Package module = new Package("application", "de.test.application");
-		module.addConataints(app);
+		module.addContains(app);
 
 		PackageFitnessService service = new PackageFitnessService(module, structureService);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(100.0, 	result.calculateFitness(), 				"Fitness"),
 				 	() -> assertEquals(DDDRating.A,		result.getscore(), 						"Rating"),
-				 	() -> assertEquals(4, 		result.getNumberOfCriteria(), 			"#Total Criteria"),
-				 	() -> assertEquals(4, 		result.getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
+				 	() -> assertEquals(5, 		result.getNumberOfCriteria(), 			"#Total Criteria"),
+				 	() -> assertEquals(5, 		result.getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
 				 	() -> assertEquals(0, 		result.getIssues().size(), 				"#Issues"));
 	}
 	
@@ -210,15 +210,15 @@ class PackageFitnessServiceTest {
 		entity.setType(DDDType.ENTITY);
 		
 		Package module = new Package("app", "de.test.app");
-		module.addConataints(entity);
-		module.addConataints(app);
+		module.addContains(entity);
+		module.addContains(app);
 
 		PackageFitnessService service = new PackageFitnessService(module, structureService);
 		final DDDFitness result = service.evaluate();
 		
-		assertAll(	() -> assertEquals(25.0, 	result.calculateFitness(), 				"Fitness"),
-				 	() -> assertEquals(DDDRating.F,		result.getscore(), 						"Rating"),
-				 	() -> assertEquals(4, 		result.getNumberOfCriteria(), 			"#Total Criteria"),
+		assertAll(	() -> assertEquals(20.0, 	result.calculateFitness(), 				"Fitness"),
+				 	() -> assertEquals(DDDRating.E,		result.getscore(), 						"Rating"),
+				 	() -> assertEquals(5, 		result.getNumberOfCriteria(), 			"#Total Criteria"),
 				 	() -> assertEquals(1, 		result.getNumberOfFulfilledCriteria(),	"#Fulfilled Criteria"),
 				 	() -> assertEquals(2, 		result.getIssues().size(), 				"#Issues"));
 	}

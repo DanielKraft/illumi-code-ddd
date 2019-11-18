@@ -127,7 +127,7 @@ public class StructureService {
 		for (Artifact artifact : artifacts) {
 			JSONObject json = artifact.toJSON();
 			if (artifact instanceof Package) {
-				json.put("contains", convertPackage((ArrayList<Artifact>) ((Package) artifact).getConataints()));
+				json.put("contains", convertPackage((ArrayList<Artifact>) ((Package) artifact).getContains()));
 			}
 			array.put(json);
 		}

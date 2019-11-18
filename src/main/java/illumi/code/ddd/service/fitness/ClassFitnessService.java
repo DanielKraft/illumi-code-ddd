@@ -18,6 +18,7 @@ public class ClassFitnessService {
 
     private static final String REPOSITORY = "Repository";
     private static final String FACTORY = "Factory";
+    private static final String DOMAIN = "domain.%s.model.";
 
     private Class artifact;
     private StructureService structureService;
@@ -70,7 +71,7 @@ public class ClassFitnessService {
     private void evaluateEntity() {
         LOGGER.info("DDD:ENTITY:{}", artifact.getName());
 
-        evaluatePath("domain." + artifact.getDomain() + ".model.",
+        evaluatePath(String.format(DOMAIN, artifact.getDomain()),
                 String.format("The Entity '%s' is not placed at 'domain.%s.model'", artifact.getName(), artifact.getDomain()));
 
         Field.evaluateEntity(artifact, structureService, fitness);
@@ -104,7 +105,7 @@ public class ClassFitnessService {
     private void evaluateValueObject() {
         LOGGER.info("DDD:VALUE_OBJECT:{}", artifact.getName());
 
-        evaluatePath("domain." + artifact.getDomain() + ".model.",
+        evaluatePath(String.format(DOMAIN, artifact.getDomain()),
                 String.format("The Value Object '%s' is not placed at 'domain.%s.model'", artifact.getName(), artifact.getDomain()));
 
         // Must have criteria of Entity: no ID
@@ -160,7 +161,7 @@ public class ClassFitnessService {
     private ArrayList<Artifact> getDomainModule(String domain) {
         for (Package module : structureService.getPackages()) {
             if (module.getName().contains(domain)) {
-                return (ArrayList<Artifact>) module.getConataints();
+                return (ArrayList<Artifact>) module.getContains();
             }
         }
         return new ArrayList<>();
@@ -169,7 +170,7 @@ public class ClassFitnessService {
     private void evaluateDomainEvent() {
         LOGGER.info("DDD:DOMAIN_EVENT:{}", artifact.getName());
 
-        evaluatePath("domain." + artifact.getDomain() + ".model.",
+        evaluatePath(String.format(DOMAIN, artifact.getDomain()),
                 String.format("The Domain Event '%s' is not placed at 'domain.%s.model'", artifact.getName(), artifact.getDomain()));
 
         Field.evaluateDomainEvent(artifact, fitness);
@@ -179,7 +180,7 @@ public class ClassFitnessService {
         LOGGER.info("DDD:REPOSITORY:{}", artifact.getName());
         evaluateRepositoryName();
 
-        evaluatePath("domain." + artifact.getDomain() + ".model.impl.",
+        evaluatePath(String.format(DOMAIN + "impl.", artifact.getDomain()),
                 String.format("The repository '%s' is not placed at 'domain.%s.model.impl'", artifact.getName(), artifact.getDomain()));
 
         evaluateRepositoryInterfaces();
@@ -209,7 +210,7 @@ public class ClassFitnessService {
 
         evaluateFactoryName();
 
-        evaluatePath("domain." + artifact.getDomain() + ".model.impl.",
+        evaluatePath(String.format(DOMAIN + "impl.", artifact.getDomain()),
                 String.format("The factory '%s' is not placed at 'domain.%s.model.impl'", artifact.getName(), artifact.getDomain()));
 
         evaluateFactoryInterfaces();

@@ -53,6 +53,7 @@ public class DDDFitness {
 	public void add(DDDFitness fitness) {
 		this.numberOfCriteria += fitness.numberOfCriteria;
 		this.numberOfFulfilledCriteria += fitness.numberOfFulfilledCriteria;
+		this.issues.addAll(fitness.issues);
 	}
 	
 	public double calculateFitness() {
@@ -80,7 +81,8 @@ public class DDDFitness {
 				.put("criteria", new JSONObject()
 						.put("total", numberOfCriteria)
 						.put("fulfilled", numberOfFulfilledCriteria))
-				.put("fitness", calculateFitness());
+				.put("fitness", calculateFitness())
+				.put("#Issues", issues.size());
 	}
 
 	public List<DDDIssue> getIssues() {

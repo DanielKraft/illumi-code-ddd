@@ -33,13 +33,13 @@ class MetricServiceImplTest {
 		entity.setType(DDDType.ENTITY);
 		entity.setDomain("domain");
 		entity.setFitness(new DDDFitness(15, 9));
-		domain.addConataints(entity);
+		domain.addContains(entity);
 		structure.addClasses(entity);
 		Class repo = new Class("EntityRepository", "de.test.domain.EntityRepository");
 		repo.setType(DDDType.REPOSITORY);
 		repo.setDomain("domain");
 		repo.setFitness(new DDDFitness(5, 4));
-		domain.addConataints(repo);
+		domain.addContains(repo);
 		structure.addClasses(repo);
 		
 		Package infrastructure = new Package("infrastructure", "de.test.infrastructure");
@@ -49,7 +49,7 @@ class MetricServiceImplTest {
 		Class contoller = new Class("EntityController", "de.test.infrastructure.EntityController");
 		contoller.setType(DDDType.CONTROLLER);
 		contoller.setFitness(new DDDFitness(12, 7));
-		infrastructure.addConataints(contoller);
+		infrastructure.addContains(contoller);
 		structure.addClasses(contoller);
 		
 		ArrayList<Artifact> data = new ArrayList<>();
@@ -61,16 +61,17 @@ class MetricServiceImplTest {
 		service  = new MetricServiceImpl();
 		service.setStructureService(structure);
 	}
-	
+
 	@Test
 	void testGetMetric() {
 		final JSONObject expected = new JSONObject()
 				.put("metric", new JSONObject()
-						.put("score", DDDRating.D)
+						.put("score", DDDRating.C)
 						.put("criteria", new JSONObject()
 								.put("total", 40)
 								.put("fulfilled", 25))
-						.put("fitness", 62.5))
+						.put("fitness", 62.5)
+						.put("#Issues", 0))
 				.put("DDD", new JSONObject()
 				        .put("#APPLICATION_SERVICE",	0)
 				        .put("#VALUE_OBJECT", 			0)

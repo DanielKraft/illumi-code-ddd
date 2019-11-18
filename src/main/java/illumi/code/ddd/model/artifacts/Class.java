@@ -34,6 +34,9 @@ public class Class extends Artifact {
 	private Class superClass;
 	
 	private ArrayList<Annotation> annotations;
+
+	private ArrayList<String> dependencies;
+	private ArrayList<String> used;
 		
 	public Class(Record record) {
 		super(record, null);
@@ -56,6 +59,8 @@ public class Class extends Artifact {
 		this.methods = new ArrayList<>();
 		this.implInterfaces = new ArrayList<>();
 		this.annotations = new ArrayList<>();
+		this.dependencies = new ArrayList<>();
+		this.used = new ArrayList<>();
 	}
 
 	public List<Field> getFields() {
@@ -112,6 +117,26 @@ public class Class extends Artifact {
 	
 	public void setAnnotations(Driver driver, List<Annotation> annotations) {
 		this.annotations = (ArrayList<Annotation>) JavaArtifactService.getAnnotations(getPath(), driver, QUERY_CLASS_PARENT_ANNOTATIONS, QUERY_CLASS_CHILD_ANNOTATIONS, annotations);
+	}
+
+	public ArrayList<String> getDependencies() {
+		return dependencies;
+	}
+
+	public void setDependencies(Driver driver, String path) {
+		this.dependencies = (ArrayList<String>) JavaArtifactService.getDependencies(path, getPath(), driver);
+	}
+
+	public void addDependencies(String path) {
+		this.dependencies.add(path);
+	}
+
+	public ArrayList<String> getUsed() {
+		return used;
+	}
+
+	public void addUsed(String path) {
+		this.used.add(path);
 	}
 
 	public void setType(StructureService structureService) {

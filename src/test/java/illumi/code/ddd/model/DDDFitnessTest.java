@@ -1,5 +1,6 @@
 package illumi.code.ddd.model;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.json.JSONObject;
@@ -14,11 +15,11 @@ class DDDFitnessTest {
 		fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
 		
 		JSONObject result = fitness.summary();
-		
-		assertEquals(DDDRating.A, result.get("score"));
-		assertEquals(2, ((JSONObject) result.get("criteria")).get("total"));
-		assertEquals(2, ((JSONObject) result.get("criteria")).get("fulfilled"));
-		assertEquals(100.0, result.get("fitness"));
+		assertAll("Should find an aggregate root",
+				() -> assertEquals(DDDRating.A, 	result.get("score"), 									"Score"),
+				() -> assertEquals(3, 		((JSONObject) result.get("criteria")).get("total"), 	"Total"),
+				() -> assertEquals(3, 		((JSONObject) result.get("criteria")).get("fulfilled"), "Fulfilled"),
+				() -> assertEquals(100.0, 	result.get("fitness"), 									"Fitness"));
 	}
 	
 	@Test
@@ -45,7 +46,7 @@ class DDDFitnessTest {
 		
 		JSONObject result = fitness.summary();
 		
-		assertEquals(DDDRating.D, result.get("score"));
+		assertEquals(DDDRating.C, result.get("score"));
 		assertEquals(10, ((JSONObject) result.get("criteria")).get("total"));
 		assertEquals(6, ((JSONObject) result.get("criteria")).get("fulfilled"));
 		assertEquals(60.0, result.get("fitness"));
@@ -80,16 +81,7 @@ class DDDFitnessTest {
 	
 	@Test
 	void testGetScoreAWith100Procent() {
-		DDDFitness fitness = new DDDFitness(10, 10);
-		
-		DDDRating result = fitness.getscore();
-		
-		assertEquals(DDDRating.A, result);
-	}
-	
-	@Test
-	void testGetScoreAWith90Procent() {
-		DDDFitness fitness = new DDDFitness(10, 9);
+		DDDFitness fitness = new DDDFitness(100, 100);
 		
 		DDDRating result = fitness.getscore();
 		
@@ -98,7 +90,16 @@ class DDDFitnessTest {
 	
 	@Test
 	void testGetScoreAWith95Procent() {
-		DDDFitness fitness = new DDDFitness(20, 19);
+		DDDFitness fitness = new DDDFitness(100, 95);
+		
+		DDDRating result = fitness.getscore();
+		
+		assertEquals(DDDRating.A, result);
+	}
+	
+	@Test
+	void testGetScoreAWith90Procent() {
+		DDDFitness fitness = new DDDFitness(100, 90);
 		
 		DDDRating result = fitness.getscore();
 		
@@ -113,19 +114,19 @@ class DDDFitnessTest {
 		
 		assertEquals(DDDRating.B, result);
 	}
-	
+
 	@Test
-	void testGetScoreBWith80Procent() {
-		DDDFitness fitness = new DDDFitness(100, 80);
-		
+	void testGetScoreBAWith85Procent() {
+		DDDFitness fitness = new DDDFitness(100, 85);
+
 		DDDRating result = fitness.getscore();
-		
+
 		assertEquals(DDDRating.B, result);
 	}
 	
 	@Test
-	void testGetScoreBAWith85Procent() {
-		DDDFitness fitness = new DDDFitness(100, 85);
+	void testGetScoreBWith80Procent() {
+		DDDFitness fitness = new DDDFitness(100, 80);
 		
 		DDDRating result = fitness.getscore();
 		
@@ -151,8 +152,8 @@ class DDDFitnessTest {
 	}
 	
 	@Test
-	void testGetScoreCAWith75Procent() {
-		DDDFitness fitness = new DDDFitness(100, 75);
+	void testGetScoreCAWith60Procent() {
+		DDDFitness fitness = new DDDFitness(100, 60);
 		
 		DDDRating result = fitness.getscore();
 		
@@ -160,53 +161,35 @@ class DDDFitnessTest {
 	}
 	
 	@Test
-	void testGetScoreDWith69Procent() {
-		DDDFitness fitness = new DDDFitness(100, 69);
-		
-		DDDRating result = fitness.getscore();
-		
-		assertEquals(DDDRating.D, result);
-	}
-	
-	@Test
-	void testGetScoreDWith60Procent() {
-		DDDFitness fitness = new DDDFitness(100, 60);
-		
-		DDDRating result = fitness.getscore();
-		
-		assertEquals(DDDRating.D, result);
-	}
-	
-	@Test
-	void testGetScoreDAWith65Procent() {
-		DDDFitness fitness = new DDDFitness(100, 65);
-		
-		DDDRating result = fitness.getscore();
-		
-		assertEquals(DDDRating.D, result);
-	}
-	
-	@Test
-	void testGetScoreEWith59Procent() {
+	void testGetScoreDWith59Procent() {
 		DDDFitness fitness = new DDDFitness(100, 59);
 		
 		DDDRating result = fitness.getscore();
 		
-		assertEquals(DDDRating.E, result);
+		assertEquals(DDDRating.D, result);
 	}
 	
 	@Test
-	void testGetScoreEWith50Procent() {
+	void testGetScoreDWith50Procent() {
 		DDDFitness fitness = new DDDFitness(100, 50);
 		
 		DDDRating result = fitness.getscore();
 		
-		assertEquals(DDDRating.E, result);
+		assertEquals(DDDRating.D, result);
 	}
 	
 	@Test
-	void testGetScoreEAWith55Procent() {
-		DDDFitness fitness = new DDDFitness(100, 55);
+	void testGetScoreDAWith40Procent() {
+		DDDFitness fitness = new DDDFitness(100, 40);
+		
+		DDDRating result = fitness.getscore();
+		
+		assertEquals(DDDRating.D, result);
+	}
+	
+	@Test
+	void testGetScoreEWith39Procent() {
+		DDDFitness fitness = new DDDFitness(100, 39);
 		
 		DDDRating result = fitness.getscore();
 		
@@ -214,8 +197,26 @@ class DDDFitnessTest {
 	}
 	
 	@Test
-	void testGetScoreEWith49Procent() {
-		DDDFitness fitness = new DDDFitness(100, 49);
+	void testGetScoreEWith30Procent() {
+		DDDFitness fitness = new DDDFitness(100, 30);
+		
+		DDDRating result = fitness.getscore();
+		
+		assertEquals(DDDRating.E, result);
+	}
+	
+	@Test
+	void testGetScoreEAWith25Procent() {
+		DDDFitness fitness = new DDDFitness(100, 25);
+		
+		DDDRating result = fitness.getscore();
+		
+		assertEquals(DDDRating.E, result);
+	}
+	
+	@Test
+	void testGetScoreEWith19Procent() {
+		DDDFitness fitness = new DDDFitness(100, 19);
 		
 		DDDRating result = fitness.getscore();
 		
