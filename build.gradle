@@ -18,7 +18,7 @@ sonarqube {
   }
 }
 
-version "0.1"
+version "0.5"
 group "illumi.code.ddd"
 
 repositories {
