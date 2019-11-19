@@ -38,24 +38,23 @@ public class Field {
 		return type;
 	}
 	public static void evaluateEntity(Class artifact, StructureService structureService, DDDFitness fitness) {
-		boolean containtsId = false;
+		boolean containsId = false;
 		for (Field field : artifact.getFields()) {
 			if (isId(field)) {
-				containtsId = true;
+				containsId = true;
 			}
-			
+
+			Method.evaluateEntity(artifact, field, fitness);
+
 			// Is type of field Entity or Value Object?
-			if (field.getType().contains(structureService.getPath())) {
-				fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-			} else {
-				fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The Field '%s' of the Entity '%s' is not a type of an Entity or a Value Object", field.getName(), artifact.getName()));
-			}
+			fitness.addIssue(field.getType().contains(structureService.getPath()), DDDIssueType.MAJOR,
+					String.format("The Field '%s' of the Entity '%s' is not a type of an Entity or a Value Object", field.getName(), artifact.getName()));
 		}
 		
-		if (containtsId) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
+		if (containsId) {
+			fitness.addSuccessfulCriteria(DDDIssueType.CRITICAL);
 		} else if (artifact.getSuperClass() == null) {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The Entity '%s' does not containts an ID.", artifact.getName()));
+			fitness.addFailedCriteria(DDDIssueType.CRITICAL, String.format("The Entity '%s' does not contains an ID.", artifact.getName()));
 		}
 	}
 	
@@ -64,71 +63,57 @@ public class Field {
 	}
 	
 	public static void evaluateValueObject(Class artifact, StructureService structureService, DDDFitness fitness) {
-		boolean containtsId = false;
+		boolean containsId = false;
 		for (Field field : artifact.getFields()) {
 			if (Field.isId(field)) {
-				containtsId = true;
+				containsId = true;
 			}
 			
 			// Is type of field Value Object or standard type?
-			if (field.getType().contains(structureService.getPath()) || field.getType().contains("java.lang.")) {
-				fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
-			} else {
-				fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The Field '%s' of Value Object '%s' is not a Value Object or a standard type.", field.getName(), artifact.getName()));
-			}
+			fitness.addIssue(field.getType().contains(structureService.getPath()) || field.getType().contains("java.lang."), DDDIssueType.MAJOR,
+					String.format("The Field '%s' of Value Object '%s' is not a Value Object or a standard type.", field.getName(), artifact.getName()));
 			
 			// Has the field a getter and an immutable setter?
 			Method.evaluateValueObject(artifact, field, fitness);
 		}
-		
-		if (!containtsId) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The Value Object '%s' containts an ID.", artifact.getName()));
-		}
+
+		fitness.addIssue(!containsId, DDDIssueType.BLOCKER,
+				String.format("The Value Object '%s' contains an ID.", artifact.getName()));
 	}
 	
-	public static void evaluateDomainEvent(Class artifact, StructureService structureService, DDDFitness fitness) {
-		int ctr = 0;
-		boolean containtsId = false;
+	public static void evaluateDomainEvent(Class artifact, DDDFitness fitness) {
+		boolean containsTime = false;
+		boolean containsId = false;
 		
 		for (Field field : artifact.getFields()) {
 			if (field.getName().contains("time") 
 				|| field.getName().contains("date") 
-				|| field.getType().contains("java.time.")
-				|| field.getType().contains(structureService.getPath())) {
-				fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-				ctr++;
+				|| field.getType().contains("java.time.")) {
+				containsTime = true;
 				Method.evaluateDomainEvent(artifact, field, fitness);
-				if (field.getName().toUpperCase().endsWith("ID")) {
-					containtsId = true;
-				}
+			} else if (field.getName().toUpperCase().endsWith("ID")) {
+				containsId = true;
+				Method.evaluateDomainEvent(artifact, field, fitness);
 			}
 		}
-		
-		if (containtsId) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The domain event '%s' does not containts an ID.", artifact.getName()));
-		}
-		
-		if (ctr == 0) {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The domain event '%s' does not containts any fields.", artifact.getName()));
-		}
+
+		fitness.addIssue(containsId, DDDIssueType.MAJOR,
+				String.format("The domain event '%s' does not contains an ID.", artifact.getName()));
+
+		fitness.addIssue(containsTime, DDDIssueType.MAJOR,
+				String.format("The domain event '%s' does not contains any timestamp or date.", artifact.getName()));
 	}
 	
 	public static void evaluateFactory(String name, List<Field> fields, DDDFitness fitness) {
-		boolean containtsRepo = false;
+		boolean containsRepo = false;
 		for (Field field : fields) {
 			if (field.getType().contains("Repository")) {
-				containtsRepo = true;
+				containsRepo = true;
+				break;
 			}
 		}
-		
-		if (containtsRepo) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The factory interface '%s' does not containts a repository as field.", name));
-		}
+
+		fitness.addIssue(containsRepo, DDDIssueType.MAJOR,
+				String.format("The factory interface '%s' does not contains a repository as field.", name));
 	}
 }

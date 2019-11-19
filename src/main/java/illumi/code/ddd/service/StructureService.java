@@ -51,10 +51,6 @@ public class StructureService {
 		this.path = split[split.length-1] + ".";
 	}
 
-	public List<Artifact> getStructure() {
-		return structure;
-	}
-
 	public void setStructure(List<Artifact> artifacts) {
 		this.structure = (ArrayList<Artifact>) artifacts;
 	}
@@ -85,7 +81,7 @@ public class StructureService {
 		this.classes.add(c);
 	}
 
-	public List<Interface> getInterfaces() {
+	List<Interface> getInterfaces() {
 		return interfaces;
 	}
 
@@ -93,11 +89,11 @@ public class StructureService {
 		this.interfaces.add(i);
 	}
 
-	public List<Enum> getEnums() {
+	List<Enum> getEnums() {
 		return enums;
 	}
 
-	public void addEnums(Enum e) {
+	void addEnums(Enum e) {
 		this.enums.add(e);
 	}
 
@@ -109,7 +105,7 @@ public class StructureService {
 		this.annotations.add(a);
 	}
 	
-	public List<Artifact> getAllArtifacts() {
+	List<Artifact> getAllArtifacts() {
 		ArrayList<Artifact> all = new ArrayList<>();
 		
 		all.addAll(this.packages);
@@ -122,7 +118,7 @@ public class StructureService {
 		return all;
 	}
 	
-	public JSONArray getJOSN() {
+	JSONArray getJOSN() {
 		return convertPackage(structure);
 	}
 	
@@ -131,7 +127,7 @@ public class StructureService {
 		for (Artifact artifact : artifacts) {
 			JSONObject json = artifact.toJSON();
 			if (artifact instanceof Package) {
-				json.put("contains", convertPackage((ArrayList<Artifact>) ((Package) artifact).getConataints()));
+				json.put("contains", convertPackage((ArrayList<Artifact>) ((Package) artifact).getContains()));
 			}
 			array.put(json);
 		}

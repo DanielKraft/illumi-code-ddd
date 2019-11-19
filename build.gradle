@@ -6,7 +6,7 @@ plugins {
     id "com.github.johnrengelman.shadow" version "4.0.2"
     id "application"
     id "jacoco"
-  id "org.sonarqube" version "2.8"
+    id "org.sonarqube" version "2.8"
 }
 
 sonarqube {
@@ -15,12 +15,10 @@ sonarqube {
     property "sonar.organization", "danielkraft"
     property "sonar.host.url", "https://sonarcloud.io"
     property "sonar.login", "d9b98f5dd5bc24fab2356209e61700e7f14460bd"
-
-
   }
 }
 
-version "0.1"
+version "0.5"
 group "illumi.code.ddd"
 
 repositories {

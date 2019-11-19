@@ -3,10 +3,10 @@ package illumi.code.ddd.model.artifacts;
 import java.util.ArrayList;
 import java.util.List;
 
+import illumi.code.ddd.service.analyse.PackageAnalyseService;
+import illumi.code.ddd.service.fitness.PackageFitnessService;
 import org.neo4j.driver.v1.Record;
 
-import illumi.code.ddd.model.DDDFitness;
-import illumi.code.ddd.model.DDDIssueType;
 import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.service.StructureService;
 
@@ -16,142 +16,36 @@ import illumi.code.ddd.service.StructureService;
  */
 public class Package extends Artifact {
 		
-	private ArrayList<Artifact> conataints;
+	private ArrayList<Artifact> contains;
 	
 	public Package(Record record) {
 		super(record, DDDType.MODULE);
 		
-		this.conataints = new ArrayList<>();
+		this.contains = new ArrayList<>();
 	}
 
 	public Package(String name, String path) {
 		super(name, path, DDDType.MODULE);
-		this.conataints = new ArrayList<>();
+		this.contains = new ArrayList<>();
 	}
 
-	public List<Artifact> getConataints() {
-		return conataints;
+	public List<Artifact> getContains() {
+		return contains;
 	}
 
-	public void setConataints(List<Artifact> conataints) {
-		this.conataints = (ArrayList<Artifact>) conataints;
+	public void setContains(List<Artifact> contains) {
+		this.contains = (ArrayList<Artifact>) contains;
 	}
 
-	public void addConataints(Artifact artifact) {
-		this.conataints.add(artifact);
+	public void addContains(Artifact artifact) {
+		this.contains.add(artifact);
 	}
 	
-	public void evaluate(StructureService structureService) {		
-		if (isDomainModule(structureService)) {
-			setFitness(evaluateDomainModule(structureService));
-		} else if (containsInfrastructure()) {
-			setFitness(evaluateInfrastructureModule(structureService));
-		} else if (containsApplication()) {
-			setFitness(evaluateApplicationModule(structureService));
-		} else {
-			setFitness(new DDDFitness().addFailedCriteria(DDDIssueType.INFO, String.format("The module '%s' is no DDD-Module.", getName())));
-		}
+	public void setAggregateRoot(StructureService structureService) {
+		new PackageAnalyseService(this, structureService).setAggregateRoot();
 	}
 
-	private boolean isDomainModule(StructureService structureService) {
-		return structureService.getDomains().contains(getName());
+	public void evaluate(StructureService structureService) {
+		setFitness(new PackageFitnessService(this, structureService).evaluate());
 	}
-
-	private DDDFitness evaluateDomainModule(StructureService structureService) {
-		DDDFitness fitness = new DDDFitness().addSuccessfulCriteria(DDDIssueType.MINOR);
-		if (getPath().contains(structureService.getPath() + "domain." + getName())) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The module '%s' is not a submodule of the module 'domain'.", getName()));
-		}
-		
-		if (containsAggregateRoot()) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The module '%s' does not contain an Aggregate Root.", getName()));
-		}
-		return fitness;
-	}
-
-	private boolean containsAggregateRoot() {
-		for (Artifact artifact : getConataints()) {
-			if (artifact.getType() == DDDType.AGGREGATE_ROOT) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean containsInfrastructure() {
-		for (Artifact artifact : getConataints()) {
-			if (artifact.getType() == DDDType.INFRASTRUCTUR || artifact.getType() == DDDType.CONTROLLER) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private DDDFitness evaluateInfrastructureModule(StructureService structureService) {
-		DDDFitness fitness = new DDDFitness().addSuccessfulCriteria(DDDIssueType.MINOR);
-		
-		if (getPath().contains(structureService.getPath() + "infrastructur")) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The module '%s' is not an infrastructure module.", getName()));
-		}
-		
-		if (containsOnlyInfrastructure()) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The module '%s' dose not only containts infrastructure artifacts.", getName()));
-		}
-		
-		return fitness;
-	}
-	
-	private boolean containsOnlyInfrastructure() {
-		for (Artifact artifact : getConataints()) {
-			if (artifact.getType() != DDDType.INFRASTRUCTUR && artifact.getType() != DDDType.CONTROLLER) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	private boolean containsApplication() {
-		for (Artifact artifact : getConataints()) {
-			if (artifact.getType() == DDDType.APPLICATION_SERVICE) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private DDDFitness evaluateApplicationModule(StructureService structureService) {
-		DDDFitness fitness = new DDDFitness().addSuccessfulCriteria(DDDIssueType.MINOR);
-		
-		if (getPath().contains(structureService.getPath() + "application")) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The module '%s' is not an application module.", getName()));
-		}
-		
-		if (containsOnlyApplication()) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
-		} else {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The module '%s' dose not only containts infrastructure artifacts.", getName()));
-		}
-		
-		return fitness;
-	}
-
-	private boolean containsOnlyApplication() {
-		for (Artifact artifact : getConataints()) {
-			if (artifact.getType() != DDDType.APPLICATION_SERVICE) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
 }

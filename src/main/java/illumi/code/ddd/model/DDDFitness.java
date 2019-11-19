@@ -30,6 +30,14 @@ public class DDDFitness {
 		return numberOfFulfilledCriteria;
 	}
 
+	public DDDFitness addIssue(boolean successful, DDDIssueType type, String message) {
+		if (successful) {
+			return addSuccessfulCriteria(type);
+		} else {
+			return addFailedCriteria(type, message);
+		}
+	}
+
 	public DDDFitness addFailedCriteria(DDDIssueType type, String description) {
 		numberOfCriteria += type.weight;
 		issues.add(new DDDIssue(type, description));
@@ -45,6 +53,7 @@ public class DDDFitness {
 	public void add(DDDFitness fitness) {
 		this.numberOfCriteria += fitness.numberOfCriteria;
 		this.numberOfFulfilledCriteria += fitness.numberOfFulfilledCriteria;
+		this.issues.addAll(fitness.issues);
 	}
 	
 	public double calculateFitness() {
@@ -72,7 +81,8 @@ public class DDDFitness {
 				.put("criteria", new JSONObject()
 						.put("total", numberOfCriteria)
 						.put("fulfilled", numberOfFulfilledCriteria))
-				.put("fitness", calculateFitness());
+				.put("fitness", calculateFitness())
+				.put("#Issues", issues.size());
 	}
 
 	public List<DDDIssue> getIssues() {

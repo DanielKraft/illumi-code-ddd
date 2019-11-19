@@ -1,15 +1,15 @@
 package illumi.code.ddd.model;
 
 public enum DDDIssueType {
-	BLOCKER(4),
-	CRITICAL(3),
-	MAJOR(2),
+	BLOCKER(10),
+	CRITICAL(5),
+	MAJOR(3),
 	MINOR(1),
 	INFO(0);
 	
 	public final int weight;
 	 
-    private DDDIssueType(int weight) {
+    DDDIssueType(int weight) {
         this.weight = weight;
     }
 }

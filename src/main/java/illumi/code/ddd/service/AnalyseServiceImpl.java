@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.Session;
@@ -19,9 +18,7 @@ import illumi.code.ddd.model.artifacts.Annotation;
 import illumi.code.ddd.model.artifacts.Artifact;
 import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Enum;
-import illumi.code.ddd.model.artifacts.Field;
 import illumi.code.ddd.model.artifacts.Interface;
-import illumi.code.ddd.model.artifacts.Method;
 import illumi.code.ddd.model.artifacts.Package;
 
 public class AnalyseServiceImpl implements AnalyseService {
@@ -55,6 +52,7 @@ public class AnalyseServiceImpl implements AnalyseService {
     	
     	setupDomains();
     	analyseDomains();
+    	
     	findEvents();
     	return structureService.getJOSN();
     }
@@ -75,28 +73,28 @@ public class AnalyseServiceImpl implements AnalyseService {
 			.parallel()
 			.forEach(item -> {
 				List<Object> types = item.get( "types" ).asList();
+				Artifact artifact;
+
 				if (types.contains("Package")) {
-					Package newPackage = new Package(item);
-					newPackage.setConataints(getArtifacts(newPackage.getPath()));
-					structureService.addPackage(newPackage);
-					artifacts.add(newPackage);
+					artifact = new Package(item);
+					((Package) artifact).setContains(getArtifacts(artifact.getPath()));
+					structureService.addPackage((Package) artifact);
 				} else if (types.contains("Class")) {
-					Class newClass = new Class(item);
-					structureService.addClasses(newClass);
-					artifacts.add(newClass);
+					artifact = new Class(item);
+					((Class) artifact).setDependencies(driver, structureService.getPath());
+					structureService.addClasses((Class) artifact);
 				} else if (types.contains("Interface")) {
-					Interface newInterface = new Interface(item);
-					structureService.addInterfaces(newInterface);
-					artifacts.add(newInterface);
+					artifact = new Interface(item);
+					structureService.addInterfaces((Interface) artifact);
 				} else if (types.contains("Enum")) {
-					Enum newEnum = new Enum(item);
-					structureService.addEnums(newEnum);
-					artifacts.add(newEnum);
+					artifact = new Enum(item);
+					structureService.addEnums((Enum) artifact);
 				} else {
-					Annotation newAnnotation = new Annotation(item);
-					structureService.addAnnotations(newAnnotation);
-					artifacts.add(newAnnotation);
+					artifact = new Annotation(item);
+					structureService.addAnnotations((Annotation) artifact);
 				}
+
+				artifacts.add(artifact);
 			});
 		return artifacts;
 	}
@@ -119,75 +117,7 @@ public class AnalyseServiceImpl implements AnalyseService {
 		
 		structureService.getClasses().stream()
 			.parallel()
-			.forEach(item -> {
-				if (item.getType() == null) {
-					
-					if (isValueObject(item)) {
-						item.setType(DDDType.VALUE_OBJECT);
-					} else if (isEntity(item)) {
-						item.setType(DDDType.ENTITY);
-					} else if (isService(item)) { 
-						item.setType(DDDType.SERVICE);
-					} else {
-						item.setType(DDDType.INFRASTRUCTUR);
-					}
-				} 
-			});
-
-	}
-	
-	private boolean isEntity(Class artifact) {
-		
-		for (Field field : artifact.getFields()) {
-			if (isConstant(field)) {
-				return false;
-			}
-		}
-		return !artifact.getFields().isEmpty() && !containsEntityName(artifact) && conatiansGetterSetter(artifact);
-	}
-
-	private boolean isValueObject(Class artifact) {
-		int ctr = 0;
-		for (Field field : artifact.getFields()) {
-			if (isConstant(field)) {
-				return false;
-			} else if (field.getType().contains("java.lang.") || field.getType().contains(structureService.getPath())) {
-				ctr++;
-			}
-		}
-		
-		return !artifact.getFields().isEmpty() && ctr == artifact.getFields().size() && conatiansGetterSetter(artifact);
-	}
-
-	private boolean isConstant(Field field) {
-		return StringUtils.isAllUpperCase(field.getName());
-	}
-	
-	private boolean isService(Class item) {
-		for (Field field : item.getFields()) {
-			if (field.getType().contains("Repository")) {
-				return true;
-			}
-		}
-		return containsEntityName(item);
-	}
-	
-	private boolean conatiansGetterSetter(Class item) {
-		for (Method method : item.getMethods()) {
-			if (method.getName().startsWith("get") || method.getName().startsWith("set")) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	private boolean containsEntityName(Class item) {
-		for (Class artifact : structureService.getClasses()) {
-			if (item != artifact && item.getName().contains(artifact.getName()) && !item.getName().equals(artifact.getName() + "s")) {
-				return true;
-			}
-		}
-		return false;
+			.forEach(item -> item.setType(structureService));
 	}
 	
 	private void analyzeInterfaces() {
@@ -198,6 +128,8 @@ public class AnalyseServiceImpl implements AnalyseService {
 				item.setMethods(driver);
 				item.setImplInterfaces(driver, structureService.getInterfaces());
 				item.setAnnotations(driver, structureService.getAnnotations());
+				
+				item.setType();
 			});
 	}
 	
@@ -224,11 +156,10 @@ public class AnalyseServiceImpl implements AnalyseService {
 		structureService.getClasses().stream()
 			.parallel()
 			.forEach(item -> {
-				if (item.getType() == DDDType.ENTITY 
-					|| item.getType() == DDDType.VALUE_OBJECT 
-					|| item.getType() == DDDType.SERVICE 
-					|| item.getType() == DDDType.REPOSITORY 
-					|| item.getType() == DDDType.FACTORY) {
+				if (item.isTypeOf(DDDType.ENTITY)
+					|| item.isTypeOf(DDDType.VALUE_OBJECT)
+					|| item.isTypeOf(DDDType.REPOSITORY) 
+					|| item.isTypeOf(DDDType.FACTORY)) {
 					addDomain(item);
 				}
 			});
@@ -236,9 +167,8 @@ public class AnalyseServiceImpl implements AnalyseService {
 		structureService.getInterfaces().stream()
 			.parallel()
 			.forEach(item -> {
-				if (item.getType() == DDDType.SERVICE 
-					|| item.getType() == DDDType.REPOSITORY 
-					|| item.getType() == DDDType.FACTORY) {
+				if (item.isTypeOf(DDDType.REPOSITORY)
+					|| item.isTypeOf(DDDType.FACTORY)) {
 					addDomain(item);
 				}
 			});
@@ -255,57 +185,15 @@ public class AnalyseServiceImpl implements AnalyseService {
 		item.setDomain(domain);
 	}
     
-    public void analyseDomains() {
+    private void analyseDomains() {
     	structureService.getPackages().stream()
     		.parallel()
-    		.forEach(item -> {
-    			if (isDomain(item)) {
-    				for (Artifact artifact : item.getConataints()) {
-						if (artifact.getDomain() != null && artifact.getDomain().contains(artifact.getName().toLowerCase())) {
-							artifact.setType(DDDType.AGGREGATE_ROOT);
-							break;
-						}
-					}
-    			}
-    		});
+    		.forEach(item -> item.setAggregateRoot(structureService));
     }
 
-	private boolean isDomain(Package module) {
-		return structureService.getDomains().contains(module.getName());
-	}
-	
 	private void findEvents() {
 		structureService.getClasses().stream()
-		.parallel()
-		.forEach(item -> {
-			switch(item.getType()) {
-				case ENTITY:
-				case AGGREGATE_ROOT:
-				case VALUE_OBJECT:
-					if (isDomainEvent(item)) {
-						item.setType(DDDType.DOMAIN_EVENT);
-					}
-					break;
-				default:
-					break;
-			}
-		});
+			.parallel()
+			.forEach(Class::setDomainEvent);
 	}
-	
-	private boolean isDomainEvent(Class artifact) {
-		int criteriaCounter = 0;
-		
-		for (Field field : artifact.getFields()) {
-			if (field.getName().contains("time") 
-				|| field.getName().contains("date") 
-				|| field.getType().contains("java.time.") 
-				|| field.getName().toUpperCase().endsWith("ID")
-				|| field.getType().contains(structureService.getPath())) {
-				criteriaCounter++;
-			} 
-		}
-		
-		return criteriaCounter == 2;
-	}
-
 }

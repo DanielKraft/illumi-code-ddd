@@ -1,8 +1,5 @@
 package illumi.code.ddd.service;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.json.JSONArray;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -14,12 +11,14 @@ import org.neo4j.harness.TestServerBuilders;
 
 import illumi.code.ddd.model.DDDType;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AnalyseServiceImplTest {
+class AnalyseServiceImplTest {
 	private ServerControls embeddedDatabaseServer;
 	
 	@BeforeAll
-	public void initializeNeo4j() {
+	void initializeNeo4j() {
 		this.embeddedDatabaseServer = TestServerBuilders
 	        .newInProcessBuilder()
 	        .withFixture( "CREATE(root:Java:Package{fqn: 'de.test', name: 'test'})"
@@ -46,12 +45,17 @@ public class AnalyseServiceImplTest {
 									+ "CREATE(person)-[:CONTAINS]->(value)"
 										+ "CREATE(id:Java:Field{name: 'id', signature: 'java.lang.Integer id', visibility: 'private'})"
 										+ "CREATE(value)-[:DECLARES]->(id)"
-					        			+ "CREATE(toString:Java:Method{name: 'toString', signature: 'java.lang.String toString()', visibility: 'public'})"
-							        	+ "CREATE(value)-[:DECLARES]->(toString)"
-							        	+ "CREATE(get:Java:Method{name: 'getPersonId', signature: 'java.lang.Integer getPersonId()', visibility: 'public'})"
-							        	+ "CREATE(value)-[:DECLARES]->(get)"
-					        			+ "CREATE(set:Java:Method{name: 'setPersonId', signature: 'void setPersonId(java.lang.Integer)', visibility: 'public'})"
-							        	+ "CREATE(value)-[:DECLARES]->(set)"
+							        	+ "CREATE(get1:Java:Method{name: 'getPersonId', signature: 'java.lang.Integer getPersonId()', visibility: 'public'})"
+							        	+ "CREATE(value)-[:DECLARES]->(get1)"
+					        			+ "CREATE(set1:Java:Method{name: 'setPersonId', signature: 'void setPersonId(java.lang.Integer)', visibility: 'public'})"
+							        	+ "CREATE(value)-[:DECLARES]->(set1)"							
+
+									+ "CREATE(valueName:Java:Class{fqn: 'de.test.domain.person.PersonName', name: 'PersonName'})"
+									+ "CREATE(person)-[:CONTAINS]->(valueName)"
+										+ "CREATE(v_name:Java:Field{name: 'name', signature: 'java.lang.String name', visibility: 'private'})"
+										+ "CREATE(valueName)-[:DECLARES]->(v_name)"
+							        	+ "CREATE(get2:Java:Method{name: 'name', signature: 'java.lang.String name()', visibility: 'public'})"
+							        	+ "CREATE(valueName)-[:DECLARES]->(get2)"
 										
 				        			
 					        		+ "CREATE(entity:Java:Class{fqn: 'de.test.domain.person.Entity', name: 'Entity'})"
@@ -94,6 +98,8 @@ public class AnalyseServiceImplTest {
 									+ "CREATE(person)-[:CONTAINS]->(serviceImpl)"
 				        				+ "CREATE(f_repo:Java:Field{name: 'repo', signature: 'de.test.domain.person.CustomerRepository repo', visibility: 'private'})"
 					        			+ "CREATE(serviceImpl)-[:DECLARES]->(f_repo)"
+										+ "CREATE(m_valid:Java:Method{name: 'validate', signature: 'java.lang.Long validate()', visibility: 'public'})"
+							        	+ "CREATE(serviceImpl)-[:DECLARES]->(m_valid)"
 					        		+ "CREATE(serviceImpl)-[:IMPLEMENTS]->(serviceInter)"
 					        			
 				        			+ "CREATE(enum:Java:Enum{fqn: 'de.test.domain.person.CustomerType', name: 'CustomerType'})"
@@ -103,7 +109,7 @@ public class AnalyseServiceImplTest {
 									+ "CREATE(person)-[:CONTAINS]->(event1)"
 										+ "CREATE(time1:Java:Field{name: 'timestamp', signature: 'java.lang.Long timestamp', visibility: 'private'})"
 										+ "CREATE(event1)-[:DECLARES]->(time1)"
-										+ "CREATE(identity1:Java:Field{name: 'customer', signature: 'de.test.domain.person.Customer customer', visibility: 'private'})"
+										+ "CREATE(identity1:Java:Field{name: 'customerId', signature: 'java.lang.long customerId', visibility: 'private'})"
 										+ "CREATE(event1)-[:DECLARES]->(identity1)"
 										+ "CREATE(m3:Java:Method{name: 'getTimestamp', signature: 'java.lang.Long getTimestamp()', visibility: 'public'})"
 							        	+ "CREATE(event1)-[:DECLARES]->(m3)"
@@ -128,8 +134,11 @@ public class AnalyseServiceImplTest {
 								+ "CREATE(anno:Java:Annotation{name: 'Anno', fqn: 'de.test.infrastructure.Anno'})"
 								+ "CREATE(infra)-[:CONTAINS]->(anno)"
 								
-								+ "CREATE(unused:Java{name: 'Unused', fqn: 'de.test.infrastructure.Unused'})"
-								+ "CREATE(infra)-[:CONTAINS]->(unused)"
+								+ "CREATE(unused1:Class{name: 'JpaUnused', fqn: 'de.test.infrastructure.JpaUnused'})"
+								+ "CREATE(infra)-[:CONTAINS]->(unused1)"
+								
+								+ "CREATE(unused2:Class{name: 'CrudUnused', fqn: 'de.test.infrastructure.CrudUnused'})"
+								+ "CREATE(infra)-[:CONTAINS]->(unused2)"
 		        			
 		        			+ "CREATE(application:Java:Package{fqn: 'de.test.application', name: 'application'})"
 		        			+ "CREATE(root)-[:CONTAINS]->(application)"
@@ -139,60 +148,61 @@ public class AnalyseServiceImplTest {
     }
 	
 	@Test
-	public void readArtifacts() {
-		try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());) {
+	void readArtifacts() {
+		try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
 			AnalyseService service = new AnalyseServiceImpl(driver);
 			service.setStructureService(new StructureService());
 			
 			JSONArray result = service.analyzeStructure("de.test");
-			
-			JSONArray infrastructure = result.getJSONObject(0).getJSONArray("contains");
+			System.out.println(result);
+			JSONArray infrastructure = result.getJSONObject(1).getJSONArray("contains");
 			assertAll("Should return DDD-Types of infrastructure",
-				() -> assertEquals(DDDType.CONTROLLER, (DDDType) infrastructure.getJSONObject(0).get("DDD")),
-				() -> assertEquals(DDDType.INFRASTRUCTUR, (DDDType) infrastructure.getJSONObject(1).get("DDD")));
+				() -> assertEquals(DDDType.INFRASTRUCTURE, infrastructure.getJSONObject(0).get("DDD"), 	" 0: " + infrastructure.getJSONObject(0).get("name")),
+				() -> assertEquals(DDDType.INFRASTRUCTURE, infrastructure.getJSONObject(1).get("DDD"), 	" 1: " + infrastructure.getJSONObject(0).get("name")),
+				() -> assertEquals(DDDType.CONTROLLER, infrastructure.getJSONObject(2).get("DDD"),	" 2: " + infrastructure.getJSONObject(0).get("name")),
+				() -> assertEquals(DDDType.INFRASTRUCTURE, infrastructure.getJSONObject(3).get("DDD"), 	" 3: " + infrastructure.getJSONObject(0).get("name")));
 			
 			
-			JSONArray application = result.getJSONObject(1).getJSONArray("contains");
+			JSONArray application = result.getJSONObject(0).getJSONArray("contains");
 			assertAll("Should return DDD-Types of application",
-				() -> assertEquals(DDDType.APPLICATION_SERVICE, (DDDType) application.getJSONObject(0).get("DDD")));
+				() -> assertEquals(DDDType.APPLICATION_SERVICE, application.getJSONObject(0).get("DDD")));
 			
 			
 			JSONArray domain = result.getJSONObject(2).getJSONArray("contains");
 			
 			JSONArray productDomain = domain.getJSONObject(0).getJSONArray("contains");
-			assertEquals(true, productDomain.isEmpty());
+			assertTrue(productDomain.isEmpty());
 			
 			JSONArray personDomain = domain.getJSONObject(1).getJSONArray("contains");
-			
-			System.out.println(personDomain.toString());
-			
+
 			assertAll("Should return DDD-Types of domain",
-			    () -> assertEquals(DDDType.DOMAIN_EVENT, 	(DDDType) personDomain.getJSONObject(0).get("DDD"), 	personDomain.getJSONObject(0).getString("name")),
-			    () -> assertEquals(DDDType.DOMAIN_EVENT, 	(DDDType) personDomain.getJSONObject(1).get("DDD"), 	personDomain.getJSONObject(1).getString("name")),
-			    () -> assertEquals(DDDType.VALUE_OBJECT, 	(DDDType) personDomain.getJSONObject(2).get("DDD"), 	personDomain.getJSONObject(2).getString("name")),
-			    () -> assertEquals(DDDType.SERVICE, 		(DDDType) personDomain.getJSONObject(3).get("DDD"), 	personDomain.getJSONObject(3).getString("name")),
-			    () -> assertEquals(DDDType.SERVICE, 		(DDDType) personDomain.getJSONObject(4).get("DDD"), 	personDomain.getJSONObject(4).getString("name")),
-			    () -> assertEquals(DDDType.SERVICE, 		(DDDType) personDomain.getJSONObject(5).get("DDD"), 	personDomain.getJSONObject(5).getString("name")),
-			    () -> assertEquals(DDDType.INFRASTRUCTUR,	(DDDType) personDomain.getJSONObject(6).get("DDD"), 	personDomain.getJSONObject(6).getString("name")),
-			    () -> assertEquals(DDDType.REPOSITORY, 		(DDDType) personDomain.getJSONObject(7).get("DDD"), 	personDomain.getJSONObject(7).getString("name")),
-			    () -> assertEquals(DDDType.REPOSITORY, 		(DDDType) personDomain.getJSONObject(8).get("DDD"), 	personDomain.getJSONObject(8).getString("name")),
-			    () -> assertEquals(DDDType.FACTORY, 		(DDDType) personDomain.getJSONObject(9).get("DDD"), 	personDomain.getJSONObject(9).getString("name")),
-			    () -> assertEquals(DDDType.FACTORY, 		(DDDType) personDomain.getJSONObject(10).get("DDD"), 	personDomain.getJSONObject(10).getString("name")),
-			    () -> assertEquals(DDDType.ENTITY, 			(DDDType) personDomain.getJSONObject(11).get("DDD"), 	personDomain.getJSONObject(11).getString("name")),
-			    () -> assertEquals(DDDType.VALUE_OBJECT, 	(DDDType) personDomain.getJSONObject(12).get("DDD"), 	personDomain.getJSONObject(12).getString("name")),
-			    () -> assertEquals(DDDType.ENTITY, 			(DDDType) personDomain.getJSONObject(13).get("DDD"), 	personDomain.getJSONObject(13).getString("name")),
-			    () -> assertEquals(DDDType.AGGREGATE_ROOT, 	(DDDType) personDomain.getJSONObject(14).get("DDD"),	personDomain.getJSONObject(14).getString("name")));
+			    () -> assertEquals(DDDType.DOMAIN_EVENT, personDomain.getJSONObject(0).get("DDD"), 	" 0: " + personDomain.getJSONObject(0).getString("name")),
+			    () -> assertEquals(DDDType.DOMAIN_EVENT, personDomain.getJSONObject(1).get("DDD"), 	" 1: " + personDomain.getJSONObject(1).getString("name")),
+			    () -> assertEquals(DDDType.VALUE_OBJECT, personDomain.getJSONObject(2).get("DDD"), 	" 2: " + personDomain.getJSONObject(2).getString("name")),
+			    () -> assertEquals(DDDType.SERVICE, personDomain.getJSONObject(3).get("DDD"), 	" 3: " + personDomain.getJSONObject(3).getString("name")),
+			    () -> assertEquals(DDDType.SERVICE, personDomain.getJSONObject(4).get("DDD"), 	" 4: " + personDomain.getJSONObject(4).getString("name")),
+			    () -> assertEquals(DDDType.SERVICE, personDomain.getJSONObject(5).get("DDD"), 	" 5: " + personDomain.getJSONObject(5).getString("name")),
+			    () -> assertEquals(DDDType.INFRASTRUCTURE, personDomain.getJSONObject(6).get("DDD"), 	" 6: " + personDomain.getJSONObject(6).getString("name")),
+			    () -> assertEquals(DDDType.REPOSITORY, personDomain.getJSONObject(7).get("DDD"), 	" 7: " + personDomain.getJSONObject(7).getString("name")),
+			    () -> assertEquals(DDDType.REPOSITORY, personDomain.getJSONObject(8).get("DDD"), 	" 8: " + personDomain.getJSONObject(8).getString("name")),
+			    () -> assertEquals(DDDType.FACTORY, personDomain.getJSONObject(9).get("DDD"), 	" 9: " + personDomain.getJSONObject(9).getString("name")),
+			    () -> assertEquals(DDDType.FACTORY, personDomain.getJSONObject(10).get("DDD"), 	"10: " + personDomain.getJSONObject(10).getString("name")),
+			    () -> assertEquals(DDDType.ENTITY, personDomain.getJSONObject(11).get("DDD"), 	"11: " + personDomain.getJSONObject(11).getString("name")),
+			    () -> assertEquals(DDDType.VALUE_OBJECT, personDomain.getJSONObject(12).get("DDD"), 	"12: " + personDomain.getJSONObject(12).getString("name")),
+			    () -> assertEquals(DDDType.VALUE_OBJECT, personDomain.getJSONObject(13).get("DDD"), 	"13: " + personDomain.getJSONObject(13).getString("name")),
+			    () -> assertEquals(DDDType.ENTITY, personDomain.getJSONObject(14).get("DDD"), 	"14: " + personDomain.getJSONObject(14).getString("name")),
+			    () -> assertEquals(DDDType.AGGREGATE_ROOT, personDomain.getJSONObject(15).get("DDD"),	"15: " + personDomain.getJSONObject(15).getString("name")));
 			
 		}
 	}
 	
 	@Test
-	public void readArtifactsWithoutDriver() {
+	void readArtifactsWithoutDriver() {
 		AnalyseService service = new AnalyseServiceImpl(null);
 		service.setStructureService(new StructureService());
 		
 		JSONArray result = service.analyzeStructure("de.test");
-		
-		assertEquals(true, result.isEmpty());
+
+		assertTrue(result.isEmpty());
 	}
 }

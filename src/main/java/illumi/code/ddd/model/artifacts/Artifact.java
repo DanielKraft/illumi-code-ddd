@@ -10,9 +10,10 @@ public abstract class Artifact {
 
 	private String name;
 	private String path;
-	
+
+
 	private String domain;
-	
+
 	private DDDType type;
 	private DDDFitness fitness;
 	
@@ -47,6 +48,10 @@ public abstract class Artifact {
 
 	public DDDType getType() {
 		return type;
+	}
+	
+	public boolean isTypeOf(DDDType type) {
+		return this.type == type;
 	}
 
 	public void setType(DDDType type) {
