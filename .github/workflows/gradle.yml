@@ -13,7 +13,7 @@ jobs:
         with:
           java-version: 1.8
       - name: Build with Gradle
-        run: ./gradlew build -x test -x checkstyleMain -x checkstyleTest
+        run: ./gradlew build -x test
       
   test:
     needs: build
