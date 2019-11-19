@@ -11,11 +11,7 @@ import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.service.JavaArtifactService;
 
 public class Enum extends Artifact {
-	
-	private static final String QUERY_FIELDS 				= "MATCH (e:Enum)-[:DECLARES]->(f:Field) WHERE e.fqn={path} RETURN DISTINCT f.name as name, f.signature as type, f.visibility as visibility";
-	private static final String QUERY_PARENT_ANNOTATIONS 	= "MATCH (parent:Enum)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} RETURN DISTINCT type.fqn as annotation";
-	private static final String QUERY_CHILD_ANNOTATIONS		= "MATCH (parent:Enum)-[:DECLARES]->(child:Java)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} AND (child:Field OR child:Method) RETURN DISTINCT type.fqn as annotation";
-	
+
 	private ArrayList<Field> fields;
 	private ArrayList<Annotation> annotations;
 	
@@ -40,7 +36,7 @@ public class Enum extends Artifact {
 	}
 	
 	public void setFields(Driver driver) {
-		this.fields = (ArrayList<Field>) JavaArtifactService.getFields(getPath(), driver, QUERY_FIELDS);
+		this.fields = (ArrayList<Field>) new JavaArtifactService(driver, getPath()).getFields();
 	}
 	
 	public List<Annotation> getAnnotations() {
@@ -48,6 +44,6 @@ public class Enum extends Artifact {
 	}
 	
 	public void setAnnotations(Driver driver, List<Annotation> annotations) {
-		this.annotations = (ArrayList<Annotation>) JavaArtifactService.getAnnotations(getPath(), driver, QUERY_PARENT_ANNOTATIONS, QUERY_CHILD_ANNOTATIONS, annotations);
+		this.annotations = (ArrayList<Annotation>) new JavaArtifactService(driver, getPath()).getAnnotations(annotations);
 	}
 }

@@ -11,16 +11,9 @@ import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.service.JavaArtifactService;
 
 public class Annotation extends Artifact {
-		
-	private static final String QUERY_FIELDS 				= "MATCH (a:Annotation)-[:DECLARES]->(f:Field) WHERE a.fqn={path} RETURN DISTINCT f.name as name, f.signature as type, f.visibility as visibility";
-	private static final String QUERY_METHODS 				= "MATCH (a:Annotation)-[:DECLARES]->(m:Method) WHERE a.fqn = {path} RETURN DISTINCT m.visibility as visibility, m.name as name, m.signature as signature";
-	private static final String QUERY_PARENT_ANNOTATIONS 	= "MATCH (parent:Annotation)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} RETURN DISTINCT type.fqn as annotation";
-	private static final String QUERY_CHILD_ANNOTATIONS		= "MATCH (parent:Annotation)-[:DECLARES]->(child:Java)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} AND (child:Field OR child:Method) RETURN DISTINCT type.fqn as annotation";
-	
+
 	private ArrayList<Field> fields;
-	
 	private ArrayList<Method> methods;
-	
 	private ArrayList<Annotation> annotations;
 
 	public Annotation(Record record) {
@@ -44,7 +37,7 @@ public class Annotation extends Artifact {
 	}
 
 	public void setFields(Driver driver) {
-		this.fields = (ArrayList<Field>) JavaArtifactService.getFields(getPath(), driver, QUERY_FIELDS);
+		this.fields = (ArrayList<Field>) new JavaArtifactService(driver, getPath()).getFields();
 	}
 
 	public List<Method> getMethods() {
@@ -52,7 +45,7 @@ public class Annotation extends Artifact {
 	}
 
 	public void setMethods(Driver driver) {
-		this.methods = (ArrayList<Method>) JavaArtifactService.getMethods(getPath(), driver, QUERY_METHODS);
+		this.methods = (ArrayList<Method>) new JavaArtifactService(driver, getPath()).getMethods();
 	}
 	
 	public List<Annotation> getAnnotations() {
@@ -60,7 +53,7 @@ public class Annotation extends Artifact {
 	}
 	
 	public void setAnnotations(Driver driver, List<Annotation> annotations) {
-		this.annotations = (ArrayList<Annotation>) JavaArtifactService.getAnnotations(getPath(), driver, QUERY_PARENT_ANNOTATIONS, QUERY_CHILD_ANNOTATIONS, annotations);
+		this.annotations = (ArrayList<Annotation>) new JavaArtifactService(driver, getPath()).getAnnotations(annotations);
 	}
 	
 	public void evaluate() {

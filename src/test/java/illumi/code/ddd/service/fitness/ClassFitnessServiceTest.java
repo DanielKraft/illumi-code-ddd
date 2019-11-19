@@ -38,7 +38,10 @@ class ClassFitnessServiceTest {
 		Class artifact = new Class("Entity", "de.test.Entity");
 		artifact.setType(DDDType.ENTITY);
 		artifact.addField(new Field("private", "id", "de.test.EntityId"));
-		artifact.addField(new Field("private", "name", "string"));
+		artifact.addField(new Field("private", "name", "String"));
+		artifact.addMethod(new Method("public", "getName", "String getName()"));
+		artifact.addMethod(new Method("public", "setName", "void setName(String)"));
+		artifact.addMethod(new Method("public", "hashCode", "int hashCode()"));
 		artifact.addMethod(new Method("public", "equals", "boolean equals()"));
 		artifact.addMethod(new Method("public", "hashCode", "int hashCode()"));
 		artifact.addMethod(new Method("public", "toString", "test toString()"));
@@ -47,11 +50,11 @@ class ClassFitnessServiceTest {
 		ClassFitnessService service = new ClassFitnessService(artifact, structureService);
 		final DDDFitness result = service.evaluate();
 		
-		assertAll(	() -> assertEquals(65.22, 	result.calculateFitness(), 				"Fitness"),
+		assertAll(	() -> assertEquals(73.91, 	result.calculateFitness(), 				"Fitness"),
 				 	() -> assertEquals(DDDRating.C, 	result.getscore(), 						"Rating"),
 				 	() -> assertEquals(23, 	result.getNumberOfCriteria(), 			"Total Criteria"),
-				 	() -> assertEquals(15, 	result.getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
-				 	() -> assertEquals(6, 		result.getIssues().size(), 				"#Issues"));
+				 	() -> assertEquals(17, 	result.getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
+				 	() -> assertEquals(4, 		result.getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test
@@ -98,17 +101,19 @@ class ClassFitnessServiceTest {
 		artifact.addField(new Field("private", "name", "java.lang.string"));
 		artifact.addField(new Field("private", "value", "de.test.Value"));
 		artifact.addMethod(new Method("public", "getName", "java.lang.string getName()"));
+		artifact.addMethod(new Method("public", "name", "java.lang.string name()"));
 		artifact.addMethod(new Method("public", "setName", "de.test.ValueObject setName()"));
+		artifact.addMethod(new Method("private", "setValue", "void setValue(de.test.Value)"));
 		artifact.addMethod(new Method("public", "setValue", "void setValue(de.test.Value)"));
 		artifact.addMethod(new Method("public", "toString", "test toString()"));
 
 		ClassFitnessService service = new ClassFitnessService(artifact, structureService);
 		final DDDFitness result = service.evaluate();
 		
-		assertAll(	() -> assertEquals(75.0, 	result.calculateFitness(), 				"Fitness"),
+		assertAll(	() -> assertEquals(78.38, 	result.calculateFitness(), 				"Fitness"),
 				 	() -> assertEquals(DDDRating.C, 	result.getscore(), 						"Rating"),
-				 	() -> assertEquals(32, 	result.getNumberOfCriteria(), 			"Total Criteria"),
-				 	() -> assertEquals(24, 	result.getNumberOfFulfilledCriteria(), "Fulfilled Criteria"),
+				 	() -> assertEquals(37, 	result.getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(29, 	result.getNumberOfFulfilledCriteria(), "Fulfilled Criteria"),
 				 	() -> assertEquals(5, 		result.getIssues().size(), 				"#Issues"));
 	}
 	
@@ -225,36 +230,38 @@ class ClassFitnessServiceTest {
 		Class repository = new Class("TestRepositoryImpl", "de.test.domain.TestRepositoryImpl");
 		repository.setType(DDDType.REPOSITORY);
 		repository.setDomain("domain");
+		repository.addMethod(new Method("public", "nextIdentity", "test nextIdentity()"));
 		repository.addMethod(new Method("public", "findById", "test findById()"));
 		repository.addMethod(new Method("public", "getId", "test getId()"));
 		repository.addMethod(new Method("public", "save", "test save()"));
 		repository.addMethod(new Method("public", "add", "test add()"));
 		repository.addMethod(new Method("public", "insert", "test insert()"));
+		repository.addMethod(new Method("public", "put", "test put()"));
 		repository.addMethod(new Method("public", "delete", "test delete()"));
 		repository.addMethod(new Method("public", "remove", "test remove()"));
 		repository.addMethod(new Method("public", "contains", "test contains()"));
 		repository.addMethod(new Method("public", "exists", "test exists()"));
 		repository.addMethod(new Method("public", "update", "test update()"));
 		repository.addMethod(new Method("public", "toString", "test toString()"));
+
+		Interface serviceInterface = new Interface("Service", "de.test.domain.Service");
+		serviceInterface.setType(DDDType.SERVICE);
+		serviceInterface.setDomain("domain");
+		repository.addImplInterface(serviceInterface);
 		
 		Interface repo = new Interface("TestRepository", "de.test.domain.TestRepository");
 		repo.setType(DDDType.REPOSITORY);
 		repo.setDomain("domain");
 		repository.addImplInterface(repo);
-		
-		Interface serviceInterface = new Interface("Service", "de.test.domain.Service");
-		serviceInterface.setType(DDDType.SERVICE);
-		serviceInterface.setDomain("domain");
-		repository.addImplInterface(serviceInterface);
 
 		ClassFitnessService service = new ClassFitnessService(repository, structureService);
 		final DDDFitness result = service.evaluate();
 		
-		assertAll(	() -> assertEquals(75, 	result.calculateFitness(), 				"Fitness"),
-				 	() -> assertEquals(DDDRating.C,	 	result.getscore(), 						"Rating"),
+		assertAll(	() -> assertEquals(93.75, 	result.calculateFitness(), 				"Fitness"),
+				 	() -> assertEquals(DDDRating.A,	 	result.getscore(), 						"Rating"),
 				 	() -> assertEquals(16, 	result.getNumberOfCriteria(), 			"Total Criteria"),
-				 	() -> assertEquals(12, 	result.getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
-				 	() -> assertEquals(2, 		result.getIssues().size(), 				"#Issues"));
+				 	() -> assertEquals(15, 	result.getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
+				 	() -> assertEquals(1, 		result.getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test
@@ -281,16 +288,16 @@ class ClassFitnessServiceTest {
 		factoryImpl.addField(new Field("private", "name", "string"));
 		factoryImpl.addMethod(new Method("public", "create", "test create()"));
 		factoryImpl.addMethod(new Method("public", "toString", "test toString()"));
+
+		Interface serviceInterface = new Interface("Service", "de.test.domain.Service");
+		serviceInterface.setType(DDDType.SERVICE);
+		serviceInterface.setDomain("domain");
+		factoryImpl.addImplInterface(serviceInterface);
 		
 		Interface factory = new Interface("TestFactory", "de.test.domain.TestFactory");
 		factory.setType(DDDType.REPOSITORY);
 		factory.setDomain("domain");
 		factoryImpl.addImplInterface(factory);
-		
-		Interface serviceInterface = new Interface("Service", "de.test.domain.Service");
-		serviceInterface.setType(DDDType.SERVICE);
-		serviceInterface.setDomain("domain");
-		factoryImpl.addImplInterface(serviceInterface);
 
 		ClassFitnessService service = new ClassFitnessService(factoryImpl, structureService);
 		final DDDFitness result = service.evaluate();

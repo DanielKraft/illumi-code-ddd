@@ -1,5 +1,6 @@
 package illumi.code.ddd.model.artifacts;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
@@ -76,16 +77,16 @@ class InterfaceTest {
 			artifact.setFields(driver);
 			
 			ArrayList<Field> result = (ArrayList<Field>) artifact.getFields();
-			
-			assertEquals(2, result.size());
-	    	
-	    	assertEquals("interfaceId", result.get(0).getName());
-	    	assertEquals("java.lang.Integer", result.get(0).getType());
-	    	assertEquals("public", result.get(0).getVisibility());
-	    	
-	    	assertEquals("name", result.get(1).getName());
-	    	assertEquals("java.lang.String", result.get(1).getType());
-	    	assertEquals("public", result.get(1).getVisibility());
+
+			assertAll( 	() -> assertEquals(2, result.size()),
+
+						() -> assertEquals("name", result.get(0).getName()),
+						() -> assertEquals("java.lang.String", result.get(0).getType()),
+						() -> assertEquals("public", result.get(0).getVisibility()),
+
+						() -> assertEquals("interfaceId", result.get(1).getName()),
+						() -> assertEquals("java.lang.Integer", result.get(1).getType()),
+						() -> assertEquals("public", result.get(1).getVisibility()));
 	    	
 		}
 	}
@@ -108,16 +109,16 @@ class InterfaceTest {
 			artifact.setMethods(driver);
 			
 			ArrayList<Method> result = (ArrayList<Method>) artifact.getMethods();
-			
-			assertEquals(2, result.size());
-	    	
-	    	assertEquals("exec", result.get(0).getName());
-	    	assertEquals("void exec(java.lang.Integer)", result.get(0).getSignature());
-	    	assertEquals("public", result.get(0).getVisibility());
-	    	
-	    	assertEquals("init", result.get(1).getName());
-	    	assertEquals("void init()", result.get(1).getSignature());
-	    	assertEquals("public", result.get(1).getVisibility());
+
+			assertAll( 	() -> assertEquals(2, result.size()),
+
+						() -> assertEquals("init", result.get(0).getName()),
+						() -> assertEquals("void init()", result.get(0).getSignature()),
+						() -> assertEquals("public", result.get(0).getVisibility()),
+
+						() -> assertEquals("exec", result.get(1).getName()),
+						() -> assertEquals("void exec(java.lang.Integer)", result.get(1).getSignature()),
+						() -> assertEquals("public", result.get(1).getVisibility()));
 		}
 	}
 	
@@ -143,11 +144,11 @@ class InterfaceTest {
 	    	artifact.setImplInterfaces(driver, interfaces);
 	    	
 			ArrayList<Interface> result = (ArrayList<Interface>) artifact.getInterfaces();
-	    	
-			assertEquals(1, result.size());
-			
-	    	assertEquals("ImplInterface", result.get(0).getName());
-	    	assertEquals("de.test.ImplInterface", result.get(0).getPath());
+
+			assertAll( 	() -> assertEquals(1, result.size()),
+
+						() -> assertEquals("ImplInterface", result.get(0).getName()),
+						() -> assertEquals("de.test.ImplInterface", result.get(0).getPath()));
 	    }
 	}
 	
@@ -187,12 +188,12 @@ class InterfaceTest {
 	    	artifact.setAnnotations(driver, annotations);
 	    	
 	    	ArrayList<Annotation> result = (ArrayList<Annotation>) artifact.getAnnotations();
-	    	
-	    	assertEquals(1, result.size());
-	    	
-	    	assertEquals("Anno", result.get(0).getName());
-	    	assertEquals("de.test.Anno", result.get(0).getPath());
-	    	assertEquals(DDDType.INFRASTRUCTURE, result.get(0).getType());
+
+			assertAll( 	() -> assertEquals(1, result.size()),
+
+						() -> assertEquals("Anno", result.get(0).getName()),
+						() -> assertEquals("de.test.Anno", result.get(0).getPath()),
+						() -> assertEquals(DDDType.INFRASTRUCTURE, result.get(0).getType()));
 	    }
 	}
 	

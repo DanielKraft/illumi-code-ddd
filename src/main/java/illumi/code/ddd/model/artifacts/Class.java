@@ -17,17 +17,8 @@ import illumi.code.ddd.service.StructureService;
  * @author Daniel Kraft
  */
 public class Class extends Artifact {
-
-	private static final String QUERY_CLASS_FIELDS 				= "MATCH (c:Class)-[:DECLARES]->(f:Field) WHERE c.fqn={path} RETURN DISTINCT f.name as name, f.signature as type, f.visibility as visibility";
-	private static final String QUERY_CLASS_METHODS 			= "MATCH (c:Class)-[:DECLARES]->(m:Method) WHERE c.fqn = {path} RETURN DISTINCT m.visibility as visibility, m.name as name, m.signature as signature";
-	private static final String QUERY_CLASS_SUPER 				= "MATCH (c1:Class)-[:EXTENDS]->(c2:Class) WHERE c1.fqn={path} RETURN DISTINCT c2.fqn as superClass";
-	private static final String QUERY_CLASS_IMPL 				= "MATCH (c:Class)-[:IMPLEMENTS]->(i:Interface) WHERE c.fqn={path} RETURN DISTINCT i.fqn as interface";
-	private static final String QUERY_CLASS_PARENT_ANNOTATIONS 	= "MATCH (parent:Class)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} RETURN DISTINCT type.fqn as annotation";
-	private static final String QUERY_CLASS_CHILD_ANNOTATIONS	= "MATCH (parent:Class)-[:DECLARES]->(child:Java)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} AND (child:Field OR child:Method) RETURN DISTINCT type.fqn as annotation";
-	
 	
 	private ArrayList<Field> fields;
-	
 	private ArrayList<Method> methods;
 	
 	private ArrayList<Interface> implInterfaces;
@@ -68,7 +59,7 @@ public class Class extends Artifact {
 	}
 	
 	public void setFields(Driver driver) {
-		this.fields = (ArrayList<Field>) JavaArtifactService.getFields(getPath(), driver, QUERY_CLASS_FIELDS);
+		this.fields = (ArrayList<Field>) new JavaArtifactService(driver, getPath()).getFields();
     }
 	
 	public void addField(Field field) {
@@ -80,7 +71,7 @@ public class Class extends Artifact {
 	}
 
 	public void setMethods(Driver driver) {
-		this.methods = (ArrayList<Method>) JavaArtifactService.getMethods(getPath(), driver, QUERY_CLASS_METHODS);
+		this.methods = (ArrayList<Method>) new JavaArtifactService(driver, getPath()).getMethods();
     }
 	
 	public void addMethod(Method method) {
@@ -92,7 +83,7 @@ public class Class extends Artifact {
 	}
 	
 	public void setImplInterfaces(Driver driver, List<Interface> interfaces) {
-		this.implInterfaces =  (ArrayList<Interface>) JavaArtifactService.getImplInterfaces(getPath(), driver, QUERY_CLASS_IMPL, interfaces);
+		this.implInterfaces =  (ArrayList<Interface>) new JavaArtifactService(driver, getPath()).getImplInterfaces(interfaces);
     }
 	
 	public void addImplInterface(Interface implInterface) {
@@ -104,7 +95,7 @@ public class Class extends Artifact {
 	}
 
 	public void setSuperClass(Driver driver, List<Class> classes) {
-		this.superClass = JavaArtifactService.getSuperClass(getPath(), driver, QUERY_CLASS_SUPER, classes);
+		this.superClass = new JavaArtifactService(driver, getPath()).getSuperClass(classes);
 	}
 	
 	public void addSuperClass(Class superClass) {
@@ -116,7 +107,7 @@ public class Class extends Artifact {
 	}
 	
 	public void setAnnotations(Driver driver, List<Annotation> annotations) {
-		this.annotations = (ArrayList<Annotation>) JavaArtifactService.getAnnotations(getPath(), driver, QUERY_CLASS_PARENT_ANNOTATIONS, QUERY_CLASS_CHILD_ANNOTATIONS, annotations);
+		this.annotations = (ArrayList<Annotation>) new JavaArtifactService(driver, getPath()).getAnnotations(annotations);
 	}
 
 	public List<String> getDependencies() {
@@ -124,7 +115,7 @@ public class Class extends Artifact {
 	}
 
 	public void setDependencies(Driver driver, String path) {
-		this.dependencies = (ArrayList<String>) JavaArtifactService.getDependencies(path, getPath(), driver);
+		this.dependencies = (ArrayList<String>) new JavaArtifactService(driver, getPath()).getDependencies(path);
 	}
 
 	public void addDependencies(String path) {

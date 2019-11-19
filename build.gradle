@@ -7,7 +7,6 @@ plugins {
     id "application"
     id "jacoco"
     id "org.sonarqube" version "2.8"
-    id "checkstyle"
 }
 
 sonarqube {
@@ -16,8 +15,6 @@ sonarqube {
     property "sonar.organization", "danielkraft"
     property "sonar.host.url", "https://sonarcloud.io"
     property "sonar.login", "d9b98f5dd5bc24fab2356209e61700e7f14460bd"
-
-
   }
 }
 

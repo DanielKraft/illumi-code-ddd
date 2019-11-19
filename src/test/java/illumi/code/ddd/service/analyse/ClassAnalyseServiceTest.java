@@ -231,7 +231,7 @@ class ClassAnalyseServiceTest {
 		artifact.addField(new Field("private", "EntityId", "java.lang.long"));
 		artifact.addField(new Field("private", "desc", "java.lang.String"));
 
-		ClassAnalyseService service = new ClassAnalyseService(artifact, structureService);
+		ClassAnalyseService service = new ClassAnalyseService(artifact);
 		service.setDomainEvent();
 		
 		assertEquals(DDDType.DOMAIN_EVENT, artifact.getType());
@@ -243,7 +243,7 @@ class ClassAnalyseServiceTest {
 		artifact.setType(DDDType.AGGREGATE_ROOT);
 		artifact.addField(new Field("private", "id", "java.lang.long"));
 
-		ClassAnalyseService service = new ClassAnalyseService(artifact, structureService);
+		ClassAnalyseService service = new ClassAnalyseService(artifact);
 		service.setDomainEvent();
 		
 		assertEquals(DDDType.AGGREGATE_ROOT, artifact.getType());
@@ -255,7 +255,7 @@ class ClassAnalyseServiceTest {
 		artifact.setType(DDDType.VALUE_OBJECT);
 		artifact.addField(new Field("private", "birth", "java.time.Time"));
 
-		ClassAnalyseService service = new ClassAnalyseService(artifact, structureService);
+		ClassAnalyseService service = new ClassAnalyseService(artifact);
 		service.setDomainEvent();
 		
 		assertEquals(DDDType.VALUE_OBJECT, artifact.getType());
@@ -266,7 +266,7 @@ class ClassAnalyseServiceTest {
 		Class artifact = new Class("Event", "de.test.domain.Event");
 		artifact.setType(DDDType.FACTORY);
 
-		ClassAnalyseService service = new ClassAnalyseService(artifact, structureService);
+		ClassAnalyseService service = new ClassAnalyseService(artifact);
 		service.setDomainEvent();
 		
 		assertEquals(DDDType.FACTORY, artifact.getType());

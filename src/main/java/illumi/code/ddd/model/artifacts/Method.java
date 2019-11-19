@@ -7,10 +7,6 @@ import org.neo4j.driver.v1.Record;
 import illumi.code.ddd.model.DDDFitness;
 import illumi.code.ddd.model.DDDIssueType;
 
-/**
- * Entity-Class: Method
- * @author Daniel Kraft
- */
 public class Method {
 			
 	private String visibility;
@@ -106,8 +102,8 @@ public class Method {
 	}
 	
 	private static boolean isMethodImmutable(Class artifact, Method method) {
-		return method.getSignature().split(" ")[0].contains(artifact.getPath())
-				|| method.getVisibility().equals("private");
+		return method.getVisibility().contains("private")
+				|| method.getSignature().split(" ")[0].contains(artifact.getPath());
 	}
 
 	static void evaluateDomainEvent(Class artifact, Field field, DDDFitness fitness) {

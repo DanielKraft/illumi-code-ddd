@@ -1,8 +1,5 @@
 package illumi.code.ddd.model.artifacts;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -14,6 +11,8 @@ import org.neo4j.harness.ServerControls;
 import org.neo4j.harness.TestServerBuilders;
 
 import illumi.code.ddd.model.DDDType;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ClassTest {
@@ -44,6 +43,7 @@ class ClassTest {
 		        		// Superclass setup
 		        			+ "CREATE(e:Java:Class{fqn: 'de.test.SuperClass', name: 'SuperClass'})"
 		        			+ "CREATE(c)-[:EXTENDS]->(e)"
+							+ "CREATE(c)-[:DEPENDS_ON]->(e)"
 		        		// Annotation setup
 							+ "CREATE(a:Java:Annotation{name: 'Anno'})"
 							+ "CREATE(c)-[:ANNOTATED_BY]->(a)"
@@ -94,17 +94,16 @@ class ClassTest {
 			artifact.setFields(driver);
 			
 			ArrayList<Field> result = (ArrayList<Field>) artifact.getFields();
-			
-			assertEquals(2, result.size());
-	    	
-	    	assertEquals("classId", result.get(0).getName());
-	    	assertEquals("java.lang.Integer", result.get(0).getType());
-	    	assertEquals("private", result.get(0).getVisibility());
-	    	
-	    	assertEquals("name", result.get(1).getName());
-	    	assertEquals("java.lang.String", result.get(1).getType());
-	    	assertEquals("public", result.get(1).getVisibility());
-	    	
+			assertAll(	() -> assertEquals(2, result.size()),
+
+						() -> assertEquals("name", result.get(0).getName()),
+						() -> assertEquals("java.lang.String", result.get(0).getType()),
+						() -> assertEquals("public", result.get(0).getVisibility()),
+
+						() -> assertEquals("classId", result.get(1).getName()),
+						() -> assertEquals("java.lang.Integer", result.get(1).getType()),
+						() -> assertEquals("private", result.get(1).getVisibility())
+			);
 		}
 	}
 	
@@ -126,16 +125,17 @@ class ClassTest {
 			artifact.setMethods(driver);
 			
 			ArrayList<Method> result = (ArrayList<Method>) artifact.getMethods();
-			
-			assertEquals(2, result.size());
-	    	
-	    	assertEquals("exec", result.get(0).getName());
-	    	assertEquals("void exec(java.lang.Integer)", result.get(0).getSignature());
-	    	assertEquals("public", result.get(0).getVisibility());
-	    	
-	    	assertEquals("init", result.get(1).getName());
-	    	assertEquals("void init()", result.get(1).getSignature());
-	    	assertEquals("private", result.get(1).getVisibility());
+
+			assertAll(	() -> assertEquals(2, result.size()),
+
+						() -> assertEquals("init", result.get(0).getName()),
+						() -> assertEquals("void init()", result.get(0).getSignature()),
+						() -> assertEquals("private", result.get(0).getVisibility()),
+
+						() -> assertEquals("exec", result.get(1).getName()),
+						() -> assertEquals("void exec(java.lang.Integer)", result.get(1).getSignature()),
+						() -> assertEquals("public", result.get(1).getVisibility())
+			);
 		}
 	}
 	
@@ -161,11 +161,11 @@ class ClassTest {
 	    	artifact.setImplInterfaces(driver, interfaces);
 	    	
 			ArrayList<Interface> result = (ArrayList<Interface>) artifact.getInterfaces();
-	    	
-			assertEquals(1, result.size());
-			
-	    	assertEquals("Interface", result.get(0).getName());
-	    	assertEquals("de.test.Interface", result.get(0).getPath());
+
+			assertAll(	() -> assertEquals(1, result.size()),
+
+						() -> assertEquals("Interface", result.get(0).getName()),
+						() -> assertEquals("de.test.Interface", result.get(0).getPath()));
 	    }
 	}
 	
@@ -205,9 +205,9 @@ class ClassTest {
 	    	artifact.setSuperClass(driver, classes);
 	    	
 	    	Class result = artifact.getSuperClass();
-	    	
-	    	assertEquals("SuperClass", result.getName());
-	    	assertEquals("de.test.SuperClass", result.getPath());
+
+			assertAll(	() -> assertEquals("SuperClass", result.getName()),
+						() -> assertEquals("de.test.SuperClass", result.getPath()));
 	    }
 	}
 	
@@ -226,7 +226,7 @@ class ClassTest {
 	}
 	
 	@Test
-	void testSetNoAvalibleSuperClass() {
+	void testSetNoAvailableSuperClass() {
 		Class artifact = new Class("Class", "de.test.Class");
 	    try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
 	    	ArrayList<Class> classes = new ArrayList<>();
@@ -249,7 +249,31 @@ class ClassTest {
 
 		assertNull(result);
 	}
-	
+
+	@Test
+	void testSetDependencies() {
+		Class artifact = new Class("Class", "de.test.Class");
+		try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
+			artifact.setDependencies(driver, "de.test");
+
+			ArrayList<String> result = (ArrayList<String>) artifact.getDependencies();
+
+			assertEquals(1, result.size());
+			assertEquals("de.test.SuperClass", result.get(0));
+		}
+	}
+
+	@Test
+	void testSetDependenciesFailed() {
+		Class artifact = new Class("Class", "de.test.Class");
+
+		artifact.setDependencies(null, "de.test");
+
+		ArrayList<String> result = (ArrayList<String>) artifact.getDependencies();
+
+		assertEquals(0, result.size());
+	}
+
 	@Test
 	void testSetAnnotations() {
 		Class artifact = new Class("Class", "de.test.Class");
@@ -261,12 +285,12 @@ class ClassTest {
 	    	artifact.setAnnotations(driver, annotations);
 	    	
 	    	ArrayList<Annotation> result = (ArrayList<Annotation>) artifact.getAnnotations();
-	    	
-	    	assertEquals(1, result.size());
-	    	
-	    	assertEquals("Anno", result.get(0).getName());
-	    	assertEquals("de.test.Anno", result.get(0).getPath());
-	    	assertEquals(DDDType.INFRASTRUCTURE, result.get(0).getType());
+
+			assertAll( 	() -> assertEquals(1, result.size()),
+
+						() -> assertEquals("Anno", result.get(0).getName()),
+						() -> assertEquals("de.test.Anno", result.get(0).getPath()),
+						() -> assertEquals(DDDType.INFRASTRUCTURE, result.get(0).getType()));
 	    }
 	}
 	
