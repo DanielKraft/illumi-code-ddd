@@ -30,6 +30,8 @@ public class ClassAnalyseService {
                 this.artifact.setType(DDDType.VALUE_OBJECT);
             } else if (isEntity(structureService)) {
                 this.artifact.setType(DDDType.ENTITY);
+            } else if (isAppliccationService()) {
+                this.artifact.setType(DDDType.APPLICATION_SERVICE);
             } else if (isService(structureService)) {
                 this.artifact.setType(DDDType.SERVICE);
             } else {
@@ -83,6 +85,15 @@ public class ClassAnalyseService {
             }
         }
         return containsEntityName(structureService);
+    }
+
+    private boolean isAppliccationService() {
+        for (Method method: this.artifact.getMethods()) {
+            if (method.getName().equalsIgnoreCase("main")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isConstant(Field field) {
