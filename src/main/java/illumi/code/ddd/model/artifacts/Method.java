@@ -45,9 +45,9 @@ public class Method {
 			} 
 		}
 		if (ctr >= 2) {
-			fitness.addSuccessfulCriteria(DDDIssueType.MINOR);
+			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
 		} else if (artifact.getSuperClass() == null) {
-			fitness.addFailedCriteria(DDDIssueType.MINOR, String.format("The Entity '%s' does not containts all needed methods (equals/hashCode).", artifact.getName()));
+			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The Entity '%s' does not containts all needed methods (equals/hashCode).", artifact.getName()));
 		}
 	}
 	
