@@ -66,7 +66,7 @@ class MetricServiceImplTest {
 	void testGetMetric() {
 		final JSONObject expected = new JSONObject()
 				.put("metric", new JSONObject()
-						.put("score", DDDRating.C)
+						.put("score", DDDRating.D)
 						.put("criteria", new JSONObject()
 								.put("total", 40)
 								.put("fulfilled", 25))

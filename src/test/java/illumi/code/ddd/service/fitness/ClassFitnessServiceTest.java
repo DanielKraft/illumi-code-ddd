@@ -51,7 +51,7 @@ class ClassFitnessServiceTest {
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(77.78, 	result.calculateFitness(), 				"Fitness"),
-				 	() -> assertEquals(DDDRating.C, 	result.getscore(), 						"Rating"),
+				 	() -> assertEquals(DDDRating.D, 	result.getscore(), 						"Rating"),
 				 	() -> assertEquals(27, 	result.getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(21, 	result.getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
 				 	() -> assertEquals(4, 		result.getIssues().size(), 				"#Issues"));
@@ -111,7 +111,7 @@ class ClassFitnessServiceTest {
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(74.36, 	result.calculateFitness(), 				"Fitness"),
-				 	() -> assertEquals(DDDRating.C, 	result.getscore(), 						"Rating"),
+				 	() -> assertEquals(DDDRating.D, 	result.getscore(), 						"Rating"),
 				 	() -> assertEquals(39, 	result.getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(29, 	result.getNumberOfFulfilledCriteria(), "Fulfilled Criteria"),
 				 	() -> assertEquals(5, 		result.getIssues().size(), 				"#Issues"));
@@ -258,7 +258,7 @@ class ClassFitnessServiceTest {
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(93.75, 	result.calculateFitness(), 				"Fitness"),
-				 	() -> assertEquals(DDDRating.A,	 	result.getscore(), 						"Rating"),
+				 	() -> assertEquals(DDDRating.B,	 	result.getscore(), 						"Rating"),
 				 	() -> assertEquals(16, 	result.getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(15, 	result.getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
 				 	() -> assertEquals(1, 		result.getIssues().size(), 				"#Issues"));
@@ -303,7 +303,7 @@ class ClassFitnessServiceTest {
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(87.5, 	result.calculateFitness(), 				"Fitness"),
-				 	() -> assertEquals(DDDRating.B, 	result.getscore(), 						"Rating"),
+				 	() -> assertEquals(DDDRating.C, 	result.getscore(), 						"Rating"),
 				 	() -> assertEquals(8, 		result.getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(7, 		result.getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
 				 	() -> assertEquals(1, 		result.getIssues().size(), 				"#Issues"));
@@ -445,7 +445,7 @@ class ClassFitnessServiceTest {
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(69.57, 	result.calculateFitness(), 				"Fitness"),
-				 	() -> assertEquals(DDDRating.C, 	result.getscore(), 						"Rating"),
+				 	() -> assertEquals(DDDRating.D, 	result.getscore(), 						"Rating"),
 				 	() -> assertEquals(23, 	result.getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(16, 	result.getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
 				 	() -> assertEquals(5, 		result.getIssues().size(), 				"#Issues"));
