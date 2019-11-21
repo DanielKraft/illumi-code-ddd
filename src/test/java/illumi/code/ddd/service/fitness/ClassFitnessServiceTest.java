@@ -116,6 +116,22 @@ class ClassFitnessServiceTest {
 				 	() -> assertEquals(29, 	result.getNumberOfFulfilledCriteria(), "Fulfilled Criteria"),
 				 	() -> assertEquals(5, 		result.getIssues().size(), 				"#Issues"));
 	}
+
+	@Test
+	void testEvaluateValueObjectsWithId() {
+		Class artifact = new Class("ValueObjectId", "de.test.ValueObjectId");
+		artifact.setType(DDDType.VALUE_OBJECT);
+		artifact.addField(new Field("private", "id", "long"));
+
+		ClassFitnessService service = new ClassFitnessService(artifact, structureService);
+		final DDDFitness result = service.evaluate();
+
+		assertAll(	() -> assertEquals(52.63, 	result.calculateFitness(), 					"Fitness"),
+					() -> assertEquals(DDDRating.D, 	result.getscore(), 							"Rating"),
+					() -> assertEquals(19, 	result.getNumberOfCriteria(), 				"Total Criteria"),
+					() -> assertEquals(10, 		result.getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
+					() -> assertEquals(5, 		result.getIssues().size(), 					"#Issues"));
+	}
 	
 	@Test
 	void testEvaluateInvalidValueObjects() {
