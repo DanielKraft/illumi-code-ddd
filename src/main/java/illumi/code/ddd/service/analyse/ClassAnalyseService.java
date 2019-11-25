@@ -30,6 +30,8 @@ public class ClassAnalyseService {
                 this.artifact.setType(DDDType.VALUE_OBJECT);
             } else if (isEntity(structureService)) {
                 this.artifact.setType(DDDType.ENTITY);
+            } else if (isApplicationService()) {
+                this.artifact.setType(DDDType.APPLICATION_SERVICE);
             } else if (isService(structureService)) {
                 this.artifact.setType(DDDType.SERVICE);
             } else {
@@ -85,6 +87,15 @@ public class ClassAnalyseService {
         return containsEntityName(structureService);
     }
 
+    private boolean isApplicationService() {
+        for (Method method: this.artifact.getMethods()) {
+            if (method.getName().equalsIgnoreCase("main")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private boolean isConstant(Field field) {
         return StringUtils.isAllUpperCase(field.getName());
     }
@@ -135,21 +146,21 @@ public class ClassAnalyseService {
     }
 
     private boolean isDomainEvent() {
-        boolean containtsTimestamp = false;
-        boolean containtsIdentity = false;
+        boolean containsTimestamp = false;
+        boolean containsIdentity = false;
 
         for (Field field : this.artifact.getFields()) {
             if (field.getName().contains("time")
                     || field.getName().contains("date")
                     || field.getType().contains("java.time.")) {
-                containtsTimestamp = true;
+                containsTimestamp = true;
 
             } else if (!field.getName().equalsIgnoreCase("id")
                     && field.getName().toUpperCase().endsWith("ID")) {
-                containtsIdentity = true;
+                containsIdentity = true;
             }
         }
 
-        return containtsTimestamp && containtsIdentity;
+        return containsTimestamp && containsIdentity;
     }
 }

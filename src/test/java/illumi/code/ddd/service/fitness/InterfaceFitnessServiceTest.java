@@ -74,7 +74,7 @@ class InterfaceFitnessServiceTest {
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(85.71, 	result.calculateFitness(), 				"Fitness"),
-				 	() -> assertEquals(DDDRating.B, 	result.getscore(), 						"Rating"),
+				 	() -> assertEquals(DDDRating.C, 	result.getscore(), 						"Rating"),
 				 	() -> assertEquals(7, 		result.getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(6, 		result.getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
 				 	() -> assertEquals(1, 		result.getIssues().size(), 				"#Issues"));

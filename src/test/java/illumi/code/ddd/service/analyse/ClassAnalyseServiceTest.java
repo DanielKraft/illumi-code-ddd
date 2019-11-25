@@ -133,6 +133,18 @@ class ClassAnalyseServiceTest {
 
 		assertEquals(DDDType.ENTITY, artifact.getType());
 	}
+
+	@Test
+	void testSetTypeToApplicationService() {
+		Class artifact = new Class("Main", "de.test.domain.Main");
+		artifact.addMethod(new Method("public", "main", "void main(java.lang.String[])"));
+		structureService.addClasses(artifact);
+
+		ClassAnalyseService service = new ClassAnalyseService(artifact, structureService);
+		service.setType();
+
+		assertEquals(DDDType.APPLICATION_SERVICE, artifact.getType());
+	}
 	
 	@Test
 	void testSetTypeToService() {

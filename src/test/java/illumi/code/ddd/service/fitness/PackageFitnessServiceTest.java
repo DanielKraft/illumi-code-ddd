@@ -49,7 +49,7 @@ class PackageFitnessServiceTest {
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(40.0, 	result.calculateFitness(), 				"Fitness"),
-				 	() -> assertEquals(DDDRating.D, 	result.getscore(), 						"Rating"),
+				 	() -> assertEquals(DDDRating.E, 	result.getscore(), 						"Rating"),
 				 	() -> assertEquals(10, 	result.getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(4, 		result.getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
 				 	() -> assertEquals(2, 		result.getIssues().size(), 				"#Issues"));

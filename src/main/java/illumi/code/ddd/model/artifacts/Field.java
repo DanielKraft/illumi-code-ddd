@@ -65,7 +65,8 @@ public class Field {
 	public static void evaluateValueObject(Class artifact, StructureService structureService, DDDFitness fitness) {
 		boolean containsId = false;
 		for (Field field : artifact.getFields()) {
-			if (Field.isId(field)) {
+			if (Field.isId(field)
+				&& !artifact.getName().toUpperCase().endsWith("ID")) {
 				containsId = true;
 			}
 			
