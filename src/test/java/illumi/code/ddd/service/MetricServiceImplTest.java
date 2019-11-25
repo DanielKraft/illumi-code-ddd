@@ -34,13 +34,13 @@ class MetricServiceImplTest {
 		entity.setDomain("domain");
 		entity.setFitness(new DDDFitness(15, 9));
 		domain.addContains(entity);
-		structure.addClasses(entity);
+		structure.addClass(entity);
 		Class repo = new Class("EntityRepository", "de.test.domain.EntityRepository");
 		repo.setType(DDDType.REPOSITORY);
 		repo.setDomain("domain");
 		repo.setFitness(new DDDFitness(5, 4));
 		domain.addContains(repo);
-		structure.addClasses(repo);
+		structure.addClass(repo);
 		
 		Package infrastructure = new Package("infrastructure", "de.test.infrastructure");
 		infrastructure.setType(DDDType.MODULE);
@@ -50,7 +50,7 @@ class MetricServiceImplTest {
 		contoller.setType(DDDType.CONTROLLER);
 		contoller.setFitness(new DDDFitness(12, 7));
 		infrastructure.addContains(contoller);
-		structure.addClasses(contoller);
+		structure.addClass(contoller);
 		
 		ArrayList<Artifact> data = new ArrayList<>();
 		data.add(domain);

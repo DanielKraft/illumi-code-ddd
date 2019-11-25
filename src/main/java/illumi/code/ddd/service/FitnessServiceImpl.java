@@ -30,7 +30,7 @@ public class FitnessServiceImpl implements FitnessService {
 		evaluateClasses();
 		evaluateInterfaces();
 		evaluateAnnotations();
-		return structureService.getJOSN();
+		return structureService.getJSON();
 	}
 	
 	private void evaluateModules() {

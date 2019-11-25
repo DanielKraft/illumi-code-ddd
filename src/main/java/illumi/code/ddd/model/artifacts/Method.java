@@ -108,14 +108,11 @@ public class Method {
 
 	static void evaluateDomainEvent(Class artifact, Field field, DDDFitness fitness) {
 		boolean containsGetter = false;
-		boolean containsSetter = false;
 
 		for (Method method : artifact.getMethods()) {
 			if (method.getName().toUpperCase().startsWith("GET" + field.getName().toUpperCase())) {
 				containsGetter = true;
 			} else if (method.getName().toUpperCase().startsWith("SET" + field.getName().toUpperCase())) {
-				containsSetter = true;
-
 				fitness.addIssue(isMethodImmutable(artifact, method), DDDIssueType.CRITICAL,
 						String.format("The method '%s(...)' is not immutable.", method.getName()));
 			}
@@ -123,9 +120,6 @@ public class Method {
 
 		fitness.addIssue(containsGetter, DDDIssueType.MINOR,
 				String.format("The field '%s' of the Domain Event '%s' has no getter.", field.getName(), artifact.getName()));
-
-		fitness.addIssue(!containsSetter, DDDIssueType.MAJOR,
-				String.format("The domain event '%s' contains a setter for the field '%s'.", artifact.getName(), field.getName()));
 	}
 	
 	public static void evaluateRepository(String name, List<Method> methods, DDDFitness fitness) {

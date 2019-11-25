@@ -25,7 +25,7 @@ class ClassAnalyseServiceTest {
 	void testSetTypeWithAllreadySet() {
 		Class artifact = new Class("Value", "de.test.domain.Value");
 		artifact.setType(DDDType.VALUE_OBJECT);
-		structureService.addClasses(artifact);
+		structureService.addClass(artifact);
 
 		ClassAnalyseService service = new ClassAnalyseService(artifact, structureService);
 		service.setType();
@@ -40,7 +40,7 @@ class ClassAnalyseServiceTest {
 		artifact.addField(new Field("private", "nachname", "de.test.domain.Nachname"));
 		artifact.addMethod(new Method("public", "toString", "java.lang.String toString()"));
 		artifact.addMethod(new Method("public", "getName", "java.lang.String getName()"));
-		structureService.addClasses(artifact);
+		structureService.addClass(artifact);
 
 		ClassAnalyseService service = new ClassAnalyseService(artifact, structureService);
 		service.setType();
@@ -53,7 +53,7 @@ class ClassAnalyseServiceTest {
 		Class artifact = new Class("ValueId", "de.test.domain.ValueId");
 		artifact.addField(new Field("private", "id", "java.lang.long"));
 		artifact.addMethod(new Method("public", "getId", "java.lang.long getId()"));
-		structureService.addClasses(artifact);
+		structureService.addClass(artifact);
 
 		ClassAnalyseService service = new ClassAnalyseService(artifact, structureService);
 		service.setType();
@@ -67,7 +67,7 @@ class ClassAnalyseServiceTest {
 		artifact.addField(new Field("private", "name", "java.lang.String"));
 		artifact.addField(new Field("private", "nachname", "de.test.domain.Nachname"));
 		artifact.addMethod(new Method("public", "nachname", "de.test.domain.Nachname nachname()"));
-		structureService.addClasses(artifact);
+		structureService.addClass(artifact);
 
 		ClassAnalyseService service = new ClassAnalyseService(artifact, structureService);
 		service.setType();
@@ -80,7 +80,7 @@ class ClassAnalyseServiceTest {
 		Class artifact = new Class("Value", "de.test.domain.Value");
 		artifact.addField(new Field("private", "name", "java.lang.String"));
 		artifact.addField(new Field("private", "nachname", "de.test.domain.Nachname"));
-		structureService.addClasses(artifact);
+		structureService.addClass(artifact);
 
 		ClassAnalyseService service = new ClassAnalyseService(artifact, structureService);
 		service.setType();
@@ -91,14 +91,14 @@ class ClassAnalyseServiceTest {
 	@Test
 	void testSetTypeToEntity() {
 		Class entity = new Class("Entity", "de.test.domain.Entity");
-		structureService.addClasses(entity);
+		structureService.addClass(entity);
 		
 		Class artifact = new Class("Entitys", "de.test.domain.Entitys");
 		artifact.addField(new Field("private", "other", ".de.Other"));
 		artifact.addField(new Field("private", "name", "java.lang.String"));
 		artifact.addMethod(new Method("public", "toString", "java.lang.String toString()"));
 		artifact.addMethod(new Method("public", "setName", "void setName(java.lang.String)"));
-		structureService.addClasses(artifact);
+		structureService.addClass(artifact);
 
 		ClassAnalyseService service = new ClassAnalyseService(artifact, structureService);
 		service.setType();
@@ -113,7 +113,7 @@ class ClassAnalyseServiceTest {
 		artifact.addField(new Field("private", "id", "de.test.domain.EntityId"));
 		artifact.addMethod(new Method("public", "toString", "java.lang.String toString()"));
 		artifact.addMethod(new Method("public", "setName", "void setName(java.lang.String)"));
-		structureService.addClasses(artifact);
+		structureService.addClass(artifact);
 
 		ClassAnalyseService service = new ClassAnalyseService(artifact, structureService);
 		service.setType();
@@ -126,7 +126,7 @@ class ClassAnalyseServiceTest {
 		Class artifact = new Class("Entity", "de.test.domain.Entity");
 		artifact.addField(new Field("private", "other", "de.Other"));
 		artifact.addField(new Field("private", "name", "java.lang.String"));
-		structureService.addClasses(artifact);
+		structureService.addClass(artifact);
 
 		ClassAnalyseService service = new ClassAnalyseService(artifact, structureService);
 		service.setType();
@@ -138,7 +138,7 @@ class ClassAnalyseServiceTest {
 	void testSetTypeToApplicationService() {
 		Class artifact = new Class("Main", "de.test.domain.Main");
 		artifact.addMethod(new Method("public", "main", "void main(java.lang.String[])"));
-		structureService.addClasses(artifact);
+		structureService.addClass(artifact);
 
 		ClassAnalyseService service = new ClassAnalyseService(artifact, structureService);
 		service.setType();
@@ -151,15 +151,15 @@ class ClassAnalyseServiceTest {
 		Class artifact = new Class("NameGenerator", "de.test.domain.NameGenerator");
 		artifact.addField(new Field("private", "nameRepository", "de.test.domain.NameRepository"));
 		artifact.addMethod(new Method("public", "generate", "void generate()"));
-		structureService.addClasses(artifact);
+		structureService.addClass(artifact);
 		
 		Class entity1 = new Class("Entity", "de.test.domain.Entity");
 		entity1.addField(new Field("private", "name", "java.lang.String"));
-		structureService.addClasses(entity1);
+		structureService.addClass(entity1);
 		
 		Class entity2 = new Class("Name", "de.test.domain.Name");
 		entity2.addField(new Field("private", "name", "java.lang.String"));
-		structureService.addClasses(entity2);
+		structureService.addClass(entity2);
 
 		ClassAnalyseService service = new ClassAnalyseService(artifact, structureService);
 		service.setType();
@@ -171,14 +171,14 @@ class ClassAnalyseServiceTest {
 	void testSetTypeToServiceWithConstant() {
 		Class entity = new Class("Name", "de.test.domain.Name");
 		entity.addField(new Field("private", "name", "java.lang.String"));
-		structureService.addClasses(entity);
+		structureService.addClass(entity);
 		
 		Class artifact = new Class("NameGenerator", "de.test.domain.NameGenerator");
 		artifact.addField(new Field("private", "CONST", "java.lang.String"));
 		artifact.addField(new Field("private", "nameRepository", "de.test.domain.NameRepository"));
 		artifact.addMethod(new Method("public", "toString", "java.lang.String toString()"));
 		artifact.addMethod(new Method("public", "generate", "void generate()"));
-		structureService.addClasses(artifact);
+		structureService.addClass(artifact);
 
 		ClassAnalyseService service = new ClassAnalyseService(artifact, structureService);
 		service.setType();
@@ -189,7 +189,7 @@ class ClassAnalyseServiceTest {
 	@Test
 	void testSetTypeToInfrastructureWithJPA() {
 		Class artifact = new Class("InfraJPA", "de.test.domain.InfraJPA");
-		structureService.addClasses(artifact);
+		structureService.addClass(artifact);
 
 		ClassAnalyseService service = new ClassAnalyseService(artifact, structureService);
 		service.setType();
@@ -200,7 +200,7 @@ class ClassAnalyseServiceTest {
 	@Test
 	void testSetTypeToInfrastructureWithCRUD() {
 		Class artifact = new Class("InfraCRUD", "de.test.domain.InfraCRUD");
-		structureService.addClasses(artifact);
+		structureService.addClass(artifact);
 
 		ClassAnalyseService service = new ClassAnalyseService(artifact, structureService);
 		service.setType();
@@ -214,7 +214,7 @@ class ClassAnalyseServiceTest {
 		artifact.addField(new Field("private", "other", "de.Other"));
 		artifact.addField(new Field("private", "name", "java.lang.String"));
 		artifact.addMethod(new Method("public", "generate", "void generate()"));
-		structureService.addClasses(artifact);
+		structureService.addClass(artifact);
 
 		ClassAnalyseService service = new ClassAnalyseService(artifact, structureService);
 		service.setType();
@@ -225,7 +225,7 @@ class ClassAnalyseServiceTest {
 	@Test
 	void testSetTypeToInfrastructureEmpty() {
 		Class artifact = new Class("Infra", "de.test.domain.Infra");
-		structureService.addClasses(artifact);
+		structureService.addClass(artifact);
 
 		ClassAnalyseService service = new ClassAnalyseService(artifact, structureService);
 		service.setType();

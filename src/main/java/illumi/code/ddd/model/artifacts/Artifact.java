@@ -37,7 +37,11 @@ public abstract class Artifact {
 	public String getPath() {
 		return this.path;
 	}
-	
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
 	public String getDomain() {
 		return domain;
 	}

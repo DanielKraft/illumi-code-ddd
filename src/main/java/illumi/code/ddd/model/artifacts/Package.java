@@ -38,7 +38,9 @@ public class Package extends Artifact {
 	}
 
 	public void addContains(Artifact artifact) {
-		this.contains.add(artifact);
+		if (!this.contains.contains(artifact)) {
+			this.contains.add(artifact);
+		}
 	}
 	
 	public void setAggregateRoot(StructureService structureService) {

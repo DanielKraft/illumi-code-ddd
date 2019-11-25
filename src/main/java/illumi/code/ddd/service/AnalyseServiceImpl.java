@@ -54,7 +54,7 @@ public class AnalyseServiceImpl implements AnalyseService {
     	analyseDomains();
     	
     	findEvents();
-    	return structureService.getJOSN();
+    	return structureService.getJSON();
     }
 
 	private ArrayList<Artifact> getArtifacts(String path) {
@@ -82,16 +82,16 @@ public class AnalyseServiceImpl implements AnalyseService {
 				} else if (types.contains("Class")) {
 					artifact = new Class(item);
 					((Class) artifact).setDependencies(driver, structureService.getPath());
-					structureService.addClasses((Class) artifact);
+					structureService.addClass((Class) artifact);
 				} else if (types.contains("Interface")) {
 					artifact = new Interface(item);
-					structureService.addInterfaces((Interface) artifact);
+					structureService.addInterface((Interface) artifact);
 				} else if (types.contains("Enum")) {
 					artifact = new Enum(item);
-					structureService.addEnums((Enum) artifact);
+					structureService.addEnum((Enum) artifact);
 				} else {
 					artifact = new Annotation(item);
-					structureService.addAnnotations((Annotation) artifact);
+					structureService.addAnnotation((Annotation) artifact);
 				}
 
 				artifacts.add(artifact);

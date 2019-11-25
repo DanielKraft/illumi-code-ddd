@@ -2,13 +2,10 @@ package illumi.code.ddd.controller;
 
 import javax.inject.Inject;
 
+import illumi.code.ddd.service.*;
+import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import illumi.code.ddd.service.AnalyseService;
-import illumi.code.ddd.service.FitnessService;
-import illumi.code.ddd.service.MetricService;
-import illumi.code.ddd.service.StructureService;
 
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
@@ -23,6 +20,7 @@ public class DDDController {
 	@Inject AnalyseService analyseService;
 	@Inject FitnessService fitnessService;
 	@Inject MetricService metricService;
+	@Inject RefactorService refactorService;
 
 	private StructureService structureService;
 
@@ -47,4 +45,21 @@ public class DDDController {
 		}
 		return HttpResponse.badRequest("{\"message\":\"No project has been analyzed!\"}");
     }
+
+
+
+	@Get("/refactor")
+	@Produces(MediaType.APPLICATION_JSON)
+	public HttpResponse<String> refactor() {
+		LOGGER.info("HTTP GET: refactor/");
+		if (structureService != null) {
+			refactorService.setStructureService(structureService);
+			structureService = refactorService.refactor();
+			fitnessService.setStructureService(structureService);
+
+			return HttpResponse.ok(new JSONArray(structureService.getStructure()).toString());
+//			return HttpResponse.ok(fitnessService.getStructureWithFitness().toString());
+		}
+		return HttpResponse.badRequest("{\"message\":\"No project has been analyzed!\"}");
+	}
 }

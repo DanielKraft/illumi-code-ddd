@@ -51,10 +51,14 @@ public class StructureService {
 		this.path = split[split.length-1] + ".";
 	}
 
+	public ArrayList<Artifact> getStructure() {
+		return structure;
+	}
+
 	public void setStructure(List<Artifact> artifacts) {
 		this.structure = (ArrayList<Artifact>) artifacts;
 	}
-	
+
 	public List<String> getDomains() {
 		return domains;
 	}
@@ -77,15 +81,17 @@ public class StructureService {
 		return classes;
 	}
 
-	public void addClasses(Class c) {
-		this.classes.add(c);
+	public void addClass(Class c) {
+		if (!this.classes.contains(c)) {
+			this.classes.add(c);
+		}
 	}
 
 	List<Interface> getInterfaces() {
 		return interfaces;
 	}
 
-	public void addInterfaces(Interface i) {
+	public void addInterface(Interface i) {
 		this.interfaces.add(i);
 	}
 
@@ -93,15 +99,15 @@ public class StructureService {
 		return enums;
 	}
 
-	void addEnums(Enum e) {
+	void addEnum(Enum e) {
 		this.enums.add(e);
 	}
 
-	public List<Annotation> getAnnotations() {
+	List<Annotation> getAnnotations() {
 		return annotations;
 	}
 
-	public void addAnnotations(Annotation a) {
+	public void addAnnotation(Annotation a) {
 		this.annotations.add(a);
 	}
 	
@@ -118,7 +124,7 @@ public class StructureService {
 		return all;
 	}
 	
-	JSONArray getJOSN() {
+	JSONArray getJSON() {
 		return convertPackage(structure);
 	}
 	

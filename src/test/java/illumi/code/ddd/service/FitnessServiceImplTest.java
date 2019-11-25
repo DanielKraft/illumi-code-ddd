@@ -33,15 +33,15 @@ private FitnessServiceImpl service;
 		
 		Class artifact2 = new Class("Class", "de.test.Class");
 		artifact2.setType(DDDType.ENTITY);
-		structure.addClasses(artifact2);
+		structure.addClass(artifact2);
 		
 		Interface artifact3 = new Interface("Interface", "de.test.Interface");
 		artifact3.setType(DDDType.REPOSITORY);
-		structure.addInterfaces(artifact3);
+		structure.addInterface(artifact3);
 		
 		Annotation artifact4 = new Annotation("Annotation", "de.test.Annotation");
 		artifact4.setType(DDDType.INFRASTRUCTURE);
-		structure.addAnnotations(artifact4);
+		structure.addAnnotation(artifact4);
 		
 		ArrayList<Artifact> data = new ArrayList<>();
 		data.add(artifact1);

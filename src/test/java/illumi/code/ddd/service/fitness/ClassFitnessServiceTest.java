@@ -460,11 +460,11 @@ class ClassFitnessServiceTest {
 		ClassFitnessService service = new ClassFitnessService(event, structureService);
 		final DDDFitness result = service.evaluate();
 		
-		assertAll(	() -> assertEquals(57.14, 	result.calculateFitness(), 				"Fitness"),
+		assertAll(	() -> assertEquals(43.75, 	result.calculateFitness(), 				"Fitness"),
 				 	() -> assertEquals(DDDRating.D, 	result.getscore(), 						"Rating"),
-				 	() -> assertEquals(28, 	result.getNumberOfCriteria(), 			"Total Criteria"),
-				 	() -> assertEquals(16, 	result.getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
-				 	() -> assertEquals(6, 		result.getIssues().size(), 				"#Issues"));
+				 	() -> assertEquals(16, 	result.getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(7, 		result.getNumberOfFulfilledCriteria(),		"Fulfilled Criteria"),
+				 	() -> assertEquals(5, 		result.getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test

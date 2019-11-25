@@ -23,7 +23,7 @@ public class PackageAnalyseService {
             if (candidates.size() == 1) {
                 candidates.get(0).setType(DDDType.AGGREGATE_ROOT);
             } else {
-                for (Artifact artifact : candidates) {
+                for (Class artifact : candidates) {
                     if (structureService.getDomains().contains(artifact.getName().toLowerCase())) {
                         artifact.setType(DDDType.AGGREGATE_ROOT);
                     }
