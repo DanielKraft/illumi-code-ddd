@@ -1,22 +1,20 @@
 package illumi.code.ddd.service;
 
 import illumi.code.ddd.model.DDDType;
-import illumi.code.ddd.model.artifacts.Artifact;
+import illumi.code.ddd.model.artifacts.*;
 import illumi.code.ddd.model.artifacts.Class;
-import illumi.code.ddd.model.artifacts.Field;
+import illumi.code.ddd.model.artifacts.Enum;
 import illumi.code.ddd.model.artifacts.Package;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
 
 public class RefactorServiceImpl implements RefactorService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(RefactorServiceImpl.class);
-
-    private StructureService structureService;
-    private StructureService improveStructureService;
+    private static final String DOMAIN_PATH = "domain.%s.model";
+    private static final String IMPL_PATH = "domain.%s.model.impl";
+    private static final String APPLICATION_PATH = "application.%s";
+    private StructureService oldStructure;
+    private StructureService newStructure;
 
     private Package domain;
     private Package application;
@@ -32,10 +30,10 @@ public class RefactorServiceImpl implements RefactorService {
     }
 
     @Override
-    public void setStructureService(StructureService structureService) {
-        this.structureService = structureService;
-        this.improveStructureService = new StructureService();
-        this.improveStructureService.setPath(structureService.getPath());
+    public void setOldStructure(StructureService oldStructure) {
+        this.oldStructure = oldStructure;
+        this.newStructure = new StructureService();
+        this.newStructure.setPath(oldStructure.getPath());
         this.roots = new ArrayList<>();
     }
 
@@ -43,60 +41,63 @@ public class RefactorServiceImpl implements RefactorService {
     public StructureService refactor() {
         initModules();
 
-        sortClasses();
+        assignClasses();
+        assignInterfaces();
+        assignEnums();
+        assignAnnotations();
 
-        refactorPaths(improveStructureService.getPath(), improveStructureService.getStructure());
-        return improveStructureService;
+        refactorPaths(newStructure.getPath(), newStructure.getStructure());
+        return newStructure;
     }
 
     private void initModules() {
         ArrayList<Artifact> structure = new ArrayList<>();
 
         this.application = new Package("application",
-                String.format("%sapplication", improveStructureService.getPath()));
-        improveStructureService.addPackage(application);
+                String.format("%sapplication", newStructure.getPath()));
+        newStructure.addPackage(application);
         structure.add(application);
 
         this.infrastructure = new Package("infrastructure",
-                String.format("%sinfrastructure", improveStructureService.getPath()));
-        improveStructureService.addPackage(infrastructure);
+                String.format("%sinfrastructure", newStructure.getPath()));
+        newStructure.addPackage(infrastructure);
         structure.add(infrastructure);
 
         this.domain = new Package("domain",
-                String.format("%sdomain", improveStructureService.getPath()));
-        improveStructureService.addPackage(domain);
+                String.format("%sdomain", newStructure.getPath()));
+        newStructure.addPackage(domain);
         structure.add(domain);
 
         initDomains();
 
         this.model = new Package("model",
                 String.format("%s.model", this.domain.getPath()));
-        improveStructureService.addPackage(model);
+        newStructure.addPackage(model);
         this.domain.addContains(model);
 
-        improveStructureService.setStructure(structure);
+        newStructure.setStructure(structure);
     }
 
     private void initDomains() {
-        for (Class artifact: structureService.getClasses()) {
+        for (Class artifact: oldStructure.getClasses()) {
             if (artifact.isTypeOf(DDDType.AGGREGATE_ROOT)) {
                 roots.add(artifact);
 
                 String domain = artifact.getName().toLowerCase();
-                improveStructureService.addDomain(domain);
+                newStructure.addDomain(domain);
 
                 Package domainModule = addDomainModules(this.domain, domain);
 
                 Package model = new Package("model", String.format("%s.model", domainModule.getPath()));
                 domainModule.addContains(model);
-                improveStructureService.addPackage(model);
+                newStructure.addPackage(model);
 
                 Package impl = new Package("impl", String.format("%s.impl", model.getPath()));
                 model.addContains(impl);
-                improveStructureService.addPackage(impl);
+                newStructure.addPackage(impl);
 
                 model.addContains(artifact);
-                improveStructureService.addClass(artifact);
+                newStructure.addClass(artifact);
 
                 addDomainModules(this.application, domain);
             }
@@ -106,13 +107,13 @@ public class RefactorServiceImpl implements RefactorService {
     private Package addDomainModules(Package module, String domain) {
         Package newModule = new Package(domain, String.format("%s.%s", module.getPath(), domain));
         module.addContains(newModule);
-        improveStructureService.addPackage(newModule);
+        newStructure.addPackage(newModule);
 
         return newModule;
     }
 
-    private void sortClasses() {
-        for (Class artifact: structureService.getClasses()) {
+    private void assignClasses() {
+        for (Class artifact: oldStructure.getClasses()) {
             switch (artifact.getType()) {
                 case APPLICATION_SERVICE:
                     this.application.addContains(artifact);
@@ -122,17 +123,17 @@ public class RefactorServiceImpl implements RefactorService {
                     this.infrastructure.addContains(artifact);
                     break;
                 case SERVICE:
-                    addArtifact(artifact, "application.%s");
+                    addArtifact(artifact, APPLICATION_PATH);
                     break;
                 case FACTORY:
                 case REPOSITORY:
-                    addArtifact(artifact, "domain.%s.model.impl");
+                    addArtifact(artifact, IMPL_PATH);
                     break;
                 default:
-                    addArtifact(artifact, "domain.%s.model");
+                    addArtifact(artifact, DOMAIN_PATH);
                     break;
             }
-            improveStructureService.addClass(artifact);
+            newStructure.addClass(artifact);
         }
     }
 
@@ -152,7 +153,7 @@ public class RefactorServiceImpl implements RefactorService {
     }
 
     private Package getModule(String path) {
-        for (Package module : improveStructureService.getPackages()) {
+        for (Package module : newStructure.getPackages()) {
             if (module.getPath().endsWith(path)) {
                 return module;
             }
@@ -160,7 +161,7 @@ public class RefactorServiceImpl implements RefactorService {
         return null;
     }
 
-    private String getDomainOf(Class artifact) {
+    private String getDomainOf(Artifact artifact) {
         for (Class root: roots) {
             if (isRootOf(root, artifact)) {
                 return root.getName().toLowerCase();
@@ -169,19 +170,19 @@ public class RefactorServiceImpl implements RefactorService {
         return null;
     }
 
-    private boolean isRootOf(Class root, Class artifact) {
+    private boolean isRootOf(Class root, Artifact artifact) {
         return artifact.getName().toLowerCase().contains(root.getName().toLowerCase())
                 || artifact.getName().toLowerCase().contains(root.getDomain().toLowerCase())
                 || artifact.getPath().contains("." + root.getDomain() + ".")
                 || (artifact.getDomain() != null
-                    && artifact.getDomain().equalsIgnoreCase(root.getDomain()));
+                && artifact.getDomain().equalsIgnoreCase(root.getDomain()));
     }
 
     private String dependsOn(Class artifact) {
         for (String dependency : artifact.getDependencies()) {
-            for (Class aClass : structureService.getClasses()) {
+            for (Class aClass : oldStructure.getClasses()) {
                 if (aClass != artifact
-                    && artifact.getPath().contains(dependency)) {
+                        && artifact.getPath().contains(dependency)) {
                     String domain = getDomainOf(aClass);
                     if (domain != null) {
                         return domain;
@@ -191,9 +192,9 @@ public class RefactorServiceImpl implements RefactorService {
         }
 
         for (Field field : artifact.getFields()) {
-            for (Class aClass : structureService.getClasses()) {
+            for (Class aClass : oldStructure.getClasses()) {
                 if (aClass != artifact
-                    && field.getName().toLowerCase().contains(aClass.getName().toLowerCase())) {
+                        && field.getName().toLowerCase().contains(aClass.getName().toLowerCase())) {
                     String domain = getDomainOf(aClass);
                     if (domain != null) {
                         return domain;
@@ -203,6 +204,64 @@ public class RefactorServiceImpl implements RefactorService {
         }
 
         return null;
+    }
+
+    private void assignInterfaces() {
+        for (Interface artifact: oldStructure.getInterfaces()) {
+            addArtifact(artifact);
+            newStructure.addInterface(artifact);
+        }
+    }
+
+    private void addArtifact(Interface artifact) {
+        Package module = getModule(String.format(DOMAIN_PATH, getDomainOf(artifact)));
+
+        if (module != null) {
+            module.addContains(artifact);
+        } else {
+            module = dependsOn(artifact);
+            if (module != null) {
+                module.addContains(artifact);
+            } else {
+                this.model.addContains(artifact);
+            }
+        }
+    }
+
+    private Package dependsOn(Interface artifact) {
+        for (Package module : newStructure.getPackages()) {
+            for (Artifact item : module.getContains()) {
+                if (!(item instanceof Package)
+                    && artifact.getName().toLowerCase().contains(item.getName().toLowerCase())) {
+                    return module;
+                }
+            }
+        }
+        return null;
+    }
+
+    private void assignEnums() {
+        for (Enum artifact: oldStructure.getEnums()) {
+            addArtifact(artifact);
+            newStructure.addEnum(artifact);
+        }
+    }
+
+    private void addArtifact(Enum artifact) {
+        Package module = getModule(String.format(DOMAIN_PATH, getDomainOf(artifact)));
+
+        if (module != null) {
+            module.addContains(artifact);
+        } else {
+            this.model.addContains(artifact);
+        }
+    }
+
+    private void assignAnnotations() {
+        for (Annotation artifact: oldStructure.getAnnotations()) {
+            infrastructure.addContains(artifact);
+            newStructure.addAnnotation(artifact);
+        }
     }
 
     private void refactorPaths(String path, ArrayList<Artifact> structure) {

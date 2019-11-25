@@ -2,7 +2,7 @@ package illumi.code.ddd.service;
 
 public interface RefactorService {
 
-    void setStructureService(StructureService structureService);
+    void setOldStructure(StructureService oldStructure);
 
     StructureService refactor();
 }

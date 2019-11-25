@@ -53,7 +53,7 @@ public class DDDController {
 	public HttpResponse<String> refactor() {
 		LOGGER.info("HTTP GET: refactor/");
 		if (structureService != null) {
-			refactorService.setStructureService(structureService);
+			refactorService.setOldStructure(structureService);
 			structureService = refactorService.refactor();
 			fitnessService.setStructureService(structureService);
 

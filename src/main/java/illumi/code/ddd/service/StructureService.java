@@ -103,7 +103,7 @@ public class StructureService {
 		this.enums.add(e);
 	}
 
-	List<Annotation> getAnnotations() {
+	public List<Annotation> getAnnotations() {
 		return annotations;
 	}
 

@@ -461,7 +461,7 @@ class ClassFitnessServiceTest {
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(43.75, 	result.calculateFitness(), 				"Fitness"),
-				 	() -> assertEquals(DDDRating.D, 	result.getscore(), 						"Rating"),
+				 	() -> assertEquals(DDDRating.E, 	result.getscore(), 						"Rating"),
 				 	() -> assertEquals(16, 	result.getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(7, 		result.getNumberOfFulfilledCriteria(),		"Fulfilled Criteria"),
 				 	() -> assertEquals(5, 		result.getIssues().size(), 				"#Issues"));
