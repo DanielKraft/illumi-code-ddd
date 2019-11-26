@@ -1,48 +1,26 @@
-package illumi.code.ddd.service;
+package illumi.code.ddd.service.refactor.impl;
+
 
 import illumi.code.ddd.model.DDDFitness;
-import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.artifacts.*;
 import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Enum;
 import illumi.code.ddd.model.artifacts.Package;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.List;
 
-public class RefactorServiceImpl implements RefactorService {
+class AssignService {
     private static final String DOMAIN_PATH = "domain.%s.model";
     private static final String IMPL_PATH = "domain.%s.model.impl";
     private static final String APPLICATION_PATH = "application.%s";
-    private StructureService oldStructure;
-    private StructureService newStructure;
 
-    private Package domainModule;
-    private Package applicationModule;
-    private Package infrastructureModule;
+    private RefactorServiceImpl refactorService;
 
-    private Package modelModule;
-
-    private ArrayList<Class> roots;
-
-    public @Inject
-    RefactorServiceImpl() {
-        // @Inject is needed
+    AssignService(RefactorServiceImpl refactorService) {
+        this.refactorService = refactorService;
     }
 
-    @Override
-    public void setOldStructure(StructureService oldStructure) {
-        this.oldStructure = oldStructure;
-        this.newStructure = new StructureService();
-        this.newStructure.setPath(oldStructure.getPath());
-        this.roots = new ArrayList<>();
-    }
-
-    @Override
-    public StructureService refactor() {
-        initModules();
-
+    void assign() {
         assignClasses();
         assignInterfaces();
         assignEnums();
@@ -50,84 +28,20 @@ public class RefactorServiceImpl implements RefactorService {
 
         clean();
 
-        refactorPaths(newStructure.getPath(), (ArrayList<Artifact>) newStructure.getStructure());
+        refactorPaths(refactorService.getNewStructure().getPath(),
+                (ArrayList<Artifact>) refactorService.getNewStructure().getStructure());
         refactorDomains();
-
-        deleteEmptyModules(newStructure.getStructure());
-        return newStructure;
-    }
-
-    private void initModules() {
-        ArrayList<Artifact> structure = new ArrayList<>();
-
-        this.applicationModule = new Package("application",
-                String.format("%sapplication", newStructure.getPath()));
-        newStructure.addPackage(applicationModule);
-        structure.add(applicationModule);
-
-        this.infrastructureModule = new Package("infrastructure",
-                String.format("%sinfrastructure", newStructure.getPath()));
-        newStructure.addPackage(infrastructureModule);
-        structure.add(infrastructureModule);
-
-        this.domainModule = new Package("domain",
-                String.format("%sdomain", newStructure.getPath()));
-        newStructure.addPackage(domainModule);
-        structure.add(domainModule);
-
-        initDomains();
-
-        this.modelModule = new Package("model",
-                String.format("%s.model", this.domainModule.getPath()));
-        newStructure.addPackage(modelModule);
-        this.domainModule.addContains(modelModule);
-
-        newStructure.setStructure(structure);
-    }
-
-    private void initDomains() {
-        for (Class artifact: oldStructure.getClasses()) {
-            if (artifact.isTypeOf(DDDType.AGGREGATE_ROOT)) {
-                roots.add(artifact);
-
-                String domain = artifact.getName().toLowerCase();
-                newStructure.addDomain(domain);
-
-                Package module = addDomainModules(this.domainModule, domain);
-
-                Package model = new Package("model", String.format("%s.model", module.getPath()));
-                module.addContains(model);
-                newStructure.addPackage(model);
-
-                Package impl = new Package("impl", String.format("%s.impl", model.getPath()));
-                model.addContains(impl);
-                newStructure.addPackage(impl);
-
-                model.addContains(artifact);
-                newStructure.addClass(artifact);
-
-                addDomainModules(this.applicationModule, domain);
-            }
-        }
-    }
-
-    private Package addDomainModules(Package module, String domain) {
-        Package newModule = new Package(domain, String.format("%s.%s", module.getPath(), domain));
-        module.addContains(newModule);
-        newStructure.addPackage(newModule);
-
-        return newModule;
     }
 
     private void assignClasses() {
-        for (Class artifact: oldStructure.getClasses()) {
+        for (Class artifact: refactorService.getOldStructure().getClasses()) {
             switch (artifact.getType()) {
                 case APPLICATION_SERVICE:
-                    this.applicationModule.addContains(artifact);
+                    refactorService.getApplicationModule().addContains(artifact);
                     break;
                 case INFRASTRUCTURE:
                 case CONTROLLER:
-                    this.infrastructureModule.addContains(artifact);
+                    refactorService.getInfrastructureModule().addContains(artifact);
                     break;
                 case SERVICE:
                     addArtifact(artifact, APPLICATION_PATH);
@@ -140,7 +54,7 @@ public class RefactorServiceImpl implements RefactorService {
                     addArtifact(artifact, DOMAIN_PATH);
                     break;
             }
-            newStructure.addClass(artifact);
+            refactorService.getNewStructure().addClass(artifact);
         }
     }
 
@@ -154,13 +68,13 @@ public class RefactorServiceImpl implements RefactorService {
             if (module != null) {
                 module.addContains(artifact);
             } else {
-                this.modelModule.addContains(artifact);
+                refactorService.getModelModule().addContains(artifact);
             }
         }
     }
 
     private Package getModule(String path) {
-        for (Package module : newStructure.getPackages()) {
+        for (Package module : refactorService.getNewStructure().getPackages()) {
             if (module.getPath().endsWith(path)) {
                 return module;
             }
@@ -169,7 +83,7 @@ public class RefactorServiceImpl implements RefactorService {
     }
 
     private String getDomainOf(Artifact artifact) {
-        for (Class root: roots) {
+        for (Class root: refactorService.getRoots()) {
             if (isRootOf(root, artifact)) {
                 return root.getName().toLowerCase();
             }
@@ -198,7 +112,7 @@ public class RefactorServiceImpl implements RefactorService {
 
     private String dependsOnDependency(Class artifact) {
         for (String dependency : artifact.getDependencies()) {
-            for (Class aClass : oldStructure.getClasses()) {
+            for (Class aClass : refactorService.getOldStructure().getClasses()) {
                 if (aClass != artifact
                         && artifact.getName().contains(dependency)) {
                     String domain = getDomainOf(aClass);
@@ -213,7 +127,7 @@ public class RefactorServiceImpl implements RefactorService {
 
     private String dependsOnField(Class artifact) {
         for (Field field : artifact.getFields()) {
-            for (Class aClass : oldStructure.getClasses()) {
+            for (Class aClass : refactorService.getOldStructure().getClasses()) {
                 if (aClass != artifact
                         && field.getName().toLowerCase().contains(aClass.getName().toLowerCase())) {
                     String domain = getDomainOf(aClass);
@@ -227,20 +141,20 @@ public class RefactorServiceImpl implements RefactorService {
     }
 
     private void assignInterfaces() {
-        for (Interface artifact: oldStructure.getInterfaces()) {
+        for (Interface artifact: refactorService.getOldStructure().getInterfaces()) {
             switch (artifact.getType()) {
                 case SERVICE:
                     addArtifact(APPLICATION_PATH, artifact);
                     break;
                 case INFRASTRUCTURE:
                 case CONTROLLER:
-                    this.infrastructureModule.addContains(artifact);
+                    refactorService.getInfrastructureModule().addContains(artifact);
                     break;
                 default:
                     addArtifact(DOMAIN_PATH, artifact);
                     break;
             }
-            newStructure.addInterface(artifact);
+            refactorService.getNewStructure().addInterface(artifact);
         }
     }
 
@@ -254,16 +168,16 @@ public class RefactorServiceImpl implements RefactorService {
             if (module != null) {
                 module.addContains(artifact);
             } else {
-                this.modelModule.addContains(artifact);
+                refactorService.getModelModule().addContains(artifact);
             }
         }
     }
 
     private Package dependsOn(Interface artifact) {
-        for (Package module : newStructure.getPackages()) {
+        for (Package module : refactorService.getNewStructure().getPackages()) {
             for (Artifact item : module.getContains()) {
                 if (!(item instanceof Package)
-                    && artifact.getName().toLowerCase().contains(item.getName().toLowerCase())) {
+                        && artifact.getName().toLowerCase().contains(item.getName().toLowerCase())) {
                     return module;
                 }
             }
@@ -272,9 +186,9 @@ public class RefactorServiceImpl implements RefactorService {
     }
 
     private void assignEnums() {
-        for (Enum artifact: oldStructure.getEnums()) {
+        for (illumi.code.ddd.model.artifacts.Enum artifact: refactorService.getOldStructure().getEnums()) {
             addArtifact(artifact);
-            newStructure.addEnum(artifact);
+            refactorService.getNewStructure().addEnum(artifact);
         }
     }
 
@@ -284,14 +198,14 @@ public class RefactorServiceImpl implements RefactorService {
         if (module != null) {
             module.addContains(artifact);
         } else {
-            this.modelModule.addContains(artifact);
+            refactorService.getModelModule().addContains(artifact);
         }
     }
 
     private void assignAnnotations() {
-        for (Annotation artifact: oldStructure.getAnnotations()) {
-            infrastructureModule.addContains(artifact);
-            newStructure.addAnnotation(artifact);
+        for (Annotation artifact: refactorService.getOldStructure().getAnnotations()) {
+            refactorService.getInfrastructureModule().addContains(artifact);
+            refactorService.getNewStructure().addAnnotation(artifact);
         }
     }
 
@@ -305,7 +219,7 @@ public class RefactorServiceImpl implements RefactorService {
     }
 
     private void refactorDomains() {
-        for (String domain : newStructure.getDomains()) {
+        for (String domain : refactorService.getNewStructure().getDomains()) {
             setDomain(domain, DOMAIN_PATH);
 
             setDomain(domain, IMPL_PATH);
@@ -324,23 +238,11 @@ public class RefactorServiceImpl implements RefactorService {
     }
 
     private void clean() {
-        newStructure.getAllArtifacts().stream()
-            .parallel()
-            .forEach(item -> {
-                item.setFitness(new DDDFitness());
-                item.setDomain(null);
-            });
-    }
-
-    private void deleteEmptyModules(List<Artifact> structure) {
-        for (Artifact artifact : new ArrayList<>(structure)) {
-            if (artifact instanceof Package) {
-                if (((Package) artifact).getContains().isEmpty()) {
-                    structure.remove(artifact);
-                } else {
-                    deleteEmptyModules(((Package) artifact).getContains());
-                }
-            }
-        }
+        refactorService.getNewStructure().getAllArtifacts().stream()
+                .parallel()
+                .forEach(item -> {
+                    item.setFitness(new DDDFitness());
+                    item.setDomain(null);
+                });
     }
 }

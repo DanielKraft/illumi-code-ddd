@@ -1,21 +1,21 @@
-package illumi.code.ddd.service.analyse;
+package illumi.code.ddd.service.analyse.impl;
 
 import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Field;
 import illumi.code.ddd.model.artifacts.Method;
-import illumi.code.ddd.service.StructureService;
+import illumi.code.ddd.model.Structure;
 import org.apache.commons.lang3.StringUtils;
 
 public class ClassAnalyseService {
     private static final String REPOSITORY = "Repository";
 
     private Class artifact;
-    private StructureService structureService;
+    private Structure structure;
 
-    public ClassAnalyseService(Class artifact, StructureService structureService) {
+    public ClassAnalyseService(Class artifact, Structure structure) {
         this.artifact = artifact;
-        this.structureService = structureService;
+        this.structure = structure;
     }
 
     public ClassAnalyseService(Class artifact) {
@@ -26,13 +26,13 @@ public class ClassAnalyseService {
         if (isInfrastructure()) {
             this.artifact.setType(DDDType.INFRASTRUCTURE);
         } else if (this.artifact.getType() == null) {
-            if (isValueObject(structureService)) {
+            if (isValueObject(structure)) {
                 this.artifact.setType(DDDType.VALUE_OBJECT);
-            } else if (isEntity(structureService)) {
+            } else if (isEntity(structure)) {
                 this.artifact.setType(DDDType.ENTITY);
             } else if (isApplicationService()) {
                 this.artifact.setType(DDDType.APPLICATION_SERVICE);
-            } else if (isService(structureService)) {
+            } else if (isService(structure)) {
                 this.artifact.setType(DDDType.SERVICE);
             } else {
                 this.artifact.setType(DDDType.INFRASTRUCTURE);
@@ -44,7 +44,7 @@ public class ClassAnalyseService {
         return this.artifact.getName().toUpperCase().contains("JPA") || this.artifact.getName().toUpperCase().contains("CRUD");
     }
 
-    private boolean isValueObject(StructureService structureService) {
+    private boolean isValueObject(Structure structure) {
         int ctr = 0;
         for (Field field : this.artifact.getFields()) {
             if (isConstant(field)) {
@@ -53,7 +53,7 @@ public class ClassAnalyseService {
                     && !(this.artifact.getName().toLowerCase().endsWith("id"))) {
                 return false;
             } else if (field.getType().startsWith("java.lang.")
-                    || field.getType().contains(structureService.getPath())) {
+                    || field.getType().contains(structure.getPath())) {
                 ctr++;
             }
         }
@@ -63,7 +63,7 @@ public class ClassAnalyseService {
                 || this.artifact.getMethods().isEmpty());
     }
 
-    private boolean isEntity(StructureService structureService) {
+    private boolean isEntity(Structure structure) {
 
         for (Field field : this.artifact.getFields()) {
             if (isConstant(field)) {
@@ -73,18 +73,18 @@ public class ClassAnalyseService {
             }
         }
         return !this.artifact.getFields().isEmpty()
-                && !containsEntityName(structureService)
+                && !containsEntityName(structure)
                 && (canadiansGetterSetter()
                 || this.artifact.getMethods().isEmpty());
     }
 
-    private boolean isService(StructureService structureService) {
+    private boolean isService(Structure structure) {
         for (Field field : this.artifact.getFields()) {
             if (field.getType().contains(REPOSITORY)) {
                 return true;
             }
         }
-        return containsEntityName(structureService);
+        return containsEntityName(structure);
     }
 
     private boolean isApplicationService() {
@@ -120,8 +120,8 @@ public class ClassAnalyseService {
         return false;
     }
 
-    private boolean containsEntityName(StructureService structureService) {
-        for (Class aClass : structureService.getClasses()) {
+    private boolean containsEntityName(Structure structure) {
+        for (Class aClass : structure.getClasses()) {
             if (this.artifact != aClass
                     && this.artifact.getName().contains(aClass.getName())
                     && !this.artifact.getName().equals(aClass.getName() + "s")) {

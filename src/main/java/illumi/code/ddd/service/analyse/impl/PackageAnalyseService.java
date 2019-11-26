@@ -1,20 +1,20 @@
-package illumi.code.ddd.service.analyse;
+package illumi.code.ddd.service.analyse.impl;
 
 import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.artifacts.Artifact;
 import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Package;
-import illumi.code.ddd.service.StructureService;
+import illumi.code.ddd.model.Structure;
 
 import java.util.ArrayList;
 
 public class PackageAnalyseService {
     private Package module;
-    private StructureService structureService;
+    private Structure structure;
 
-    public PackageAnalyseService(Package module, StructureService structureService) {
+    public PackageAnalyseService(Package module, Structure structure) {
         this.module = module;
-        this.structureService = structureService;
+        this.structure = structure;
     }
 
     public void setAggregateRoot() {
@@ -24,7 +24,7 @@ public class PackageAnalyseService {
                 candidates.get(0).setType(DDDType.AGGREGATE_ROOT);
             } else {
                 for (Class artifact : candidates) {
-                    if (structureService.getDomains().contains(artifact.getName().toLowerCase())) {
+                    if (structure.getDomains().contains(artifact.getName().toLowerCase())) {
                         artifact.setType(DDDType.AGGREGATE_ROOT);
                     }
                 }
@@ -33,7 +33,7 @@ public class PackageAnalyseService {
     }
 
     private boolean isDomain() {
-        return structureService.getDomains().contains(module.getName());
+        return structure.getDomains().contains(module.getName());
     }
 
     private ArrayList<Class> getAggregateRootCandidates() {

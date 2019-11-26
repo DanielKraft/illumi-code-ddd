@@ -3,14 +3,14 @@ package illumi.code.ddd.model.artifacts;
 import java.util.ArrayList;
 import java.util.List;
 
-import illumi.code.ddd.service.analyse.ClassAnalyseService;
-import illumi.code.ddd.service.fitness.ClassFitnessService;
+import illumi.code.ddd.service.analyse.impl.ClassAnalyseService;
+import illumi.code.ddd.service.fitness.impl.ClassFitnessService;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.Record;
 
 import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.service.JavaArtifactService;
-import illumi.code.ddd.service.StructureService;
+import illumi.code.ddd.model.Structure;
 
 /**
  * Entity-Class: Class
@@ -76,15 +76,15 @@ public class Class extends File {
 		this.used.add(path);
 	}
 
-	public void setType(StructureService structureService) {
-		new ClassAnalyseService(this, structureService).setType();
+	public void setType(Structure structure) {
+		new ClassAnalyseService(this, structure).setType();
 	}
 
 	public void setDomainEvent() {
 		new ClassAnalyseService(this).setDomainEvent();
 	}
 	
-	public void evaluate(StructureService structureService) {
-		setFitness(new ClassFitnessService(this, structureService).evaluate());
+	public void evaluate(Structure structure) {
+		setFitness(new ClassFitnessService(this, structure).evaluate());
 	}
 }

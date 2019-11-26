@@ -1,4 +1,4 @@
-package illumi.code.ddd.service.analyse;
+package illumi.code.ddd.service.analyse.impl;
 
 import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.artifacts.Interface;

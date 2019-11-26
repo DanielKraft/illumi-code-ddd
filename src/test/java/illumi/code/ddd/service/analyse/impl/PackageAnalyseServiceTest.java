@@ -1,26 +1,27 @@
-package illumi.code.ddd.service.analyse;
+package illumi.code.ddd.service.analyse.impl;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Package;
+import illumi.code.ddd.service.analyse.impl.PackageAnalyseService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import illumi.code.ddd.model.DDDType;
-import illumi.code.ddd.service.StructureService;
+import illumi.code.ddd.model.Structure;
 
 class PackageAnalyseServiceTest {
 
-	private StructureService structureService;
+	private Structure structure;
 	
 	@BeforeEach
 	void init() {
 		
-		structureService = new StructureService();
-		structureService.setPath("de.test");
-		structureService.addDomain("domain");
+		structure = new Structure();
+		structure.setPath("de.test");
+		structure.addDomain("domain");
 	}
 	
 	@Test
@@ -57,7 +58,7 @@ class PackageAnalyseServiceTest {
 		root.addDependencies("Entity3");
 		module.addContains(root);
 
-		PackageAnalyseService service = new PackageAnalyseService(module, structureService);
+		PackageAnalyseService service = new PackageAnalyseService(module, structure);
 		service.setAggregateRoot();
 
 		assertAll("Should find an aggregate root",
@@ -81,7 +82,7 @@ class PackageAnalyseServiceTest {
 		root.setType(DDDType.ENTITY);
 		module.addContains(root);
 
-		PackageAnalyseService service = new PackageAnalyseService(module, structureService);
+		PackageAnalyseService service = new PackageAnalyseService(module, structure);
 		service.setAggregateRoot();
 
 		assertAll("Should find an aggregate root",
@@ -99,7 +100,7 @@ class PackageAnalyseServiceTest {
 		
 		System.out.println(module.getContains().size());
 
-		PackageAnalyseService service = new PackageAnalyseService(module, structureService);
+		PackageAnalyseService service = new PackageAnalyseService(module, structure);
 		service.setAggregateRoot();
 
 		assertAll("Should find an aggregate root",
@@ -110,7 +111,7 @@ class PackageAnalyseServiceTest {
 	void testSetAggragateRootWithNoEntities() {
 		Package module = new Package("domain", "de.test.domain");
 
-		PackageAnalyseService service = new PackageAnalyseService(module, structureService);
+		PackageAnalyseService service = new PackageAnalyseService(module, structure);
 		service.setAggregateRoot();
 
 		assertAll("Should find no aggregate root",
@@ -125,7 +126,7 @@ class PackageAnalyseServiceTest {
 		root.setType(DDDType.ENTITY);
 		module.addContains(root);
 
-		PackageAnalyseService service = new PackageAnalyseService(module, structureService);
+		PackageAnalyseService service = new PackageAnalyseService(module, structure);
 		service.setAggregateRoot();
 
 		assertAll("Should find no aggregate root",

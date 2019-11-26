@@ -7,7 +7,15 @@ import static org.mockito.Mockito.when;
 
 import javax.inject.Inject;
 
-import illumi.code.ddd.service.*;
+import illumi.code.ddd.model.Structure;
+import illumi.code.ddd.service.analyse.AnalyseService;
+import illumi.code.ddd.service.analyse.impl.AnalyseServiceImpl;
+import illumi.code.ddd.service.fitness.FitnessService;
+import illumi.code.ddd.service.fitness.impl.FitnessServiceImpl;
+import illumi.code.ddd.service.metric.MetricService;
+import illumi.code.ddd.service.metric.impl.MetricServiceImpl;
+import illumi.code.ddd.service.refactor.RefactorService;
+import illumi.code.ddd.service.refactor.impl.RefactorServiceImpl;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
@@ -22,21 +30,25 @@ import io.micronaut.test.annotation.MockBean;
 @MicronautTest
 class DDDControllerTest {
 
-	@Inject AnalyseService analyseService; 
-	@Inject FitnessService fitnessService;
-	@Inject MetricService metricService;
-	@Inject RefactorService refactorService;
+	@Inject
+	AnalyseService analyseService;
+	@Inject
+	FitnessService fitnessService;
+	@Inject
+	MetricService metricService;
+	@Inject
+	RefactorService refactorService;
 	
 	@Inject
     @Client("/")
     RxHttpClient client;
 	
-	@MockBean(AnalyseServiceImpl.class) 
+	@MockBean(AnalyseServiceImpl.class)
     AnalyseService analyseService() {
         return mock(AnalyseService.class); 
     }
 	
-	@MockBean(FitnessServiceImpl.class) 
+	@MockBean(FitnessServiceImpl.class)
     FitnessService fitnessService() {
         return mock(FitnessService.class); 
     }
@@ -109,7 +121,7 @@ class DDDControllerTest {
 				.put("DDD", "MODULE")
 				.put("name", "visit"));
 
-		when(refactorService.refactor()).then(invocation -> new StructureService());
+		when(refactorService.refactor()).then(invocation -> new Structure());
 		when(fitnessService.getStructureWithFitness()).then(invocation -> data);
 
 		final String expected = "[{\"contains\":["

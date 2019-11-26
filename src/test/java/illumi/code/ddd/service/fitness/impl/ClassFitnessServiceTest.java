@@ -1,4 +1,4 @@
-package illumi.code.ddd.service.fitness;
+package illumi.code.ddd.service.fitness.impl;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -7,23 +7,24 @@ import illumi.code.ddd.model.DDDFitness;
 import illumi.code.ddd.model.artifacts.*;
 import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Package;
+import illumi.code.ddd.service.fitness.impl.ClassFitnessService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import illumi.code.ddd.model.DDDRating;
 import illumi.code.ddd.model.DDDType;
-import illumi.code.ddd.service.StructureService;
+import illumi.code.ddd.model.Structure;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ClassFitnessServiceTest {
 
-	private StructureService structureService;
+	private Structure structure;
 	
 	@BeforeEach
 	void init() {
-		structureService = new StructureService();
-		structureService.setPath("de.test");
+		structure = new Structure();
+		structure.setPath("de.test");
 	}
 	
 	@Test
@@ -47,7 +48,7 @@ class ClassFitnessServiceTest {
 		artifact.addMethod(new Method("public", "toString", "test toString()"));
 		artifact.addSuperClass(superClass);
 
-		ClassFitnessService service = new ClassFitnessService(artifact, structureService);
+		ClassFitnessService service = new ClassFitnessService(artifact, structure);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(81.48, 	result.calculateFitness(), 				"Fitness"),
@@ -69,7 +70,7 @@ class ClassFitnessServiceTest {
 		artifact.setType(DDDType.ENTITY);
 		artifact.addSuperClass(superClass);
 		
-		ClassFitnessService service = new ClassFitnessService(artifact, structureService);
+		ClassFitnessService service = new ClassFitnessService(artifact, structure);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(0.0, 	result.calculateFitness(), 				"Fitness"),
@@ -84,7 +85,7 @@ class ClassFitnessServiceTest {
 		Class artifact = new Class("Entity", "de.test.Entity");
 		artifact.setType(DDDType.ENTITY);
 
-		ClassFitnessService service = new ClassFitnessService(artifact, structureService);
+		ClassFitnessService service = new ClassFitnessService(artifact, structure);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(0.0, 	result.calculateFitness(), 				"Fitness"),
@@ -107,7 +108,7 @@ class ClassFitnessServiceTest {
 		artifact.addMethod(new Method("public", "setValue", "void setValue(de.test.Value)"));
 		artifact.addMethod(new Method("public", "toString", "test toString()"));
 
-		ClassFitnessService service = new ClassFitnessService(artifact, structureService);
+		ClassFitnessService service = new ClassFitnessService(artifact, structure);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(74.36, 	result.calculateFitness(), 				"Fitness"),
@@ -123,7 +124,7 @@ class ClassFitnessServiceTest {
 		artifact.setType(DDDType.VALUE_OBJECT);
 		artifact.addField(new Field("private", "id", "long"));
 
-		ClassFitnessService service = new ClassFitnessService(artifact, structureService);
+		ClassFitnessService service = new ClassFitnessService(artifact, structure);
 		final DDDFitness result = service.evaluate();
 
 		assertAll(	() -> assertEquals(52.63, 	result.calculateFitness(), 					"Fitness"),
@@ -139,7 +140,7 @@ class ClassFitnessServiceTest {
 		artifact.setType(DDDType.VALUE_OBJECT);
 		artifact.addField(new Field("private", "id", "long"));
 
-		ClassFitnessService service = new ClassFitnessService(artifact, structureService);
+		ClassFitnessService service = new ClassFitnessService(artifact, structure);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(0.0, 	result.calculateFitness(), 				"Fitness"),
@@ -153,11 +154,11 @@ class ClassFitnessServiceTest {
 	void testEvaluateAggregateRoot() {
 		Package infra = new Package("infrastructure", "de.test.infrastructure");
 		infra.setType(DDDType.MODULE);
-		structureService.addPackage(infra);
+		structure.addPackage(infra);
 		
 		Package domain = new Package("aggregate", "de.test.aggregate");
 		domain.setType(DDDType.MODULE);
-		structureService.addPackage(domain);
+		structure.addPackage(domain);
 		
 		Class aggregate = new Class("Aggregate", "de.test.aggregate.Aggregate");
 		aggregate.setType(DDDType.AGGREGATE_ROOT);
@@ -179,7 +180,7 @@ class ClassFitnessServiceTest {
 		serviceClass.setDomain("aggregate");
 		domain.addContains(serviceClass);
 
-		ClassFitnessService service = new ClassFitnessService(aggregate, structureService);
+		ClassFitnessService service = new ClassFitnessService(aggregate, structure);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(50.0, 	result.calculateFitness(), 				"Fitness"),
@@ -193,7 +194,7 @@ class ClassFitnessServiceTest {
 	void testEvaluateInvalidAggregateRoot() {
 		Package domain = new Package("aggregate", "de.test.aggregate");
 		domain.setType(DDDType.MODULE);
-		structureService.addPackage(domain);
+		structure.addPackage(domain);
 		
 		Class aggregate = new Class("Aggregate", "de.test.aggregate.Aggregate");
 		aggregate.setType(DDDType.AGGREGATE_ROOT);
@@ -215,7 +216,7 @@ class ClassFitnessServiceTest {
 		serviceClass.setDomain("aggregate");
 		domain.addContains(serviceClass);
 
-		ClassFitnessService service = new ClassFitnessService(aggregate, structureService);
+		ClassFitnessService service = new ClassFitnessService(aggregate, structure);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(0.0, 	result.calculateFitness(), 				"Fitness"),
@@ -231,7 +232,7 @@ class ClassFitnessServiceTest {
 		aggregate.setType(DDDType.AGGREGATE_ROOT);
 		aggregate.setDomain("aggregate");
 
-		ClassFitnessService service = new ClassFitnessService(aggregate, structureService);
+		ClassFitnessService service = new ClassFitnessService(aggregate, structure);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(0.0, 	result.calculateFitness(), 				"Fitness"),
@@ -270,7 +271,7 @@ class ClassFitnessServiceTest {
 		repo.setDomain("domain");
 		repository.addImplInterface(repo);
 
-		ClassFitnessService service = new ClassFitnessService(repository, structureService);
+		ClassFitnessService service = new ClassFitnessService(repository, structure);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(93.75, 	result.calculateFitness(), 				"Fitness"),
@@ -286,7 +287,7 @@ class ClassFitnessServiceTest {
 		repository.setType(DDDType.REPOSITORY);
 		repository.setDomain("domain");
 
-		ClassFitnessService service = new ClassFitnessService(repository, structureService);
+		ClassFitnessService service = new ClassFitnessService(repository, structure);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(0.0, 	result.calculateFitness(), 				"Fitness"),
@@ -315,7 +316,7 @@ class ClassFitnessServiceTest {
 		factory.setDomain("domain");
 		factoryImpl.addImplInterface(factory);
 
-		ClassFitnessService service = new ClassFitnessService(factoryImpl, structureService);
+		ClassFitnessService service = new ClassFitnessService(factoryImpl, structure);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(87.5, 	result.calculateFitness(), 				"Fitness"),
@@ -332,7 +333,7 @@ class ClassFitnessServiceTest {
 		factoryImpl.addField(new Field("private", "name", "string"));
 		factoryImpl.addMethod(new Method("public", "toString", "test toString()"));
 
-		ClassFitnessService service = new ClassFitnessService(factoryImpl, structureService);
+		ClassFitnessService service = new ClassFitnessService(factoryImpl, structure);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(0.0, 	result.calculateFitness(), 				"Fitness"),
@@ -358,7 +359,7 @@ class ClassFitnessServiceTest {
 		repo.setDomain("domain");
 		serviceImpl.addImplInterface(repo);
 
-		ClassFitnessService service = new ClassFitnessService(serviceImpl, structureService);
+		ClassFitnessService service = new ClassFitnessService(serviceImpl, structure);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(100.0,  result.calculateFitness(), 				"Fitness"),
@@ -373,7 +374,7 @@ class ClassFitnessServiceTest {
 		Class serviceImpl = new Class("Test", "de.test.Test");
 		serviceImpl.setType(DDDType.SERVICE);
 
-		ClassFitnessService service = new ClassFitnessService(serviceImpl, structureService);
+		ClassFitnessService service = new ClassFitnessService(serviceImpl, structure);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(0.0, 	result.calculateFitness(), 				"Fitness"),
@@ -388,7 +389,7 @@ class ClassFitnessServiceTest {
 		Class app = new Class("TestApplication", "de.test.application.TestApplication");
 		app.setType(DDDType.APPLICATION_SERVICE);
 
-		ClassFitnessService service = new ClassFitnessService(app, structureService);
+		ClassFitnessService service = new ClassFitnessService(app, structure);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(100.0, 	result.calculateFitness(), 				"Fitness"),
@@ -403,7 +404,7 @@ class ClassFitnessServiceTest {
 		Class app = new Class("Test", "de.test.Test");
 		app.setType(DDDType.APPLICATION_SERVICE);
 
-		ClassFitnessService service = new ClassFitnessService(app, structureService);
+		ClassFitnessService service = new ClassFitnessService(app, structure);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(0.0, 	result.calculateFitness(), 				"Fitness"),
@@ -418,7 +419,7 @@ class ClassFitnessServiceTest {
 		Class app = new Class("Test", "de.test.infrastructure.Test");
 		app.setType(DDDType.INFRASTRUCTURE);
 
-		ClassFitnessService service = new ClassFitnessService(app, structureService);
+		ClassFitnessService service = new ClassFitnessService(app, structure);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(100.0, 	result.calculateFitness(), 				"Fitness"),
@@ -433,7 +434,7 @@ class ClassFitnessServiceTest {
 		Class app = new Class("Test", "de.test.Test");
 		app.setType(DDDType.INFRASTRUCTURE);
 
-		ClassFitnessService service = new ClassFitnessService(app, structureService);
+		ClassFitnessService service = new ClassFitnessService(app, structure);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(0.0, 	result.calculateFitness(), 				"Fitness"),
@@ -457,7 +458,7 @@ class ClassFitnessServiceTest {
 		event.addMethod(new Method("public", "setDate", "java.lang.long setDate()"));
 		event.addMethod(new Method("public", "toString", "test toString()"));
 
-		ClassFitnessService service = new ClassFitnessService(event, structureService);
+		ClassFitnessService service = new ClassFitnessService(event, structure);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(43.75, 	result.calculateFitness(), 				"Fitness"),
@@ -472,7 +473,7 @@ class ClassFitnessServiceTest {
 		Class event = new Class("Event", "de.test.domain.Event");
 		event.setType(DDDType.DOMAIN_EVENT);
 
-		ClassFitnessService service = new ClassFitnessService(event, structureService);
+		ClassFitnessService service = new ClassFitnessService(event, structure);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(0.0, 	result.calculateFitness(), 				"Fitness"),

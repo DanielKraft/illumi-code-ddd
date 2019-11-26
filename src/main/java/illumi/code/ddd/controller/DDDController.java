@@ -2,7 +2,11 @@ package illumi.code.ddd.controller;
 
 import javax.inject.Inject;
 
-import illumi.code.ddd.service.*;
+import illumi.code.ddd.model.Structure;
+import illumi.code.ddd.service.analyse.AnalyseService;
+import illumi.code.ddd.service.fitness.FitnessService;
+import illumi.code.ddd.service.metric.MetricService;
+import illumi.code.ddd.service.refactor.RefactorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,20 +20,24 @@ import io.micronaut.http.annotation.Produces;
 public class DDDController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DDDController.class);
 
-	@Inject AnalyseService analyseService;
-	@Inject FitnessService fitnessService;
-	@Inject MetricService metricService;
-	@Inject RefactorService refactorService;
+	@Inject
+	AnalyseService analyseService;
+	@Inject
+	FitnessService fitnessService;
+	@Inject
+	MetricService metricService;
+	@Inject
+	RefactorService refactorService;
 
-	private StructureService structureService;
+	private Structure structure;
 
     @Get("/analyse/{path}") 
     @Produces(MediaType.APPLICATION_JSON) 
     public HttpResponse<String> getArtifacts(String path) {
     	LOGGER.info("HTTP GET: analyse/{}", path);
-    	structureService = new StructureService();
-		analyseService.setStructureService(structureService);
-		fitnessService.setStructureService(structureService);
+    	structure = new Structure();
+		analyseService.setStructure(structure);
+		fitnessService.setStructure(structure);
     	analyseService.analyzeStructure(path);
 		return HttpResponse.ok(fitnessService.getStructureWithFitness().toString());
     }
@@ -38,8 +46,8 @@ public class DDDController {
     @Produces(MediaType.APPLICATION_JSON) 
     public HttpResponse<String> getMetrics() {
 		LOGGER.info("HTTP GET: metric/");
-		if (structureService != null) {
-			metricService.setStructureService(structureService);
+		if (structure != null) {
+			metricService.setStructure(structure);
 			return HttpResponse.ok(metricService.getMetric().toString());
 		}
 		return HttpResponse.badRequest("{\"message\":\"No project has been analyzed!\"}");
@@ -51,10 +59,10 @@ public class DDDController {
 	@Produces(MediaType.APPLICATION_JSON)
 	public HttpResponse<String> refactor() {
 		LOGGER.info("HTTP GET: refactor/");
-		if (structureService != null) {
-			refactorService.setOldStructure(structureService);
-			structureService = refactorService.refactor();
-			fitnessService.setStructureService(structureService);
+		if (structure != null) {
+			refactorService.setOldStructure(structure);
+			structure = refactorService.refactor();
+			fitnessService.setStructure(structure);
 			return HttpResponse.ok(fitnessService.getStructureWithFitness().toString());
 		}
 		return HttpResponse.badRequest("{\"message\":\"No project has been analyzed!\"}");

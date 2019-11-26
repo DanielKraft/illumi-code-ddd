@@ -1,8 +1,9 @@
-package illumi.code.ddd.service.analyse;
+package illumi.code.ddd.service.analyse.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import illumi.code.ddd.model.artifacts.Interface;
+import illumi.code.ddd.service.analyse.impl.InterfaceAnalyseService;
 import org.junit.jupiter.api.Test;
 
 import illumi.code.ddd.model.DDDType;

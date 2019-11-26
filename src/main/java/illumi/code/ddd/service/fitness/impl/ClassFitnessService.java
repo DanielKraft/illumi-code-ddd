@@ -1,4 +1,4 @@
-package illumi.code.ddd.service.fitness;
+package illumi.code.ddd.service.fitness.impl;
 
 import illumi.code.ddd.model.DDDFitness;
 import illumi.code.ddd.model.DDDIssueType;
@@ -6,7 +6,7 @@ import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.artifacts.*;
 import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Package;
-import illumi.code.ddd.service.StructureService;
+import illumi.code.ddd.model.Structure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,12 +21,12 @@ public class ClassFitnessService {
     private static final String DOMAIN = "domain.%s.model.";
 
     private Class artifact;
-    private StructureService structureService;
+    private Structure structure;
     private DDDFitness fitness;
 
-    public ClassFitnessService(Class artifact, StructureService structureService) {
+    public ClassFitnessService(Class artifact, Structure structure) {
         this.artifact = artifact;
-        this.structureService = structureService;
+        this.structure = structure;
         this.fitness = new DDDFitness();
     }
 
@@ -76,7 +76,7 @@ public class ClassFitnessService {
                 String.format("The Entity '%s' is not placed at 'domain.%s.model'",
                         artifact.getName(), artifact.getDomain()));
 
-        Field.evaluateEntity(artifact, structureService, fitness);
+        Field.evaluateEntity(artifact, structure, fitness);
 
         Method.evaluateNeededMethods(artifact, fitness);
 
@@ -114,7 +114,7 @@ public class ClassFitnessService {
                 String.format("The Value Object '%s' is not placed at 'domain.%s.model'", artifact.getName(), artifact.getDomain()));
 
         // Must have criteria of Entity: no ID
-        Field.evaluateValueObject(artifact, structureService, fitness);
+        Field.evaluateValueObject(artifact, structure, fitness);
 
         Method.evaluateNeededMethods(artifact, fitness);
     }
@@ -164,7 +164,7 @@ public class ClassFitnessService {
     }
 
     private ArrayList<Artifact> getDomainModule(String domain) {
-        for (Package module : structureService.getPackages()) {
+        for (Package module : structure.getPackages()) {
             if (module.getName().contains(domain)) {
                 return (ArrayList<Artifact>) module.getContains();
             }

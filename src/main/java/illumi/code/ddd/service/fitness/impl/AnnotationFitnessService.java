@@ -1,4 +1,4 @@
-package illumi.code.ddd.service.fitness;
+package illumi.code.ddd.service.fitness.impl;
 
 import illumi.code.ddd.model.DDDFitness;
 import illumi.code.ddd.model.DDDIssueType;

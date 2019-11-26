@@ -3,12 +3,12 @@ package illumi.code.ddd.model.artifacts;
 import java.util.ArrayList;
 import java.util.List;
 
-import illumi.code.ddd.service.analyse.PackageAnalyseService;
-import illumi.code.ddd.service.fitness.PackageFitnessService;
+import illumi.code.ddd.service.analyse.impl.PackageAnalyseService;
+import illumi.code.ddd.service.fitness.impl.PackageFitnessService;
 import org.neo4j.driver.v1.Record;
 
 import illumi.code.ddd.model.DDDType;
-import illumi.code.ddd.service.StructureService;
+import illumi.code.ddd.model.Structure;
 
 /**
  * Entity-Class: Package
@@ -43,11 +43,11 @@ public class Package extends Artifact {
 		}
 	}
 	
-	public void setAggregateRoot(StructureService structureService) {
-		new PackageAnalyseService(this, structureService).setAggregateRoot();
+	public void setAggregateRoot(Structure structure) {
+		new PackageAnalyseService(this, structure).setAggregateRoot();
 	}
 
-	public void evaluate(StructureService structureService) {
-		setFitness(new PackageFitnessService(this, structureService).evaluate());
+	public void evaluate(Structure structure) {
+		setFitness(new PackageFitnessService(this, structure).evaluate());
 	}
 }

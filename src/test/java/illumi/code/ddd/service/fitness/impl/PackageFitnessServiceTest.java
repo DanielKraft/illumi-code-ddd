@@ -1,4 +1,4 @@
-package illumi.code.ddd.service.fitness;
+package illumi.code.ddd.service.fitness.impl;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -6,32 +6,33 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import illumi.code.ddd.model.DDDFitness;
 import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Package;
+import illumi.code.ddd.service.fitness.impl.PackageFitnessService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import illumi.code.ddd.model.DDDRating;
 import illumi.code.ddd.model.DDDType;
-import illumi.code.ddd.service.StructureService;
+import illumi.code.ddd.model.Structure;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class PackageFitnessServiceTest {
 	
-	private StructureService structureService;
+	private Structure structure;
 	
 	@BeforeAll
 	void init() {
-		structureService = new StructureService();
-		structureService.setPath("de.test");
-		structureService.addDomain("domain0");
-		structureService.addDomain("domain1");
+		structure = new Structure();
+		structure.setPath("de.test");
+		structure.addDomain("domain0");
+		structure.addDomain("domain1");
 	}
 
 	@Test
 	void testEvaluateModel() {
 		Package module = new Package("domain", "de.test.domain.model");
 
-		PackageFitnessService service = new PackageFitnessService(module, structureService);
+		PackageFitnessService service = new PackageFitnessService(module, structure);
 		final DDDFitness result = service.evaluate();
 
 		assertAll(	() -> assertEquals(100.0, 	result.calculateFitness(), 				"Fitness"),
@@ -45,7 +46,7 @@ class PackageFitnessServiceTest {
 	void testEvaluateModule() {
 		Package module = new Package("domain", "de.test.domain");
 
-		PackageFitnessService service = new PackageFitnessService(module, structureService);
+		PackageFitnessService service = new PackageFitnessService(module, structure);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(100.0, 	result.calculateFitness(), 				"Fitness"),
@@ -59,7 +60,7 @@ class PackageFitnessServiceTest {
 	void testEvaluateEmptyDomainModule() {
 		Package module = new Package("domain1", "de.test.domain1");
 
-		PackageFitnessService service = new PackageFitnessService(module, structureService);
+		PackageFitnessService service = new PackageFitnessService(module, structure);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(40.0, 	result.calculateFitness(), 				"Fitness"),
@@ -81,7 +82,7 @@ class PackageFitnessServiceTest {
 		module.addContains(entity);
 		module.addContains(aggregate);
 
-		PackageFitnessService service = new PackageFitnessService(module, structureService);
+		PackageFitnessService service = new PackageFitnessService(module, structure);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(100.0, 	result.calculateFitness(), 					"Fitness"),
@@ -115,7 +116,7 @@ class PackageFitnessServiceTest {
 		module.addContains(submodule);
 		module.addContains(model);
 
-		PackageFitnessService service = new PackageFitnessService(module, structureService);
+		PackageFitnessService service = new PackageFitnessService(module, structure);
 		final DDDFitness result = service.evaluate();
 
 		assertAll(	() -> assertEquals(100.0, 	result.calculateFitness(), 					"Fitness"),
@@ -137,7 +138,7 @@ class PackageFitnessServiceTest {
 		module.addContains(entity);
 		module.addContains(infra);
 
-		PackageFitnessService service = new PackageFitnessService(module, structureService);
+		PackageFitnessService service = new PackageFitnessService(module, structure);
 		final DDDFitness result = service.evaluate();
 
 		assertAll(	() -> assertEquals(20.0, 	result.calculateFitness(), 				"Fitness"),
@@ -159,7 +160,7 @@ class PackageFitnessServiceTest {
 		module.addContains(entity);
 		module.addContains(app);
 
-		PackageFitnessService service = new PackageFitnessService(module, structureService);
+		PackageFitnessService service = new PackageFitnessService(module, structure);
 		final DDDFitness result = service.evaluate();
 
 		assertAll(	() -> assertEquals(20.0, 	result.calculateFitness(), 				"Fitness"),
@@ -181,7 +182,7 @@ class PackageFitnessServiceTest {
 		module.addContains(entity);
 		module.addContains(controller);
 
-		PackageFitnessService service = new PackageFitnessService(module, structureService);
+		PackageFitnessService service = new PackageFitnessService(module, structure);
 		final DDDFitness result = service.evaluate();
 
 		assertAll(	() -> assertEquals(20.0, 	result.calculateFitness(), 				"Fitness"),
@@ -199,7 +200,7 @@ class PackageFitnessServiceTest {
 		Package module = new Package("infrastructure", "de.test.infrastructure");
 		module.addContains(infra);
 
-		PackageFitnessService service = new PackageFitnessService(module, structureService);
+		PackageFitnessService service = new PackageFitnessService(module, structure);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(100.0, 	result.calculateFitness(), 				"Fitness"),
@@ -217,7 +218,7 @@ class PackageFitnessServiceTest {
 		Package module = new Package("domain0", "de.test.infrastructure.domain0");
 		module.addContains(infra);
 
-		PackageFitnessService service = new PackageFitnessService(module, structureService);
+		PackageFitnessService service = new PackageFitnessService(module, structure);
 		final DDDFitness result = service.evaluate();
 
 		assertAll(	() -> assertEquals(100.0, 	result.calculateFitness(), 				"Fitness"),
@@ -239,7 +240,7 @@ class PackageFitnessServiceTest {
 		module.addContains(controller);
 		module.addContains(entity);
 
-		PackageFitnessService service = new PackageFitnessService(module, structureService);
+		PackageFitnessService service = new PackageFitnessService(module, structure);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(20.0, 	result.calculateFitness(), 				"Fitness"),
@@ -261,7 +262,7 @@ class PackageFitnessServiceTest {
 		module.addContains(app);
 		module.addContains(subModule);
 
-		PackageFitnessService service = new PackageFitnessService(module, structureService);
+		PackageFitnessService service = new PackageFitnessService(module, structure);
 		final DDDFitness result = service.evaluate();
 
 		assertAll(	() -> assertEquals(100.0, 	result.calculateFitness(), 				"Fitness"),
@@ -279,7 +280,7 @@ class PackageFitnessServiceTest {
 		Package module = new Package("domain0", "de.test.application.domain0");
 		module.addContains(app);
 
-		PackageFitnessService service = new PackageFitnessService(module, structureService);
+		PackageFitnessService service = new PackageFitnessService(module, structure);
 		final DDDFitness result = service.evaluate();
 
 		assertAll(	() -> assertEquals(100.0, 	result.calculateFitness(), 				"Fitness"),
@@ -301,7 +302,7 @@ class PackageFitnessServiceTest {
 		module.addContains(entity);
 		module.addContains(app);
 
-		PackageFitnessService service = new PackageFitnessService(module, structureService);
+		PackageFitnessService service = new PackageFitnessService(module, structure);
 		final DDDFitness result = service.evaluate();
 		
 		assertAll(	() -> assertEquals(20.0, 	result.calculateFitness(), 				"Fitness"),
