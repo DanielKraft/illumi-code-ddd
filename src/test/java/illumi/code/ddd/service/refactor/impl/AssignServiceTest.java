@@ -5,6 +5,7 @@ import illumi.code.ddd.model.DDDStructure;
 import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.artifacts.*;
 import illumi.code.ddd.model.artifacts.Class;
+import illumi.code.ddd.model.artifacts.Enum;
 import illumi.code.ddd.model.artifacts.Package;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -274,9 +275,54 @@ class AssignServiceTest {
         service.assign();
 
         assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
-                () -> assertEquals(2, refactorData.getNewStructure().getClasses().size(), "#Class"),
-                () -> assertEquals(1, refactorData.getNewStructure().getInterfaces().size(), "#Interface"),
-                () -> assertEquals("test.domain.model.Repository", artifact.getPath(), "path"));
+                    () -> assertEquals(2, refactorData.getNewStructure().getClasses().size(), "#Class"),
+                    () -> assertEquals(1, refactorData.getNewStructure().getInterfaces().size(), "#Interface"),
+                    () -> assertEquals("test.domain.model.Repository", artifact.getPath(), "path"));
     }
 
+    @Test
+    void testAssignEnum() {
+        Enum artifact = new Enum("Enum", "de.test.Enum");
+        artifact.setType(DDDType.VALUE_OBJECT);
+        artifact.setDomain("domain0");
+        module.addContains(artifact);
+        structure.addEnum(artifact);
+
+        service.assign();
+
+        assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
+                    () -> assertEquals(2, refactorData.getNewStructure().getClasses().size(), "#Class"),
+                    () -> assertEquals(1, refactorData.getNewStructure().getEnums().size(), "#Enum"),
+                    () -> assertEquals("test.domain.root.model.Enum", artifact.getPath(), "path"));
+    }
+
+    @Test
+    void testAssignEnumToModel() {
+        Enum artifact = new Enum("Enum", "de.test.Enum");
+        artifact.setType(DDDType.VALUE_OBJECT);
+        module.addContains(artifact);
+        structure.addEnum(artifact);
+
+        service.assign();
+
+        assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
+                    () -> assertEquals(2, refactorData.getNewStructure().getClasses().size(), "#Class"),
+                    () -> assertEquals(1, refactorData.getNewStructure().getEnums().size(), "#Enum"),
+                    () -> assertEquals("test.domain.model.Enum", artifact.getPath(), "path"));
+    }
+
+    @Test
+    void testAssignAnnotation() {
+        Annotation artifact = new Annotation("Annotation", "de.test.Annotation");
+        artifact.setType(DDDType.INFRASTRUCTURE);
+        module.addContains(artifact);
+        structure.addAnnotation(artifact);
+
+        service.assign();
+
+        assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
+                    () -> assertEquals(2, refactorData.getNewStructure().getClasses().size(), "#Class"),
+                    () -> assertEquals(1, refactorData.getNewStructure().getAnnotations().size(), "#Annotation"),
+                    () -> assertEquals("test.infrastructure.Annotation", artifact.getPath(), "path"));
+    }
 }
