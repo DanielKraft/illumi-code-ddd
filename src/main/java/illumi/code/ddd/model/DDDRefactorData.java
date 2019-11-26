@@ -4,6 +4,7 @@ import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Package;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DDDRefactorData {
 
@@ -69,7 +70,7 @@ public class DDDRefactorData {
         return modelModule;
     }
 
-    public ArrayList<Class> getRoots() {
+    public List<Class> getRoots() {
         return roots;
     }
 }
