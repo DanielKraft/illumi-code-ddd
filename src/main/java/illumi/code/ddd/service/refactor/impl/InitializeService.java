@@ -4,67 +4,68 @@ import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.artifacts.Artifact;
 import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Package;
+import illumi.code.ddd.model.DDDRefactorData;
 
 import java.util.ArrayList;
 
 class InitializeService {
 
-    private RefactorServiceImpl refactorService;
+    private DDDRefactorData refactorData;
 
-    InitializeService(RefactorServiceImpl refactorService) {
-        this.refactorService = refactorService;
+    InitializeService(DDDRefactorData refactorData) {
+        this.refactorData = refactorData;
     }
 
     void initModules() {
         ArrayList<Artifact> structure = new ArrayList<>();
 
-        refactorService.setApplicationModule(new Package("application",
-                String.format("%sapplication", refactorService.getNewStructure().getPath())));
-        refactorService.getNewStructure().addPackage(refactorService.getApplicationModule());
-        structure.add(refactorService.getApplicationModule());
+        refactorData.setApplicationModule(new Package("application",
+                String.format("%sapplication", refactorData.getNewStructure().getPath())));
+        refactorData.getNewStructure().addPackage(refactorData.getApplicationModule());
+        structure.add(refactorData.getApplicationModule());
 
-        refactorService.setInfrastructureModule(new Package("infrastructure",
-                String.format("%sinfrastructure", refactorService.getNewStructure().getPath())));
-        refactorService.getNewStructure().addPackage(refactorService.getInfrastructureModule());
-        structure.add(refactorService.getInfrastructureModule());
+        refactorData.setInfrastructureModule(new Package("infrastructure",
+                String.format("%sinfrastructure", refactorData.getNewStructure().getPath())));
+        refactorData.getNewStructure().addPackage(refactorData.getInfrastructureModule());
+        structure.add(refactorData.getInfrastructureModule());
 
-        refactorService.setDomainModule(new Package("domain",
-                String.format("%sdomain", refactorService.getNewStructure().getPath())));
-        refactorService.getNewStructure().addPackage(refactorService.getDomainModule());
-        structure.add(refactorService.getDomainModule());
+        refactorData.setDomainModule(new Package("domain",
+                String.format("%sdomain", refactorData.getNewStructure().getPath())));
+        refactorData.getNewStructure().addPackage(refactorData.getDomainModule());
+        structure.add(refactorData.getDomainModule());
 
         initDomains();
 
-        refactorService.setModelModule(new Package("model",
-                String.format("%s.model", refactorService.getDomainModule().getPath())));
-        refactorService.getNewStructure().addPackage(refactorService.getModelModule());
-        refactorService.getDomainModule().addContains(refactorService.getModelModule());
+        refactorData.setModelModule(new Package("model",
+                String.format("%s.model", refactorData.getDomainModule().getPath())));
+        refactorData.getNewStructure().addPackage(refactorData.getModelModule());
+        refactorData.getDomainModule().addContains(refactorData.getModelModule());
 
-        refactorService.getNewStructure().setStructure(structure);
+        refactorData.getNewStructure().setStructure(structure);
     }
 
     private void initDomains() {
-        for (Class artifact: refactorService.getOldStructure().getClasses()) {
+        for (Class artifact: refactorData.getOldStructure().getClasses()) {
             if (artifact.isTypeOf(DDDType.AGGREGATE_ROOT)) {
-                refactorService.addRoots(artifact);
+                refactorData.addRoots(artifact);
 
                 String domain = artifact.getName().toLowerCase();
-                refactorService.getNewStructure().addDomain(domain);
+                refactorData.getNewStructure().addDomain(domain);
 
-                Package module = addDomainModules(refactorService.getDomainModule(), domain);
+                Package module = addDomainModules(refactorData.getDomainModule(), domain);
 
                 Package model = new Package("model", String.format("%s.model", module.getPath()));
                 module.addContains(model);
-                refactorService.getNewStructure().addPackage(model);
+                refactorData.getNewStructure().addPackage(model);
 
                 Package impl = new Package("impl", String.format("%s.impl", model.getPath()));
                 model.addContains(impl);
-                refactorService.getNewStructure().addPackage(impl);
+                refactorData.getNewStructure().addPackage(impl);
 
                 model.addContains(artifact);
-                refactorService.getNewStructure().addClass(artifact);
+                refactorData.getNewStructure().addClass(artifact);
 
-                addDomainModules(refactorService.getApplicationModule(), domain);
+                addDomainModules(refactorData.getApplicationModule(), domain);
             }
         }
     }
@@ -72,7 +73,7 @@ class InitializeService {
     private Package addDomainModules(Package module, String domain) {
         Package newModule = new Package(domain, String.format("%s.%s", module.getPath(), domain));
         module.addContains(newModule);
-        refactorService.getNewStructure().addPackage(newModule);
+        refactorData.getNewStructure().addPackage(newModule);
 
         return newModule;
     }
