@@ -3,7 +3,6 @@ package illumi.code.ddd.controller;
 import javax.inject.Inject;
 
 import illumi.code.ddd.service.*;
-import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

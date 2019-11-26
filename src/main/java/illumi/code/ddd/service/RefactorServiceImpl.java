@@ -22,7 +22,7 @@ public class RefactorServiceImpl implements RefactorService {
     private Package applicationModule;
     private Package infrastructureModule;
 
-    private Package model;
+    private Package modelModule;
 
     private ArrayList<Class> roots;
 
@@ -77,10 +77,10 @@ public class RefactorServiceImpl implements RefactorService {
 
         initDomains();
 
-        this.model = new Package("model",
+        this.modelModule = new Package("model",
                 String.format("%s.model", this.domainModule.getPath()));
-        newStructure.addPackage(model);
-        this.domainModule.addContains(model);
+        newStructure.addPackage(modelModule);
+        this.domainModule.addContains(modelModule);
 
         newStructure.setStructure(structure);
     }
@@ -93,10 +93,10 @@ public class RefactorServiceImpl implements RefactorService {
                 String domain = artifact.getName().toLowerCase();
                 newStructure.addDomain(domain);
 
-                Package domainModule = addDomainModules(this.domainModule, domain);
+                Package module = addDomainModules(this.domainModule, domain);
 
-                Package model = new Package("model", String.format("%s.model", domainModule.getPath()));
-                domainModule.addContains(model);
+                Package model = new Package("model", String.format("%s.model", module.getPath()));
+                module.addContains(model);
                 newStructure.addPackage(model);
 
                 Package impl = new Package("impl", String.format("%s.impl", model.getPath()));
@@ -154,7 +154,7 @@ public class RefactorServiceImpl implements RefactorService {
             if (module != null) {
                 module.addContains(artifact);
             } else {
-                this.model.addContains(artifact);
+                this.modelModule.addContains(artifact);
             }
         }
     }
@@ -254,7 +254,7 @@ public class RefactorServiceImpl implements RefactorService {
             if (module != null) {
                 module.addContains(artifact);
             } else {
-                this.model.addContains(artifact);
+                this.modelModule.addContains(artifact);
             }
         }
     }
@@ -284,7 +284,7 @@ public class RefactorServiceImpl implements RefactorService {
         if (module != null) {
             module.addContains(artifact);
         } else {
-            this.model.addContains(artifact);
+            this.modelModule.addContains(artifact);
         }
     }
 
@@ -315,10 +315,12 @@ public class RefactorServiceImpl implements RefactorService {
     }
 
     private void setDomain(String domain, String applicationPath) {
-        getModule(String.format(applicationPath, domain))
-                .getContains().stream()
-                .parallel()
-                .forEach(item -> item.setDomain(domain));
+        Package module = getModule(String.format(applicationPath, domain));
+        if (module != null) {
+            module.getContains().stream()
+                    .parallel()
+                    .forEach(item -> item.setDomain(domain));
+        }
     }
 
     private void clean() {
