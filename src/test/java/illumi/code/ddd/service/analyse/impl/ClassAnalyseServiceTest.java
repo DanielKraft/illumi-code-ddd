@@ -5,20 +5,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Field;
 import illumi.code.ddd.model.artifacts.Method;
-import illumi.code.ddd.service.analyse.impl.ClassAnalyseService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import illumi.code.ddd.model.DDDType;
-import illumi.code.ddd.model.Structure;
+import illumi.code.ddd.model.DDDStructure;
 
 class ClassAnalyseServiceTest {
 
-	private Structure structure;
+	private DDDStructure structure;
 	
 	@BeforeEach
 	void init() {
-		structure = new Structure();
+		structure = new DDDStructure();
 		structure.setPath("de.test");
 	}
 	

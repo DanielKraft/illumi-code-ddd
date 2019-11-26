@@ -4,16 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 
-import illumi.code.ddd.model.Structure;
-import illumi.code.ddd.service.metric.impl.MetricServiceImpl;
+import illumi.code.ddd.model.DDDStructure;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
-import illumi.code.ddd.model.DDDFitness;
-import illumi.code.ddd.model.DDDRating;
+import illumi.code.ddd.model.fitness.DDDFitness;
+import illumi.code.ddd.model.fitness.DDDRating;
 import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.artifacts.Package;
 import illumi.code.ddd.model.artifacts.Artifact;
@@ -26,7 +25,7 @@ class MetricServiceImplTest {
 	
 	@BeforeAll
 	void init() {
-		Structure structure = new Structure();
+		DDDStructure structure = new DDDStructure();
 		Package domain = new Package("domain", "de.test.domain");
 		domain.setType(DDDType.MODULE);
 		domain.setFitness(new DDDFitness(3, 2));

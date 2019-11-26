@@ -1,7 +1,7 @@
 package illumi.code.ddd.service.fitness.impl;
 
-import illumi.code.ddd.model.DDDFitness;
-import illumi.code.ddd.model.DDDIssueType;
+import illumi.code.ddd.model.fitness.DDDFitness;
+import illumi.code.ddd.model.fitness.DDDIssueType;
 import illumi.code.ddd.model.artifacts.Annotation;
 
 public class AnnotationFitnessService {

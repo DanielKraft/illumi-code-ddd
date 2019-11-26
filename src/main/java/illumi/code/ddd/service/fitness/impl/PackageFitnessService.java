@@ -1,18 +1,18 @@
 package illumi.code.ddd.service.fitness.impl;
 
-import illumi.code.ddd.model.DDDFitness;
-import illumi.code.ddd.model.DDDIssueType;
+import illumi.code.ddd.model.fitness.DDDFitness;
+import illumi.code.ddd.model.fitness.DDDIssueType;
 import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.artifacts.Artifact;
 import illumi.code.ddd.model.artifacts.Package;
-import illumi.code.ddd.model.Structure;
+import illumi.code.ddd.model.DDDStructure;
 
 public class PackageFitnessService {
 
     private Package module;
-    private Structure structure;
+    private DDDStructure structure;
 
-    public PackageFitnessService(Package module, Structure structure) {
+    public PackageFitnessService(Package module, DDDStructure structure) {
         this.module = module;
         this.structure = structure;
     }

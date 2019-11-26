@@ -4,25 +4,25 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import illumi.code.ddd.model.Structure;
+import illumi.code.ddd.model.DDDStructure;
 import illumi.code.ddd.service.metric.MetricService;
 import org.json.JSONObject;
 
-import illumi.code.ddd.model.DDDFitness;
+import illumi.code.ddd.model.fitness.DDDFitness;
 import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.artifacts.Artifact;
 
 
 public class MetricServiceImpl implements MetricService {
 	    
-    private Structure structure;
+    private DDDStructure structure;
     
     public @Inject MetricServiceImpl() {
     	// @Inject is needed
     }
     
     @Override
-    public void setStructure(Structure structure) {
+    public void setStructure(DDDStructure structure) {
     	this.structure = structure;
     }
     

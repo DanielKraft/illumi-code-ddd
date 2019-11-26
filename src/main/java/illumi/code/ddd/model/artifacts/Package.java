@@ -8,7 +8,7 @@ import illumi.code.ddd.service.fitness.impl.PackageFitnessService;
 import org.neo4j.driver.v1.Record;
 
 import illumi.code.ddd.model.DDDType;
-import illumi.code.ddd.model.Structure;
+import illumi.code.ddd.model.DDDStructure;
 
 /**
  * Entity-Class: Package
@@ -43,11 +43,11 @@ public class Package extends Artifact {
 		}
 	}
 	
-	public void setAggregateRoot(Structure structure) {
+	public void setAggregateRoot(DDDStructure structure) {
 		new PackageAnalyseService(this, structure).setAggregateRoot();
 	}
 
-	public void evaluate(Structure structure) {
+	public void evaluate(DDDStructure structure) {
 		setFitness(new PackageFitnessService(this, structure).evaluate());
 	}
 }

@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.neo4j.driver.v1.Record;
 
-import illumi.code.ddd.model.DDDFitness;
-import illumi.code.ddd.model.DDDIssueType;
+import illumi.code.ddd.model.fitness.DDDFitness;
+import illumi.code.ddd.model.fitness.DDDIssueType;
 
 public class Method {
 			

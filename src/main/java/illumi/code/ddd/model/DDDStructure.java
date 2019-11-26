@@ -13,7 +13,7 @@ import illumi.code.ddd.model.artifacts.Enum;
 import illumi.code.ddd.model.artifacts.Interface;
 import illumi.code.ddd.model.artifacts.Package;
 
-public class Structure {
+public class DDDStructure {
 		
 	private String path;   
 	
@@ -27,7 +27,7 @@ public class Structure {
     private ArrayList<Enum> enums;
     private ArrayList<Annotation> annotations;
 	
-	public Structure() {
+	public DDDStructure() {
 		init();
 	}
 	

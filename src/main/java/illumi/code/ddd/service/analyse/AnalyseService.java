@@ -1,11 +1,11 @@
 package illumi.code.ddd.service.analyse;
 
-import illumi.code.ddd.model.Structure;
+import illumi.code.ddd.model.DDDStructure;
 import org.json.JSONArray;
 
 public interface AnalyseService {
 	
-	void setStructure(Structure structure);
+	void setStructure(DDDStructure structure);
 	
 	JSONArray analyzeStructure(String path);
 }

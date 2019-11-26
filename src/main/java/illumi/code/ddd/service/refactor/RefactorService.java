@@ -1,10 +1,10 @@
 package illumi.code.ddd.service.refactor;
 
-import illumi.code.ddd.model.Structure;
+import illumi.code.ddd.model.DDDStructure;
 
 public interface RefactorService {
 
-    void setOldStructure(Structure oldStructure);
+    void setOldStructure(DDDStructure oldStructure);
 
-    Structure refactor();
+    DDDStructure refactor();
 }

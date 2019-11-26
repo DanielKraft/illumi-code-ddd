@@ -3,14 +3,13 @@ package illumi.code.ddd.service.fitness.impl;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import illumi.code.ddd.model.DDDFitness;
+import illumi.code.ddd.model.fitness.DDDFitness;
 import illumi.code.ddd.model.artifacts.Field;
 import illumi.code.ddd.model.artifacts.Interface;
 import illumi.code.ddd.model.artifacts.Method;
-import illumi.code.ddd.service.fitness.impl.InterfaceFitnessService;
 import org.junit.jupiter.api.Test;
 
-import illumi.code.ddd.model.DDDRating;
+import illumi.code.ddd.model.fitness.DDDRating;
 import illumi.code.ddd.model.DDDType;
 
 class InterfaceFitnessServiceTest {

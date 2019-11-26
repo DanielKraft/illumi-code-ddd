@@ -2,7 +2,7 @@ package illumi.code.ddd.controller;
 
 import javax.inject.Inject;
 
-import illumi.code.ddd.model.Structure;
+import illumi.code.ddd.model.DDDStructure;
 import illumi.code.ddd.service.analyse.AnalyseService;
 import illumi.code.ddd.service.fitness.FitnessService;
 import illumi.code.ddd.service.metric.MetricService;
@@ -29,13 +29,13 @@ public class DDDController {
 	@Inject
 	RefactorService refactorService;
 
-	private Structure structure;
+	private DDDStructure structure;
 
     @Get("/analyse/{path}") 
     @Produces(MediaType.APPLICATION_JSON) 
     public HttpResponse<String> getArtifacts(String path) {
     	LOGGER.info("HTTP GET: analyse/{}", path);
-    	structure = new Structure();
+    	structure = new DDDStructure();
 		analyseService.setStructure(structure);
 		fitnessService.setStructure(structure);
     	analyseService.analyzeStructure(path);

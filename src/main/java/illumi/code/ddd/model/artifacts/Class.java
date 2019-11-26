@@ -10,7 +10,7 @@ import org.neo4j.driver.v1.Record;
 
 import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.service.JavaArtifactService;
-import illumi.code.ddd.model.Structure;
+import illumi.code.ddd.model.DDDStructure;
 
 /**
  * Entity-Class: Class
@@ -76,7 +76,7 @@ public class Class extends File {
 		this.used.add(path);
 	}
 
-	public void setType(Structure structure) {
+	public void setType(DDDStructure structure) {
 		new ClassAnalyseService(this, structure).setType();
 	}
 
@@ -84,7 +84,7 @@ public class Class extends File {
 		new ClassAnalyseService(this).setDomainEvent();
 	}
 	
-	public void evaluate(Structure structure) {
+	public void evaluate(DDDStructure structure) {
 		setFitness(new ClassFitnessService(this, structure).evaluate());
 	}
 }

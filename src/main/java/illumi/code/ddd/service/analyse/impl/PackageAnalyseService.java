@@ -4,15 +4,15 @@ import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.artifacts.Artifact;
 import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Package;
-import illumi.code.ddd.model.Structure;
+import illumi.code.ddd.model.DDDStructure;
 
 import java.util.ArrayList;
 
 public class PackageAnalyseService {
     private Package module;
-    private Structure structure;
+    private DDDStructure structure;
 
-    public PackageAnalyseService(Package module, Structure structure) {
+    public PackageAnalyseService(Package module, DDDStructure structure) {
         this.module = module;
         this.structure = structure;
     }

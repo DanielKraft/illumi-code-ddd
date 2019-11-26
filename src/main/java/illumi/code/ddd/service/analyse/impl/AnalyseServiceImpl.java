@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import illumi.code.ddd.model.Structure;
+import illumi.code.ddd.model.DDDStructure;
 import illumi.code.ddd.service.analyse.AnalyseService;
 import org.json.JSONArray;
 import org.neo4j.driver.v1.Driver;
@@ -31,15 +31,15 @@ public class AnalyseServiceImpl implements AnalyseService {
 	
     private Driver driver;
     
-    private Structure structure;
+    private DDDStructure structure;
     
     public @Inject AnalyseServiceImpl(Driver driver) { 
     	this.driver = driver;
-    	this.structure = new Structure();
+    	this.structure = new DDDStructure();
     }
 	
     @Override
-    public void setStructure(Structure structure) {
+    public void setStructure(DDDStructure structure) {
     	this.structure = structure;
     }
 

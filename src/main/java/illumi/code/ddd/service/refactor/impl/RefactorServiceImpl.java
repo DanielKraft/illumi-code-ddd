@@ -1,9 +1,9 @@
 package illumi.code.ddd.service.refactor.impl;
 
-import illumi.code.ddd.model.Structure;
+import illumi.code.ddd.model.DDDStructure;
 import illumi.code.ddd.model.artifacts.*;
-import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Package;
+import illumi.code.ddd.model.DDDRefactorData;
 import illumi.code.ddd.service.refactor.RefactorService;
 
 import javax.inject.Inject;
@@ -12,86 +12,26 @@ import java.util.List;
 
 public class RefactorServiceImpl implements RefactorService {
 
-    private Structure oldStructure;
-    private Structure newStructure;
-
-    private Package domainModule;
-    private Package applicationModule;
-    private Package infrastructureModule;
-
-    private Package modelModule;
-
-    private ArrayList<Class> roots;
+    private DDDRefactorData refactorData;
 
     public @Inject
     RefactorServiceImpl() {
-        roots = new ArrayList<>();
-    }
-
-    void setDomainModule(Package domainModule) {
-        this.domainModule = domainModule;
-    }
-
-    void setApplicationModule(Package applicationModule) {
-        this.applicationModule = applicationModule;
-    }
-
-    void setInfrastructureModule(Package infrastructureModule) {
-        this.infrastructureModule = infrastructureModule;
-    }
-
-    void setModelModule(Package modelModule) {
-        this.modelModule = modelModule;
-    }
-
-    void addRoots(Class root) {
-        this.roots.add(root);
-    }
-
-    Structure getOldStructure() {
-        return oldStructure;
-    }
-
-    Structure getNewStructure() {
-        return newStructure;
-    }
-
-    Package getDomainModule() {
-        return domainModule;
-    }
-
-    Package getApplicationModule() {
-        return applicationModule;
-    }
-
-    Package getInfrastructureModule() {
-        return infrastructureModule;
-    }
-
-    Package getModelModule() {
-        return modelModule;
-    }
-
-    ArrayList<Class> getRoots() {
-        return roots;
+        // Empty
     }
 
     @Override
-    public void setOldStructure(Structure oldStructure) {
-        this.oldStructure = oldStructure;
-        this.newStructure = new Structure();
-        this.newStructure.setPath(oldStructure.getPath());
-        this.roots = new ArrayList<>();
+    public void setOldStructure(DDDStructure oldStructure) {
+        this.refactorData = new DDDRefactorData(oldStructure);
     }
 
     @Override
-    public Structure refactor() {
+    public DDDStructure refactor() {
 
-        new InitializeService(this).initModules();
-        new AssignService(this).assign();
+        new InitializeService(refactorData).initModules();
+        new AssignService(refactorData).assign();
 
-        deleteEmptyModules(newStructure.getStructure());
-        return newStructure;
+        deleteEmptyModules(refactorData.getNewStructure().getStructure());
+        return refactorData.getNewStructure();
     }
 
     private void deleteEmptyModules(List<Artifact> structure) {

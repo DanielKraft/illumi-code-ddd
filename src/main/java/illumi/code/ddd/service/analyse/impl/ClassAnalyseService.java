@@ -4,16 +4,16 @@ import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Field;
 import illumi.code.ddd.model.artifacts.Method;
-import illumi.code.ddd.model.Structure;
+import illumi.code.ddd.model.DDDStructure;
 import org.apache.commons.lang3.StringUtils;
 
 public class ClassAnalyseService {
     private static final String REPOSITORY = "Repository";
 
     private Class artifact;
-    private Structure structure;
+    private DDDStructure structure;
 
-    public ClassAnalyseService(Class artifact, Structure structure) {
+    public ClassAnalyseService(Class artifact, DDDStructure structure) {
         this.artifact = artifact;
         this.structure = structure;
     }
@@ -44,7 +44,7 @@ public class ClassAnalyseService {
         return this.artifact.getName().toUpperCase().contains("JPA") || this.artifact.getName().toUpperCase().contains("CRUD");
     }
 
-    private boolean isValueObject(Structure structure) {
+    private boolean isValueObject(DDDStructure structure) {
         int ctr = 0;
         for (Field field : this.artifact.getFields()) {
             if (isConstant(field)) {
@@ -63,7 +63,7 @@ public class ClassAnalyseService {
                 || this.artifact.getMethods().isEmpty());
     }
 
-    private boolean isEntity(Structure structure) {
+    private boolean isEntity(DDDStructure structure) {
 
         for (Field field : this.artifact.getFields()) {
             if (isConstant(field)) {
@@ -78,7 +78,7 @@ public class ClassAnalyseService {
                 || this.artifact.getMethods().isEmpty());
     }
 
-    private boolean isService(Structure structure) {
+    private boolean isService(DDDStructure structure) {
         for (Field field : this.artifact.getFields()) {
             if (field.getType().contains(REPOSITORY)) {
                 return true;
@@ -120,7 +120,7 @@ public class ClassAnalyseService {
         return false;
     }
 
-    private boolean containsEntityName(Structure structure) {
+    private boolean containsEntityName(DDDStructure structure) {
         for (Class aClass : structure.getClasses()) {
             if (this.artifact != aClass
                     && this.artifact.getName().contains(aClass.getName())

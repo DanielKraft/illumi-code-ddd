@@ -5,8 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 
-import illumi.code.ddd.model.Structure;
-import illumi.code.ddd.service.fitness.impl.FitnessServiceImpl;
+import illumi.code.ddd.model.DDDStructure;
 import org.json.JSONArray;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -26,7 +25,7 @@ private FitnessServiceImpl service;
 	
 	@BeforeAll
 	void init() {
-		Structure structure = new Structure();
+		DDDStructure structure = new DDDStructure();
 		structure.setPath("de.test");
 		
 		Package artifact1 = new Package("Package", "de.test.Package");

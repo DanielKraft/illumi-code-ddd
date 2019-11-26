@@ -1,12 +1,12 @@
 package illumi.code.ddd.service.fitness.impl;
 
-import illumi.code.ddd.model.DDDFitness;
-import illumi.code.ddd.model.DDDIssueType;
+import illumi.code.ddd.model.fitness.DDDFitness;
+import illumi.code.ddd.model.fitness.DDDIssueType;
 import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.artifacts.*;
 import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Package;
-import illumi.code.ddd.model.Structure;
+import illumi.code.ddd.model.DDDStructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,10 +21,10 @@ public class ClassFitnessService {
     private static final String DOMAIN = "domain.%s.model.";
 
     private Class artifact;
-    private Structure structure;
+    private DDDStructure structure;
     private DDDFitness fitness;
 
-    public ClassFitnessService(Class artifact, Structure structure) {
+    public ClassFitnessService(Class artifact, DDDStructure structure) {
         this.artifact = artifact;
         this.structure = structure;
         this.fitness = new DDDFitness();

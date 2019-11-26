@@ -1,8 +1,7 @@
 package illumi.code.ddd.service.analyse.impl;
 
-import illumi.code.ddd.model.Structure;
+import illumi.code.ddd.model.DDDStructure;
 import illumi.code.ddd.service.analyse.AnalyseService;
-import illumi.code.ddd.service.analyse.impl.AnalyseServiceImpl;
 import org.json.JSONArray;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -154,7 +153,7 @@ class AnalyseServiceImplTest {
 	void readArtifacts() {
 		try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
 			AnalyseService service = new AnalyseServiceImpl(driver);
-			service.setStructure(new Structure());
+			service.setStructure(new DDDStructure());
 			
 			JSONArray result = service.analyzeStructure("de.test");
 			System.out.println(result);
@@ -202,7 +201,7 @@ class AnalyseServiceImplTest {
 	@Test
 	void readArtifactsWithoutDriver() {
 		AnalyseService service = new AnalyseServiceImpl(null);
-		service.setStructure(new Structure());
+		service.setStructure(new DDDStructure());
 		
 		JSONArray result = service.analyzeStructure("de.test");
 

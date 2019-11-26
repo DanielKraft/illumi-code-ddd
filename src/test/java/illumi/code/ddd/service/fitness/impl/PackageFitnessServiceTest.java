@@ -3,26 +3,25 @@ package illumi.code.ddd.service.fitness.impl;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import illumi.code.ddd.model.DDDFitness;
+import illumi.code.ddd.model.fitness.DDDFitness;
 import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Package;
-import illumi.code.ddd.service.fitness.impl.PackageFitnessService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
-import illumi.code.ddd.model.DDDRating;
+import illumi.code.ddd.model.fitness.DDDRating;
 import illumi.code.ddd.model.DDDType;
-import illumi.code.ddd.model.Structure;
+import illumi.code.ddd.model.DDDStructure;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class PackageFitnessServiceTest {
 	
-	private Structure structure;
+	private DDDStructure structure;
 	
 	@BeforeAll
 	void init() {
-		structure = new Structure();
+		structure = new DDDStructure();
 		structure.setPath("de.test");
 		structure.addDomain("domain0");
 		structure.addDomain("domain1");

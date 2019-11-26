@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.neo4j.driver.v1.Record;
 
-import illumi.code.ddd.model.DDDFitness;
-import illumi.code.ddd.model.DDDIssueType;
-import illumi.code.ddd.model.Structure;
+import illumi.code.ddd.model.fitness.DDDFitness;
+import illumi.code.ddd.model.fitness.DDDIssueType;
+import illumi.code.ddd.model.DDDStructure;
 
 public class Field {
 	
@@ -38,7 +38,7 @@ public class Field {
 		return type;
 	}
 
-	public static void evaluateEntity(Class artifact, Structure structure, DDDFitness fitness) {
+	public static void evaluateEntity(Class artifact, DDDStructure structure, DDDFitness fitness) {
 		boolean containsId = false;
 		for (Field field : artifact.getFields()) {
 			if (isId(field)) {
@@ -63,7 +63,7 @@ public class Field {
 		return field.getName().toUpperCase().endsWith("ID");
 	}
 	
-	public static void evaluateValueObject(Class artifact, Structure structure, DDDFitness fitness) {
+	public static void evaluateValueObject(Class artifact, DDDStructure structure, DDDFitness fitness) {
 		boolean containsId = false;
 		for (Field field : artifact.getFields()) {
 			if (Field.isId(field)

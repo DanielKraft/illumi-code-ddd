@@ -7,7 +7,7 @@ import static org.mockito.Mockito.when;
 
 import javax.inject.Inject;
 
-import illumi.code.ddd.model.Structure;
+import illumi.code.ddd.model.DDDStructure;
 import illumi.code.ddd.service.analyse.AnalyseService;
 import illumi.code.ddd.service.analyse.impl.AnalyseServiceImpl;
 import illumi.code.ddd.service.fitness.FitnessService;
@@ -121,7 +121,7 @@ class DDDControllerTest {
 				.put("DDD", "MODULE")
 				.put("name", "visit"));
 
-		when(refactorService.refactor()).then(invocation -> new Structure());
+		when(refactorService.refactor()).then(invocation -> new DDDStructure());
 		when(fitnessService.getStructureWithFitness()).then(invocation -> data);
 
 		final String expected = "[{\"contains\":["
