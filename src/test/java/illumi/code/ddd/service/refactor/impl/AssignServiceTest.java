@@ -325,4 +325,13 @@ class AssignServiceTest {
                     () -> assertEquals(1, refactorData.getNewStructure().getAnnotations().size(), "#Annotation"),
                     () -> assertEquals("test.infrastructure.Annotation", artifact.getPath(), "path"));
     }
+
+    @Test
+    void testRefactorInvalidDomain() {
+        refactorData.getNewStructure().addDomain("invalid");
+        service.assign();
+
+        assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
+                    () -> assertEquals(2, refactorData.getNewStructure().getClasses().size(), "#Class"));
+    }
 }
