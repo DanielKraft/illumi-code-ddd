@@ -3,9 +3,8 @@ package illumi.code.ddd.service.refactor.impl;
 import illumi.code.ddd.model.DDDRefactorData;
 import illumi.code.ddd.model.DDDStructure;
 import illumi.code.ddd.model.DDDType;
-import illumi.code.ddd.model.artifacts.Artifact;
+import illumi.code.ddd.model.artifacts.*;
 import illumi.code.ddd.model.artifacts.Class;
-import illumi.code.ddd.model.artifacts.Field;
 import illumi.code.ddd.model.artifacts.Package;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -123,8 +122,8 @@ class AssignServiceTest {
         service.assign();
 
         assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
-                () -> assertEquals(3, refactorData.getNewStructure().getClasses().size(), "#Class"),
-                () -> assertEquals("test.domain.root.model.Entity", artifact.getPath(), "path"));
+                    () -> assertEquals(3, refactorData.getNewStructure().getClasses().size(), "#Class"),
+                    () -> assertEquals("test.domain.root.model.Entity", artifact.getPath(), "path"));
     }
 
     @Test
@@ -173,8 +172,8 @@ class AssignServiceTest {
         service.assign();
 
         assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
-                () -> assertEquals(4, refactorData.getNewStructure().getClasses().size(), "#Class"),
-                () -> assertEquals("test.domain.model.Entity", artifact.getPath(), "path"));
+                    () -> assertEquals(4, refactorData.getNewStructure().getClasses().size(), "#Class"),
+                    () -> assertEquals("test.domain.model.Entity", artifact.getPath(), "path"));
     }
 
     @Test
@@ -209,7 +208,75 @@ class AssignServiceTest {
         service.assign();
 
         assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
-                () -> assertEquals(4, refactorData.getNewStructure().getClasses().size(), "#Class"),
-                () -> assertEquals("test.domain.model.Entity", artifact.getPath(), "path"));
+                    () -> assertEquals(4, refactorData.getNewStructure().getClasses().size(), "#Class"),
+                    () -> assertEquals("test.domain.model.Entity", artifact.getPath(), "path"));
     }
+
+    @Test
+    void testAssignInterfaceService() {
+        Interface artifact = new Interface("Service", "de.test.Service");
+        artifact.setType(DDDType.SERVICE);
+        artifact.setDomain("domain0");
+        module.addContains(artifact);
+        structure.addInterface(artifact);
+
+        service.assign();
+
+        assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
+                    () -> assertEquals(2, refactorData.getNewStructure().getClasses().size(), "#Class"),
+                    () -> assertEquals(1, refactorData.getNewStructure().getInterfaces().size(), "#Interface"),
+                    () -> assertEquals("test.application.root.Service", artifact.getPath(), "path"));
+    }
+
+    @Test
+    void testAssignInterfaceController() {
+        Interface artifact = new Interface("Controller", "de.test.Controller");
+        artifact.setType(DDDType.CONTROLLER);
+        module.addContains(artifact);
+        structure.addInterface(artifact);
+
+        service.assign();
+
+        assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
+                    () -> assertEquals(2, refactorData.getNewStructure().getClasses().size(), "#Class"),
+                    () -> assertEquals(1, refactorData.getNewStructure().getInterfaces().size(), "#Interface"),
+                    () -> assertEquals("test.infrastructure.Controller", artifact.getPath(), "path"));
+    }
+
+    @Test
+    void testAssignInterfaceRepositoryWithDependency() {
+        Class entity = new Class("Entity", "test.domain.root.model.Entity");
+        entity.setType(DDDType.ENTITY);
+        entity.setDomain("domain0");
+        module.addContains(entity);
+        structure.addClass(entity);
+
+        Interface artifact = new Interface("EntityRepository", "de.test.EntityRepository");
+        artifact.setType(DDDType.REPOSITORY);
+        module.addContains(artifact);
+        structure.addInterface(artifact);
+
+        service.assign();
+
+        assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
+                    () -> assertEquals(3, refactorData.getNewStructure().getClasses().size(), "#Class"),
+                    () -> assertEquals(1, refactorData.getNewStructure().getInterfaces().size(), "#Interface"),
+                    () -> assertEquals("test.domain.root.model.EntityRepository", artifact.getPath(), "path"));
+    }
+
+    @Test
+    void testAssignInterfaceModel() {
+        Interface artifact = new Interface("Repository", "de.test.Repository");
+        artifact.setType(DDDType.REPOSITORY);
+        module.addContains(artifact);
+        structure.addInterface(artifact);
+
+        service.assign();
+
+        assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
+                () -> assertEquals(2, refactorData.getNewStructure().getClasses().size(), "#Class"),
+                () -> assertEquals(1, refactorData.getNewStructure().getInterfaces().size(), "#Interface"),
+                () -> assertEquals("test.domain.model.Repository", artifact.getPath(), "path"));
+    }
+
 }

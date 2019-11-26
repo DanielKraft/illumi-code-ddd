@@ -187,7 +187,7 @@ class AssignService {
     }
 
     private void assignEnums() {
-        for (illumi.code.ddd.model.artifacts.Enum artifact: refactorData.getOldStructure().getEnums()) {
+        for (Enum artifact: refactorData.getOldStructure().getEnums()) {
             addArtifact(artifact);
             refactorData.getNewStructure().addEnum(artifact);
         }
