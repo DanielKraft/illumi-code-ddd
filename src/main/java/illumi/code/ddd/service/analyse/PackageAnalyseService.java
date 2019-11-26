@@ -63,8 +63,8 @@ public class PackageAnalyseService {
             .parallel()
             .forEach(artifact -> {
                 for (Class entity: entities) {
-                    if (entity != artifact && entity.getDependencies().contains(artifact.getPath())) {
-                        artifact.addUsed(entity.getPath());
+                    if (entity != artifact && entity.getDependencies().contains(artifact.getName())) {
+                        artifact.addUsed(entity.getName());
                     }
                 }
             });

@@ -65,14 +65,16 @@ public class ClassFitnessService {
     }
 
     private void evaluatePath(String filter, String message) {
-        fitness.addIssue(artifact.getPath().contains(filter), DDDIssueType.MINOR, message);
+        fitness.addIssue(artifact.getPath().contains(filter)
+                || artifact.getPath().contains(".domain.model"), DDDIssueType.MINOR, message);
     }
 
     private void evaluateEntity() {
         LOGGER.info("DDD:ENTITY:{}", artifact.getName());
 
         evaluatePath(String.format(DOMAIN, artifact.getDomain()),
-                String.format("The Entity '%s' is not placed at 'domain.%s.model'", artifact.getName(), artifact.getDomain()));
+                String.format("The Entity '%s' is not placed at 'domain.%s.model'",
+                        artifact.getName(), artifact.getDomain()));
 
         Field.evaluateEntity(artifact, structureService, fitness);
 
@@ -92,8 +94,11 @@ public class ClassFitnessService {
                 }
             }
 
-            fitness.addIssue(containsId, DDDIssueType.CRITICAL,
-                    String.format("The Entity '%s' does not contains an ID.", item.getName()));
+            if (containsId) {
+                fitness.addSuccessfulCriteria(DDDIssueType.CRITICAL);
+            } else if (item.getSuperClass() == null) {
+                fitness.addFailedCriteria(DDDIssueType.CRITICAL, String.format("The Entity '%s' does not contains an ID.", artifact.getName()));
+            }
 
             Method.evaluateNeededMethods(item, fitness);
 

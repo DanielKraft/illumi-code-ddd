@@ -37,6 +37,7 @@ public class Field {
 	public String getType() {
 		return type;
 	}
+
 	public static void evaluateEntity(Class artifact, StructureService structureService, DDDFitness fitness) {
 		boolean containsId = false;
 		for (Field field : artifact.getFields()) {

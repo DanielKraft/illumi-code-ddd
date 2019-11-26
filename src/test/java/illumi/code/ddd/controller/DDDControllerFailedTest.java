@@ -4,15 +4,10 @@ import static org.mockito.Mockito.mock;
 
 import javax.inject.Inject;
 
+import illumi.code.ddd.service.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import illumi.code.ddd.service.AnalyseService;
-import illumi.code.ddd.service.AnalyseServiceImpl;
-import illumi.code.ddd.service.FitnessService;
-import illumi.code.ddd.service.FitnessServiceImpl;
-import illumi.code.ddd.service.MetricService;
-import illumi.code.ddd.service.MetricServiceImpl;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.client.RxHttpClient;
 import io.micronaut.http.client.annotation.Client;
@@ -26,6 +21,8 @@ class DDDControllerFailedTest {
 	@Inject AnalyseService analyseService; 
 	@Inject FitnessService fitnessService;
 	@Inject MetricService metricService;
+    @Inject
+    RefactorService refactorService;
 	
 	@Inject
     @Client("/")
@@ -45,9 +42,19 @@ class DDDControllerFailedTest {
     MetricService metricService() {
         return mock(MetricService.class); 
     }
+
+    @MockBean(RefactorServiceImpl.class)
+    RefactorService refactorService() {
+        return mock(RefactorService.class);
+    }
 	
 	@Test
     void testCreatingMetrics() {
 		Assertions.assertThrows(HttpClientResponseException.class, () -> client.toBlocking().retrieve(HttpRequest.GET("/metric")));
 	}
+
+    @Test
+    void testRefactorStructure() {
+        Assertions.assertThrows(HttpClientResponseException.class, () -> client.toBlocking().retrieve(HttpRequest.GET("/refactor")));
+    }
 }

@@ -35,7 +35,7 @@ class ClassFitnessServiceTest {
 		superClass.addMethod(new Method("public", "hashCode", "int hashCode()"));
 		superClass.addMethod(new Method("public", "toString", "test toString()"));
 		
-		Class artifact = new Class("Entity", "de.test.Entity");
+		Class artifact = new Class("Entity", "de.test.domain.model.Entity");
 		artifact.setType(DDDType.ENTITY);
 		artifact.addField(new Field("private", "id", "de.test.EntityId"));
 		artifact.addField(new Field("private", "name", "String"));
@@ -50,11 +50,11 @@ class ClassFitnessServiceTest {
 		ClassFitnessService service = new ClassFitnessService(artifact, structureService);
 		final DDDFitness result = service.evaluate();
 		
-		assertAll(	() -> assertEquals(77.78, 	result.calculateFitness(), 				"Fitness"),
-				 	() -> assertEquals(DDDRating.D, 	result.getscore(), 						"Rating"),
+		assertAll(	() -> assertEquals(81.48, 	result.calculateFitness(), 				"Fitness"),
+				 	() -> assertEquals(DDDRating.C, 	result.getscore(), 						"Rating"),
 				 	() -> assertEquals(27, 	result.getNumberOfCriteria(), 			"Total Criteria"),
-				 	() -> assertEquals(21, 	result.getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
-				 	() -> assertEquals(4, 		result.getIssues().size(), 				"#Issues"));
+				 	() -> assertEquals(22, 	result.getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
+				 	() -> assertEquals(3, 		result.getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test
@@ -74,9 +74,9 @@ class ClassFitnessServiceTest {
 		
 		assertAll(	() -> assertEquals(0.0, 	result.calculateFitness(), 				"Fitness"),
 				 	() -> assertEquals(DDDRating.F, 	result.getscore(), 						"Rating"),
-				 	() -> assertEquals(14, 		result.getNumberOfCriteria(), 		"Total Criteria"),
+				 	() -> assertEquals(9, 		result.getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(0, 		result.getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
-				 	() -> assertEquals(4, 		result.getIssues().size(), 				"#Issues"));
+				 	() -> assertEquals(3, 		result.getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test

@@ -32,7 +32,7 @@ public class DDDController {
 		analyseService.setStructureService(structureService);
 		fitnessService.setStructureService(structureService);
     	analyseService.analyzeStructure(path);
-    	return HttpResponse.ok(fitnessService.getStructureWithFitness().toString());
+		return HttpResponse.ok(fitnessService.getStructureWithFitness().toString());
     }
 
     @Get("/metric") 
@@ -56,9 +56,7 @@ public class DDDController {
 			refactorService.setOldStructure(structureService);
 			structureService = refactorService.refactor();
 			fitnessService.setStructureService(structureService);
-
-			return HttpResponse.ok(new JSONArray(structureService.getStructure()).toString());
-//			return HttpResponse.ok(fitnessService.getStructureWithFitness().toString());
+			return HttpResponse.ok(fitnessService.getStructureWithFitness().toString());
 		}
 		return HttpResponse.badRequest("{\"message\":\"No project has been analyzed!\"}");
 	}

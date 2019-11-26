@@ -51,7 +51,7 @@ public class StructureService {
 		this.path = split[split.length-1] + ".";
 	}
 
-	public ArrayList<Artifact> getStructure() {
+	List<Artifact> getStructure() {
 		return structure;
 	}
 

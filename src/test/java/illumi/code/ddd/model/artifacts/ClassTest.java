@@ -259,7 +259,7 @@ class ClassTest {
 			ArrayList<String> result = (ArrayList<String>) artifact.getDependencies();
 
 			assertEquals(1, result.size());
-			assertEquals("de.test.SuperClass", result.get(0));
+			assertEquals("SuperClass", result.get(0));
 		}
 	}
 

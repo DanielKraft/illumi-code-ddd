@@ -18,7 +18,9 @@ public class PackageFitnessService {
     }
 
     public DDDFitness evaluate() {
-        if (isDomainModule()) {
+        if (isModelModule()) {
+            return new DDDFitness();
+        } else if (isDomainModule()) {
             return evaluateDomainModule();
         } else if (isInfrastructure()) {
             return evaluateInfrastructureModule();
@@ -29,8 +31,14 @@ public class PackageFitnessService {
         }
     }
 
+    private boolean isModelModule() {
+        return module.getPath().endsWith(".domain.model");
+    }
+
     private boolean isDomainModule() {
-        return structureService.getDomains().contains(module.getName());
+        return structureService.getDomains().contains(module.getName())
+                && !module.getPath().contains("application")
+                && !module.getPath().contains("infrastructure");
     }
 
     private DDDFitness evaluateDomainModule() {
@@ -42,7 +50,7 @@ public class PackageFitnessService {
         fitness.addIssue(containsOnlyDomain(), DDDIssueType.MAJOR,
                 String.format("The module '%s' dose not only contains domain artifacts.", module.getName()));
 
-        fitness.addIssue(containsAggregateRoot(), DDDIssueType.CRITICAL,
+        fitness.addIssue(containsAggregateRoot(module), DDDIssueType.CRITICAL,
                 String.format("The module '%s' does not contain an Aggregate Root.", module.getName()));
 
         return fitness;
@@ -59,13 +67,17 @@ public class PackageFitnessService {
         return true;
     }
 
-    private boolean containsAggregateRoot() {
+    private boolean containsAggregateRoot(Package module) {
+        boolean contains = false;
         for (Artifact artifact : module.getContains()) {
             if (artifact.getType() == DDDType.AGGREGATE_ROOT) {
                 return true;
+            } else if (artifact instanceof Package) {
+                contains = contains
+                        || containsAggregateRoot((Package) artifact);
             }
         }
-        return false;
+        return contains;
     }
 
     private boolean isInfrastructure() {
@@ -121,7 +133,8 @@ public class PackageFitnessService {
 
     private boolean containsOnlyApplication() {
         for (Artifact artifact : module.getContains()) {
-            if (artifact.getType() != DDDType.APPLICATION_SERVICE) {
+            if (!artifact.isTypeOf(DDDType.APPLICATION_SERVICE)
+                    && !artifact.isTypeOf(DDDType.MODULE)) {
                 return false;
             }
         }
