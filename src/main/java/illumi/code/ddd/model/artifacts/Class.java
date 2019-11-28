@@ -48,6 +48,10 @@ public class Class extends File {
 		return superClass;
 	}
 
+	public void setSuperClass(Class superClass) {
+		this.superClass = superClass;
+	}
+
 	public void setSuperClass(Driver driver, List<Class> classes) {
 		this.superClass = new JavaArtifactService(driver, getPath()).getSuperClass(classes);
 	}

@@ -76,7 +76,7 @@ public class Field {
 			}
 			
 			// Is type of field Value Object or standard type?
-			fitness.addIssue(field.getType().contains(structure.getPath()) || field.getType().contains("java.lang."), DDDIssueType.MAJOR,
+			fitness.addIssue(isValidType(structure, field), DDDIssueType.MAJOR,
 					String.format("The Field '%s' of Value Object '%s' is not a Value Object or a standard type.", field.getName(), artifact.getName()));
 			
 			// Has the field a getter and an immutable setter?
@@ -86,7 +86,13 @@ public class Field {
 		fitness.addIssue(!containsId, DDDIssueType.BLOCKER,
 				String.format("The Value Object '%s' contains an ID.", artifact.getName()));
 	}
-	
+
+	private static boolean isValidType(DDDStructure structure, Field field) {
+		return (field.getType().contains(structure.getPath())
+				|| field.getType().contains("java."))
+				&& !field.getType().contains("java.util.");
+	}
+
 	public static void evaluateDomainEvent(Class artifact, DDDFitness fitness) {
 		boolean containsTime = false;
 		boolean containsId = false;

@@ -99,6 +99,7 @@ class ClassFitnessServiceTest {
 		Class artifact = new Class("ValueObject", "de.test.ValueObject");
 		artifact.setType(DDDType.VALUE_OBJECT);
 		artifact.addField(new Field("private", "name", "java.lang.string"));
+		artifact.addField(new Field("private", "types", "java.util.Set"));
 		artifact.addField(new Field("private", "value", "de.test.Value"));
 		artifact.addMethod(new Method("public", "getName", "java.lang.string getName()"));
 		artifact.addMethod(new Method("public", "name", "java.lang.string name()"));
@@ -110,11 +111,11 @@ class ClassFitnessServiceTest {
 		ClassFitnessService service = new ClassFitnessService(artifact, structure);
 		final DDDFitness result = service.evaluate();
 		
-		assertAll(	() -> assertEquals(74.36, 	result.calculateFitness(), 				"Fitness"),
+		assertAll(	() -> assertEquals(65.91, 	result.calculateFitness(), 				"Fitness"),
 				 	() -> assertEquals(DDDRating.D, 	result.getscore(), 						"Rating"),
-				 	() -> assertEquals(39, 	result.getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(44, 	result.getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(29, 	result.getNumberOfFulfilledCriteria(), "Fulfilled Criteria"),
-				 	() -> assertEquals(5, 		result.getIssues().size(), 				"#Issues"));
+				 	() -> assertEquals(8, 		result.getIssues().size(), 				"#Issues"));
 	}
 
 	@Test

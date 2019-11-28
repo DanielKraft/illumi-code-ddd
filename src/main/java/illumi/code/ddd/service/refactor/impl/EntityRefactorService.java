@@ -5,6 +5,7 @@ import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.artifacts.*;
 import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Package;
+import io.micronaut.web.router.$AnnotatedFilterRouteBuilderDefinitionClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,28 +41,63 @@ public class EntityRefactorService {
 
     private void refactor(Package model) {
         for (Artifact artifact : new ArrayList<>(model.getContains())) {
-            switch(artifact.getType()) {
-                case ENTITY:
-                case AGGREGATE_ROOT:
-                    refactorEntity(model, (Class) artifact);
-                    break;
+            if (artifact.isTypeOf(DDDType.ENTITY)
+                    || artifact.isTypeOf(DDDType.AGGREGATE_ROOT)) {
+                refactorEntity(model, (Class) artifact);
             }
         }
     }
 
     private void refactorEntity(Package model, Class artifact) {
-        refactorFields(model, artifact);
-
-        refactorMethods(artifact);
+        if (isValueObject(artifact)) {
+            artifact.setType(DDDType.VALUE_OBJECT);
+            LOGGER.info("Changed {} to Value Object", artifact.getName());
+        } else {
+            refactorId(artifact);
+            refactorFields(model, artifact);
+            refactorMethods(artifact);
+        }
     }
+
+    private boolean isValueObject(Class artifact) {
+        if (artifact.getSuperClass() == null) {
+            for (Field field : artifact.getFields()) {
+                if (artifact.getName().toLowerCase().contains(field.getName())
+                        && field.getType().startsWith("java.lang.")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void refactorId(Class artifact) {
+        if (needsId(artifact)) {
+            Field id = new Field("private", "id", "java.lang.long");
+            artifact.addField(id);
+        }
+    }
+
+    private boolean needsId(Class artifact) {
+        for (Field field : artifact.getFields()) {
+            if (field.getName().toLowerCase().endsWith("id")) {
+                return false;
+            }
+        }
+        if (artifact.getSuperClass() != null) {
+            return needsId(artifact.getSuperClass());
+        }
+        return true;
+    }
+
 
     private void refactorFields(Package model, Class artifact) {
         for (Field field : artifact.getFields()) {
-            Class type = getTypeOfField(model, field);
+            Class type = getTypeOfField(model, artifact, field);
             if (type != null) {
                 field.setType(type.getPath());
             } else {
-                Class newValueObject = createNewValueObject(model.getPath(), artifact.getName(), field);
+                Class newValueObject = createNewValueObject(artifact.getDomain(), model.getPath(), artifact.getName(), field);
                 refactorData.getNewStructure().addClass(newValueObject);
                 model.addContains(newValueObject);
                 field.setType(newValueObject.getPath());
@@ -69,7 +105,7 @@ public class EntityRefactorService {
         }
     }
 
-    private Class getTypeOfField(Package model, Field field) {
+    private Class getTypeOfField(Package model, Class artifact, Field field) {
         for (Artifact item : model.getContains()) {
             if (item instanceof Class) {
                 switch (item.getType()) {
@@ -77,10 +113,14 @@ public class EntityRefactorService {
                     case AGGREGATE_ROOT:
                     case VALUE_OBJECT:
                     case DOMAIN_EVENT:
+
                         if (field.getType().endsWith(item.getName())
-                                || field.getName().toLowerCase().contains(item.getName().toLowerCase())) {
+                                || toSingular(field.getName()).toLowerCase().contains(item.getName().toLowerCase())
+                                || item.getName().toLowerCase().contains(toSingular(field.getName()))) {
                             return (Class) item;
                         }
+                        break;
+                    default:
                         break;
                 }
             }
@@ -88,18 +128,29 @@ public class EntityRefactorService {
         return null;
     }
 
-    private Class createNewValueObject(String modelPath, String entityName, Field field) {
+    private String toSingular(String name) {
+        if (name.endsWith("ies")) {
+            return (name + "&").replaceAll("ies&", "y");
+        }
+        if (name.endsWith("s")) {
+            return name.substring(0, name.length()-1);
+        }
+        return name;
+    }
+
+    private Class createNewValueObject(String domain, String modelPath, String entityName, Field field) {
         String name = generateName(entityName, field);
         String path = String.format("%s.%s", modelPath, name);
         Class newValueObject = new Class(name, path);
         newValueObject.setType(DDDType.VALUE_OBJECT);
+        newValueObject.setDomain(domain);
         newValueObject.addField(new Field("private", field.getName(), field.getType()));
         newValueObject.addMethod(createEquals());
         newValueObject.addMethod(createHashCode());
         newValueObject.addMethod(new Method("public", field.getName(), field.getType()));
         newValueObject.addMethod(new Method("private", "set" + modifyFirstChar(field.getName()), path));
 
-        LOGGER.info("Created " + newValueObject.getPath());
+        LOGGER.info("Created {}", newValueObject.getPath());
         return newValueObject;
     }
 
