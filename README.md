@@ -60,4 +60,4 @@ The thesis is available in the following repository: [bachelor-thesis](https://g
 [**Kraft, Daniel**](https://github.com/DanielKraft)
 
 ## Acknowledgments
-[**adesso AG**](https://www.adesso.de/de/)
+[**adesso SE**](https://www.adesso.de/de/)
