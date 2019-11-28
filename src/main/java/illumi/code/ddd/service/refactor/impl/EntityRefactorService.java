@@ -5,7 +5,6 @@ import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.artifacts.*;
 import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Package;
-import io.micronaut.web.router.$AnnotatedFilterRouteBuilderDefinitionClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +12,8 @@ import java.util.ArrayList;
 
 public class EntityRefactorService {
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityRefactorService.class);
+    private static final String PRIVATE = "private";
+    private static final String PUBLIC = "public";
 
     private DDDRefactorData refactorData;
 
@@ -73,7 +74,7 @@ public class EntityRefactorService {
 
     private void refactorId(Class artifact) {
         if (needsId(artifact)) {
-            Field id = new Field("private", "id", "java.lang.long");
+            Field id = new Field(PRIVATE, "id", "java.lang.long");
             artifact.addField(id);
         }
     }
@@ -93,19 +94,22 @@ public class EntityRefactorService {
 
     private void refactorFields(Package model, Class artifact) {
         for (Field field : artifact.getFields()) {
-            Class type = getTypeOfField(model, artifact, field);
+            Class type = getTypeOfField(model, field);
             if (type != null) {
                 field.setType(type.getPath());
             } else {
                 Class newValueObject = createNewValueObject(artifact.getDomain(), model.getPath(), artifact.getName(), field);
                 refactorData.getNewStructure().addClass(newValueObject);
                 model.addContains(newValueObject);
-                field.setType(newValueObject.getPath());
+                String oldType = field.getType();
+                String newType = newValueObject.getPath();
+                field.setType(newType);
+                refactorGetterAndSetter(artifact, oldType, newType);
             }
         }
     }
 
-    private Class getTypeOfField(Package model, Class artifact, Field field) {
+    private Class getTypeOfField(Package model, Field field) {
         for (Artifact item : model.getContains()) {
             if (item instanceof Class) {
                 switch (item.getType()) {
@@ -130,7 +134,7 @@ public class EntityRefactorService {
 
     private String toSingular(String name) {
         if (name.endsWith("ies")) {
-            return (name + "&").replaceAll("ies&", "y");
+            return (name + "&").replace("ies&", "y");
         }
         if (name.endsWith("s")) {
             return name.substring(0, name.length()-1);
@@ -144,14 +148,20 @@ public class EntityRefactorService {
         Class newValueObject = new Class(name, path);
         newValueObject.setType(DDDType.VALUE_OBJECT);
         newValueObject.setDomain(domain);
-        newValueObject.addField(new Field("private", field.getName(), field.getType()));
+        newValueObject.addField(new Field(PRIVATE, field.getName(), field.getType()));
         newValueObject.addMethod(createEquals());
         newValueObject.addMethod(createHashCode());
-        newValueObject.addMethod(new Method("public", field.getName(), field.getType()));
-        newValueObject.addMethod(new Method("private", "set" + modifyFirstChar(field.getName()), path));
+        newValueObject.addMethod(new Method(PUBLIC, field.getName(), field.getType()));
+        newValueObject.addMethod(new Method(PRIVATE, "set" + modifyFirstChar(field.getName()), path));
 
         LOGGER.info("Created {}", newValueObject.getPath());
         return newValueObject;
+    }
+
+    private void refactorGetterAndSetter(Class artifact, String oldType, String newType) {
+        artifact.getMethods().stream()
+                .parallel()
+                .forEach(method -> method.setSignature(method.getSignature().replace(oldType, newType)));
     }
 
     private String generateName(String entityName, Field field) {
@@ -195,20 +205,20 @@ public class EntityRefactorService {
     private Method createGetter(Field field) {
         String name = String.format("get%s", modifyFirstChar(field.getName()));
         String signature = String.format("%s %s()", field.getType(), name);
-        return new Method("public", name, signature);
+        return new Method(PUBLIC, name, signature);
     }
 
     private Method createSetter(Field field) {
         String name = String.format("set%s", modifyFirstChar(field.getName()));
         String signature = String.format("void %s(%s)", name, field.getType());
-        return new Method("public", name, signature);
+        return new Method(PUBLIC, name, signature);
     }
 
     private Method createEquals() {
-        return new Method("public", "equals", "java.lang.Boolean equals(Object)");
+        return new Method(PUBLIC, "equals", "java.lang.Boolean equals(Object)");
     }
 
     private Method createHashCode() {
-        return new Method("public", "hashCode", "java.lang.Integer hashCode()");
+        return new Method(PUBLIC, "hashCode", "java.lang.Integer hashCode()");
     }
 }

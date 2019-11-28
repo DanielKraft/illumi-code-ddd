@@ -183,6 +183,7 @@ class AssignServiceTest {
         artifact.setType(DDDType.ENTITY);
         artifact.addField(new Field("private", "test", "de.Other"));
         artifact.addField(new Field("private", "rootId", "de.Int"));
+        artifact.addMethod(new Method("private", "test", "de.Other test()"));
         module.addContains(artifact);
         structure.addClass(artifact);
 

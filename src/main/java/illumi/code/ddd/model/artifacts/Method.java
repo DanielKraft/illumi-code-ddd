@@ -37,6 +37,10 @@ public class Method {
 		return signature;
 	}
 
+	public void setSignature(String signature) {
+		this.signature = signature;
+	}
+
 	public static void evaluateNeededMethods(Class artifact, DDDFitness fitness) {
 		int ctr = 0;
 		for (Method method : artifact.getMethods()) {

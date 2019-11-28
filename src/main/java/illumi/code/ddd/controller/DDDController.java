@@ -7,6 +7,7 @@ import illumi.code.ddd.service.analyse.AnalyseService;
 import illumi.code.ddd.service.fitness.FitnessService;
 import illumi.code.ddd.service.metric.MetricService;
 import illumi.code.ddd.service.refactor.RefactorService;
+import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

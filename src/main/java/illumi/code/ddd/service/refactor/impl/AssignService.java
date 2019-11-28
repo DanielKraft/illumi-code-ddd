@@ -212,11 +212,36 @@ class AssignService {
 
     private void refactorPaths(String path, ArrayList<Artifact> structure) {
         for (Artifact artifact : structure) {
-            artifact.setPath(path + artifact.getName());
+            String oldPath = artifact.getPath();
+            String newPath = path + artifact.getName();
+            artifact.setPath(newPath);
             if (artifact instanceof Package) {
                 refactorPaths(artifact.getPath() + ".", (ArrayList<Artifact>) ((Package) artifact).getContains());
+            } else {
+                refactorDependencies(oldPath, newPath);
             }
         }
+    }
+
+    private void refactorDependencies(String oldPath, String newPath) {
+        for (Artifact artifact : refactorData.getNewStructure().getAllArtifacts()) {
+            if (artifact instanceof File) {
+                refactorFieldDependencies(oldPath, newPath, (File) artifact);
+                refactorMethodDependencies(oldPath, newPath, (File) artifact);
+            }
+        }
+    }
+
+    private void refactorFieldDependencies(String oldPath, String newPath, File artifact) {
+        artifact.getFields().stream()
+                .parallel()
+                .forEach(field -> field.setType(field.getType().replace(oldPath, newPath)));
+    }
+
+    private void refactorMethodDependencies(String oldPath, String newPath, File artifact) {
+        artifact.getMethods().stream()
+                .parallel()
+                .forEach(method -> method.setSignature(method.getSignature().replace(oldPath, newPath)));
     }
 
     private void refactorDomains() {
