@@ -53,7 +53,7 @@ public class Method {
 	
 	private static boolean isNeededMethod(Method method) {
 		// equals() or hashCode()? 
-		return method.getName().equals("equals") || method.getName().equals("hashCode");
+		return method.getName().equalsIgnoreCase("equals") || method.getName().equalsIgnoreCase("hashCode");
 	}
 
 	static void evaluateEntity(Class artifact, Field field, DDDFitness fitness) {

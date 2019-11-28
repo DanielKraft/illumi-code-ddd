@@ -38,6 +38,10 @@ public class Field {
 		return type;
 	}
 
+	public void setType(String type) {
+		this.type = type;
+	}
+
 	public static void evaluateEntity(Class artifact, DDDStructure structure, DDDFitness fitness) {
 		boolean containsId = false;
 		for (Field field : artifact.getFields()) {

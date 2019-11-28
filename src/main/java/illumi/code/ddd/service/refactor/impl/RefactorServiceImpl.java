@@ -14,8 +14,7 @@ public class RefactorServiceImpl implements RefactorService {
 
     private DDDRefactorData refactorData;
 
-    public @Inject
-    RefactorServiceImpl() {
+    public @Inject RefactorServiceImpl() {
         // Empty
     }
 
@@ -29,6 +28,7 @@ public class RefactorServiceImpl implements RefactorService {
 
         new InitializeService(refactorData).initModules();
         new AssignService(refactorData).assign();
+        new EntityRefactorService(refactorData).refactor();
 
         deleteEmptyModules(refactorData.getNewStructure().getStructure());
         return refactorData.getNewStructure();
