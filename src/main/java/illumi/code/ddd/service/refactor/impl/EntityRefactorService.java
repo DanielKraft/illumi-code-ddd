@@ -5,12 +5,13 @@ import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.artifacts.*;
 import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Package;
+import illumi.code.ddd.service.refactor.ArtifactRefactorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
-public class EntityRefactorService {
+public class EntityRefactorService implements ArtifactRefactorService {
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityRefactorService.class);
     private static final String PRIVATE = "private";
     private static final String PUBLIC = "public";
@@ -21,6 +22,7 @@ public class EntityRefactorService {
         this.refactorData = refactorData;
     }
 
+    @Override
     public void refactor() {
         refactorData.getDomainModule().getContains().stream()
                 .parallel()
