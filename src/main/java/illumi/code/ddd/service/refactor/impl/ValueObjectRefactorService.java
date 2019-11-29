@@ -22,12 +22,12 @@ public class ValueObjectRefactorService extends DefaultRefactorService {
         for (Artifact artifact : new ArrayList<>(model.getContains())) {
             if (artifact instanceof Class
                     && artifact.isTypeOf(DDDType.VALUE_OBJECT)) {
-                refactorValueObject(model, (Class) artifact);
+                refactorValueObject((Class) artifact);
             }
         }
     }
 
-    private void refactorValueObject(Package model, Class artifact) {
+    private void refactorValueObject(Class artifact) {
 
         if (needsMethod(artifact, "equals")) {
             artifact.addMethod(createEquals());
@@ -54,13 +54,10 @@ public class ValueObjectRefactorService extends DefaultRefactorService {
     }
 
     private void deleteMethodsOfField(Class artifact, Field field) {
-        for (Method method : new ArrayList<>(artifact.getMethods())) {
-            if (method.getName().equalsIgnoreCase("get" + field.getName())
-                    || method.getName().equalsIgnoreCase(field.getName())
-                    || method.getName().equalsIgnoreCase("set" + field.getName())) {
-                artifact.getMethods().remove(method);
-            }
-        }
+        artifact.getMethods().removeIf(method->
+                method.getName().equalsIgnoreCase("get" + field.getName())
+                || method.getName().equalsIgnoreCase(field.getName())
+                || method.getName().equalsIgnoreCase("set" + field.getName()));
     }
 
     private boolean needsGetter(Class artifact, Field field) {
@@ -90,14 +87,14 @@ public class ValueObjectRefactorService extends DefaultRefactorService {
     private boolean needsSetter(Class artifact, Field field) {
         for (Method method : artifact.getMethods()) {
             if (method.getName().equalsIgnoreCase("set" + field.getName())) {
-                refactorSetter(field, method);
+                refactorSetter(method);
                 return false;
             }
         }
         return true;
     }
 
-    private void refactorSetter(Field field, Method method) {
+    private void refactorSetter(Method method) {
         if (method.getVisibility().equalsIgnoreCase(PUBLIC)) {
             method.setVisibility(PRIVATE);
         }
