@@ -155,18 +155,4 @@ public class EntityRefactorService extends DefaultRefactorService {
             }
         }
     }
-
-    private Method createGetter(Field field) {
-        String name = String.format("get%s", modifyFirstChar(field.getName()));
-        String signature = String.format("%s %s()", field.getType(), name);
-        LOGGER.info("Create {}", signature);
-        return new Method(PUBLIC, name, signature);
-    }
-
-    private Method createSetter(Field field) {
-        String name = String.format("set%s", modifyFirstChar(field.getName()));
-        String signature = String.format("void %s(%s)", name, field.getType());
-        LOGGER.info("Create {}", signature);
-        return new Method(PUBLIC, name, signature);
-    }
 }

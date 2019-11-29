@@ -1,9 +1,8 @@
 package illumi.code.ddd.service.refactor.impl;
 
 import illumi.code.ddd.model.DDDRefactorData;
-import illumi.code.ddd.model.artifacts.Artifact;
+import illumi.code.ddd.model.artifacts.*;
 import illumi.code.ddd.model.artifacts.Class;
-import illumi.code.ddd.model.artifacts.Method;
 import illumi.code.ddd.model.artifacts.Package;
 import illumi.code.ddd.service.refactor.ArtifactRefactorService;
 import org.slf4j.Logger;
@@ -70,6 +69,22 @@ public abstract class DefaultRefactorService implements ArtifactRefactorService 
         return true;
     }
 
+    boolean needsSideEffectFreeSetter(Class artifact, Field field) {
+        for (Method method : artifact.getMethods()) {
+            if (method.getName().equalsIgnoreCase("set" + field.getName())) {
+                refactorSetter(method);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void refactorSetter(Method method) {
+        if (method.getVisibility().equalsIgnoreCase(PUBLIC)) {
+            method.setVisibility(PRIVATE);
+        }
+    }
+
     Method createEquals() {
         LOGGER.info("Create java.lang.Boolean equals(Object)");
         return new Method(PUBLIC, "equals", "java.lang.Boolean equals(Object)");
@@ -78,5 +93,26 @@ public abstract class DefaultRefactorService implements ArtifactRefactorService 
     Method createHashCode() {
         LOGGER.info("Create java.lang.Integer hashCode()");
         return new Method(PUBLIC, "hashCode", "java.lang.Integer hashCode()");
+    }
+
+    Method createGetter(Field field) {
+        String name = String.format("get%s", modifyFirstChar(field.getName()));
+        String signature = String.format("%s %s()", field.getType(), name);
+        LOGGER.info("Create {}", signature);
+        return new Method(PUBLIC, name, signature);
+    }
+
+    Method createSetter(Field field) {
+        String name = String.format("set%s", modifyFirstChar(field.getName()));
+        String signature = String.format("void %s(%s)", name, field.getType());
+        LOGGER.info("Create {}", signature);
+        return new Method(PUBLIC, name, signature);
+    }
+
+    Method createSideEffectFreeSetter(Field field) {
+        String name = String.format("set%s", modifyFirstChar(field.getName()));
+        String signature = String.format("void %s(%s)", name, field.getType());
+        LOGGER.info("Create {}", signature);
+        return new Method(PRIVATE, name, signature);
     }
 }

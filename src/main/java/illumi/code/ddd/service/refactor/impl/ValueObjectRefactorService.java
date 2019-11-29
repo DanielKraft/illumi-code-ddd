@@ -46,8 +46,8 @@ public class ValueObjectRefactorService extends DefaultRefactorService {
                     artifact.addMethod(createGetter(field));
                 }
 
-                if (needsSetter(artifact, field)) {
-                    artifact.addMethod(createSetter(field));
+                if (needsSideEffectFreeSetter(artifact, field)) {
+                    artifact.addMethod(createSideEffectFreeSetter(field));
                 }
             }
         }
@@ -77,33 +77,11 @@ public class ValueObjectRefactorService extends DefaultRefactorService {
         method.setName(field.getName());
     }
 
-    private Method createGetter(Field field) {
+    @Override
+    Method createGetter(Field field) {
         String name = field.getName();
         String signature = String.format("%s %s()", field.getType(), name);
         LOGGER.info("Create {}", signature);
         return new Method(PUBLIC, name, signature);
-    }
-
-    private boolean needsSetter(Class artifact, Field field) {
-        for (Method method : artifact.getMethods()) {
-            if (method.getName().equalsIgnoreCase("set" + field.getName())) {
-                refactorSetter(method);
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private void refactorSetter(Method method) {
-        if (method.getVisibility().equalsIgnoreCase(PUBLIC)) {
-            method.setVisibility(PRIVATE);
-        }
-    }
-
-    private Method createSetter(Field field) {
-        String name = String.format("set%s", modifyFirstChar(field.getName()));
-        String signature = String.format("void %s(%s)", name, field.getType());
-        LOGGER.info("Create {}", signature);
-        return new Method(PRIVATE, name, signature);
     }
 }
