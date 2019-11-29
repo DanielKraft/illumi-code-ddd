@@ -28,7 +28,9 @@ public class RefactorServiceImpl implements RefactorService {
 
         new InitializeService(refactorData).initModules();
         new AssignService(refactorData).assign();
+
         new EntityRefactorService(refactorData).refactor();
+        new ValueObjectRefactorService(refactorData).refactor();
 
         deleteEmptyModules(refactorData.getNewStructure().getStructure());
         return refactorData.getNewStructure();

@@ -5,44 +5,19 @@ import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.artifacts.*;
 import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Package;
-import illumi.code.ddd.service.refactor.ArtifactRefactorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
-public class EntityRefactorService implements ArtifactRefactorService {
+public class EntityRefactorService extends DefaultRefactorService {
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityRefactorService.class);
-    private static final String PRIVATE = "private";
-    private static final String PUBLIC = "public";
-
-    private DDDRefactorData refactorData;
 
     public EntityRefactorService(DDDRefactorData refactorData) {
-        this.refactorData = refactorData;
+        super(refactorData);
     }
 
-    @Override
-    public void refactor() {
-        refactorData.getDomainModule().getContains().stream()
-                .parallel()
-                .forEach(item -> {
-                    if (item instanceof Package) {
-                            if (!item.getName().equalsIgnoreCase("model")) {
-                                Package model = getModelOfDomain(item);
-                                refactor(model);
-                            } else {
-                                refactor((Package) item);
-                            }
-                    }
-                });
-    }
-
-    private Package getModelOfDomain(Artifact item) {
-        return (Package) ((Package) item).getContains().get(0);
-    }
-
-    private void refactor(Package model) {
+    void refactor(Package model) {
         for (Artifact artifact : new ArrayList<>(model.getContains())) {
             if (artifact.isTypeOf(DDDType.ENTITY)
                     || artifact.isTypeOf(DDDType.AGGREGATE_ROOT)) {
@@ -101,7 +76,7 @@ public class EntityRefactorService implements ArtifactRefactorService {
                 field.setType(type.getPath());
             } else {
                 Class newValueObject = createNewValueObject(artifact.getDomain(), model.getPath(), artifact.getName(), field);
-                refactorData.getNewStructure().addClass(newValueObject);
+                getRefactorData().getNewStructure().addClass(newValueObject);
                 model.addContains(newValueObject);
                 String oldType = field.getType();
                 String newType = newValueObject.getPath();
@@ -134,16 +109,6 @@ public class EntityRefactorService implements ArtifactRefactorService {
         return null;
     }
 
-    private String toSingular(String name) {
-        if (name.endsWith("ies")) {
-            return (name + "&").replace("ies&", "y");
-        }
-        if (name.endsWith("s")) {
-            return name.substring(0, name.length()-1);
-        }
-        return name;
-    }
-
     private Class createNewValueObject(String domain, String modelPath, String entityName, Field field) {
         String name = generateName(entityName, field);
         String path = String.format("%s.%s", modelPath, name);
@@ -170,10 +135,6 @@ public class EntityRefactorService implements ArtifactRefactorService {
         return entityName + modifyFirstChar(field.getName());
     }
 
-    private String modifyFirstChar(String str) {
-        return str.substring(0, 1).toUpperCase() + str.substring(1);
-    }
-
     private void refactorMethods(Class artifact) {
         if (needsMethod(artifact, "equals")) {
             artifact.addMethod(createEquals());
@@ -195,32 +156,17 @@ public class EntityRefactorService implements ArtifactRefactorService {
         }
     }
 
-    private boolean needsMethod(Class artifact, String name) {
-        for (Method method : artifact.getMethods()) {
-            if (method.getName().equalsIgnoreCase(name)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     private Method createGetter(Field field) {
         String name = String.format("get%s", modifyFirstChar(field.getName()));
         String signature = String.format("%s %s()", field.getType(), name);
+        LOGGER.info("Create {}", signature);
         return new Method(PUBLIC, name, signature);
     }
 
     private Method createSetter(Field field) {
         String name = String.format("set%s", modifyFirstChar(field.getName()));
         String signature = String.format("void %s(%s)", name, field.getType());
+        LOGGER.info("Create {}", signature);
         return new Method(PUBLIC, name, signature);
-    }
-
-    private Method createEquals() {
-        return new Method(PUBLIC, "equals", "java.lang.Boolean equals(Object)");
-    }
-
-    private Method createHashCode() {
-        return new Method(PUBLIC, "hashCode", "java.lang.Integer hashCode()");
     }
 }

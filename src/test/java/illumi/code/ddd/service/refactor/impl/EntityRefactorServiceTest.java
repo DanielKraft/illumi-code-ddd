@@ -17,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class EntityRefactorServiceTest {
 
-
     private DDDStructure structure;
     private EntityRefactorService service;
     private DDDRefactorData refactorData;
