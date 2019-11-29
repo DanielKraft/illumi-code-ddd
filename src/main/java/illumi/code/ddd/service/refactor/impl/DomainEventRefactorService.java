@@ -13,8 +13,6 @@ import java.util.ArrayList;
 
 public class DomainEventRefactorService extends DefaultRefactorService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DomainEventRefactorService.class);
-
     DomainEventRefactorService(DDDRefactorData refactorData) {
         super(refactorData);
     }

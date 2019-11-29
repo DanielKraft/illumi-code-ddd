@@ -13,6 +13,7 @@ public abstract class DefaultRefactorService implements ArtifactRefactorService 
 
     static final String PRIVATE = "private";
     static final String PUBLIC = "public";
+    public static final String LOG_CREATE = "Create {}";
 
     private DDDRefactorData refactorData;
 
@@ -98,7 +99,7 @@ public abstract class DefaultRefactorService implements ArtifactRefactorService 
     Method createGetter(Field field) {
         String name = String.format("get%s", modifyFirstChar(field.getName()));
         String signature = String.format("%s %s()", field.getType(), name);
-        LOGGER.info("Create {}", signature);
+        LOGGER.info(LOG_CREATE, signature);
         return new Method(PUBLIC, name, signature);
     }
 
