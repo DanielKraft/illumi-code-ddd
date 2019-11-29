@@ -1,7 +1,6 @@
 package illumi.code.ddd.service.refactor.impl;
 
 
-import illumi.code.ddd.model.fitness.DDDFitness;
 import illumi.code.ddd.model.artifacts.*;
 import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Enum;
@@ -27,7 +26,7 @@ class AssignService {
         assignEnums();
         assignAnnotations();
 
-        clean();
+        cleanDomain();
 
         refactorPaths(refactorData.getNewStructure().getPath(),
                 (ArrayList<Artifact>) refactorData.getNewStructure().getStructure());
@@ -263,12 +262,9 @@ class AssignService {
         }
     }
 
-    private void clean() {
+    private void cleanDomain() {
         refactorData.getNewStructure().getAllArtifacts().stream()
                 .parallel()
-                .forEach(item -> {
-                    item.setFitness(new DDDFitness());
-                    item.setDomain(null);
-                });
+                .forEach(item -> item.setDomain(null));
     }
 }

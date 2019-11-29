@@ -65,7 +65,7 @@ class AssignServiceTest {
 
         service.assign();
 
-        assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
+        assertAll(	() -> assertEquals(13, refactorData.getNewStructure().getPackages().size(), "#Package"),
                     () -> assertEquals(3, refactorData.getNewStructure().getClasses().size(), "#Class"),
                     () -> assertEquals("test.application.ApplicationService", artifact.getPath(), "path"));
     }
@@ -79,7 +79,7 @@ class AssignServiceTest {
 
         service.assign();
 
-        assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
+        assertAll(	() -> assertEquals(13, refactorData.getNewStructure().getPackages().size(), "#Package"),
                     () -> assertEquals(3, refactorData.getNewStructure().getClasses().size(), "#Class"),
                     () -> assertEquals("test.infrastructure.Infrastructure", artifact.getPath(), "path"));
     }
@@ -93,7 +93,7 @@ class AssignServiceTest {
 
         service.assign();
 
-        assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
+        assertAll(	() -> assertEquals(13, refactorData.getNewStructure().getPackages().size(), "#Package"),
                     () -> assertEquals(3, refactorData.getNewStructure().getClasses().size(), "#Class"),
                     () -> assertEquals("test.application.root.Domain0Service", artifact.getPath(), "path"));
     }
@@ -107,7 +107,7 @@ class AssignServiceTest {
 
         service.assign();
 
-        assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
+        assertAll(	() -> assertEquals(13, refactorData.getNewStructure().getPackages().size(), "#Package"),
                     () -> assertEquals(3, refactorData.getNewStructure().getClasses().size(), "#Class"),
                     () -> assertEquals("test.domain.root.model.impl.Repository", artifact.getPath(), "path"));
     }
@@ -122,7 +122,7 @@ class AssignServiceTest {
 
         service.assign();
 
-        assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
+        assertAll(	() -> assertEquals(13, refactorData.getNewStructure().getPackages().size(), "#Package"),
                     () -> assertEquals(3, refactorData.getNewStructure().getClasses().size(), "#Class"),
                     () -> assertEquals("test.domain.root.model.Entity", artifact.getPath(), "path"));
     }
@@ -136,7 +136,7 @@ class AssignServiceTest {
 
         service.assign();
 
-        assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
+        assertAll(	() -> assertEquals(13, refactorData.getNewStructure().getPackages().size(), "#Package"),
                     () -> assertEquals(3, refactorData.getNewStructure().getClasses().size(), "#Class"),
                     () -> assertEquals("test.domain.model.Entity", artifact.getPath(), "path"));
     }
@@ -152,7 +152,7 @@ class AssignServiceTest {
 
         service.assign();
 
-        assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
+        assertAll(	() -> assertEquals(13, refactorData.getNewStructure().getPackages().size(), "#Package"),
                     () -> assertEquals(3, refactorData.getNewStructure().getClasses().size(), "#Class"),
                     () -> assertEquals("test.domain.root.model.Entity", artifact.getPath(), "path"));
     }
@@ -172,7 +172,7 @@ class AssignServiceTest {
 
         service.assign();
 
-        assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
+        assertAll(	() -> assertEquals(13, refactorData.getNewStructure().getPackages().size(), "#Package"),
                     () -> assertEquals(4, refactorData.getNewStructure().getClasses().size(), "#Class"),
                     () -> assertEquals("test.domain.model.Entity", artifact.getPath(), "path"));
     }
@@ -189,7 +189,7 @@ class AssignServiceTest {
 
         service.assign();
 
-        assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
+        assertAll(	() -> assertEquals(13, refactorData.getNewStructure().getPackages().size(), "#Package"),
                     () -> assertEquals(3, refactorData.getNewStructure().getClasses().size(), "#Class"),
                     () -> assertEquals("test.domain.root.model.Entity", artifact.getPath(), "path"));
     }
@@ -209,7 +209,7 @@ class AssignServiceTest {
 
         service.assign();
 
-        assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
+        assertAll(	() -> assertEquals(13, refactorData.getNewStructure().getPackages().size(), "#Package"),
                     () -> assertEquals(4, refactorData.getNewStructure().getClasses().size(), "#Class"),
                     () -> assertEquals("test.domain.model.Entity", artifact.getPath(), "path"));
     }
@@ -224,7 +224,7 @@ class AssignServiceTest {
 
         service.assign();
 
-        assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
+        assertAll(	() -> assertEquals(13, refactorData.getNewStructure().getPackages().size(), "#Package"),
                     () -> assertEquals(2, refactorData.getNewStructure().getClasses().size(), "#Class"),
                     () -> assertEquals(1, refactorData.getNewStructure().getInterfaces().size(), "#Interface"),
                     () -> assertEquals("test.application.root.Service", artifact.getPath(), "path"));
@@ -239,7 +239,7 @@ class AssignServiceTest {
 
         service.assign();
 
-        assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
+        assertAll(	() -> assertEquals(13, refactorData.getNewStructure().getPackages().size(), "#Package"),
                     () -> assertEquals(2, refactorData.getNewStructure().getClasses().size(), "#Class"),
                     () -> assertEquals(1, refactorData.getNewStructure().getInterfaces().size(), "#Interface"),
                     () -> assertEquals("test.infrastructure.Controller", artifact.getPath(), "path"));
@@ -260,7 +260,7 @@ class AssignServiceTest {
 
         service.assign();
 
-        assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
+        assertAll(	() -> assertEquals(13, refactorData.getNewStructure().getPackages().size(), "#Package"),
                     () -> assertEquals(3, refactorData.getNewStructure().getClasses().size(), "#Class"),
                     () -> assertEquals(1, refactorData.getNewStructure().getInterfaces().size(), "#Interface"),
                     () -> assertEquals("test.domain.root.model.EntityRepository", artifact.getPath(), "path"));
@@ -275,7 +275,7 @@ class AssignServiceTest {
 
         service.assign();
 
-        assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
+        assertAll(	() -> assertEquals(13, refactorData.getNewStructure().getPackages().size(), "#Package"),
                     () -> assertEquals(2, refactorData.getNewStructure().getClasses().size(), "#Class"),
                     () -> assertEquals(1, refactorData.getNewStructure().getInterfaces().size(), "#Interface"),
                     () -> assertEquals("test.domain.model.Repository", artifact.getPath(), "path"));
@@ -291,7 +291,7 @@ class AssignServiceTest {
 
         service.assign();
 
-        assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
+        assertAll(	() -> assertEquals(13, refactorData.getNewStructure().getPackages().size(), "#Package"),
                     () -> assertEquals(2, refactorData.getNewStructure().getClasses().size(), "#Class"),
                     () -> assertEquals(1, refactorData.getNewStructure().getEnums().size(), "#Enum"),
                     () -> assertEquals("test.domain.root.model.Enum", artifact.getPath(), "path"));
@@ -306,7 +306,7 @@ class AssignServiceTest {
 
         service.assign();
 
-        assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
+        assertAll(	() -> assertEquals(13, refactorData.getNewStructure().getPackages().size(), "#Package"),
                     () -> assertEquals(2, refactorData.getNewStructure().getClasses().size(), "#Class"),
                     () -> assertEquals(1, refactorData.getNewStructure().getEnums().size(), "#Enum"),
                     () -> assertEquals("test.domain.model.Enum", artifact.getPath(), "path"));
@@ -321,7 +321,7 @@ class AssignServiceTest {
 
         service.assign();
 
-        assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
+        assertAll(	() -> assertEquals(13, refactorData.getNewStructure().getPackages().size(), "#Package"),
                     () -> assertEquals(2, refactorData.getNewStructure().getClasses().size(), "#Class"),
                     () -> assertEquals(1, refactorData.getNewStructure().getAnnotations().size(), "#Annotation"),
                     () -> assertEquals("test.infrastructure.Annotation", artifact.getPath(), "path"));
@@ -332,7 +332,7 @@ class AssignServiceTest {
         refactorData.getNewStructure().addDomain("invalid");
         service.assign();
 
-        assertAll(	() -> assertEquals(12, refactorData.getNewStructure().getPackages().size(), "#Package"),
+        assertAll(	() -> assertEquals(13, refactorData.getNewStructure().getPackages().size(), "#Package"),
                     () -> assertEquals(2, refactorData.getNewStructure().getClasses().size(), "#Class"));
     }
 }

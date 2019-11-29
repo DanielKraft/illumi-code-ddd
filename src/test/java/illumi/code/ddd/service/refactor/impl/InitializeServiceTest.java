@@ -49,7 +49,7 @@ class InitializeServiceTest {
     void testInitModules() {
         service.initModules();
 
-        assertAll(	() -> assertEquals(8, refactorData.getNewStructure().getPackages().size(), "#Package"),
+        assertAll(	() -> assertEquals(9, refactorData.getNewStructure().getPackages().size(), "#Package"),
                     () -> assertEquals(1, refactorData.getNewStructure().getClasses().size(), "#Class"));
     }
 }

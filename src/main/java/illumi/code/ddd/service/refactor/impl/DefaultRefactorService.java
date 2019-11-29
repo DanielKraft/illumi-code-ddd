@@ -106,14 +106,14 @@ public abstract class DefaultRefactorService implements ArtifactRefactorService 
     Method createSetter(Field field) {
         String name = String.format("set%s", modifyFirstChar(field.getName()));
         String signature = String.format("void %s(%s)", name, field.getType());
-        LOGGER.info("Create {}", signature);
+        LOGGER.info(LOG_CREATE, signature);
         return new Method(PUBLIC, name, signature);
     }
 
     Method createSideEffectFreeSetter(Field field) {
         String name = String.format("set%s", modifyFirstChar(field.getName()));
         String signature = String.format("void %s(%s)", name, field.getType());
-        LOGGER.info("Create {}", signature);
+        LOGGER.info(LOG_CREATE, signature);
         return new Method(PRIVATE, name, signature);
     }
 }

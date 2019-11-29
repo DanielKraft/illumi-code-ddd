@@ -4,6 +4,7 @@ import illumi.code.ddd.model.DDDStructure;
 import illumi.code.ddd.model.artifacts.*;
 import illumi.code.ddd.model.artifacts.Package;
 import illumi.code.ddd.model.DDDRefactorData;
+import illumi.code.ddd.model.fitness.DDDFitness;
 import illumi.code.ddd.service.refactor.RefactorService;
 
 import javax.inject.Inject;
@@ -32,8 +33,10 @@ public class RefactorServiceImpl implements RefactorService {
         new EntityRefactorService(refactorData).refactor();
         new ValueObjectRefactorService(refactorData).refactor();
         new DomainEventRefactorService(refactorData).refactor();
+        new RepositoryRefactorService(refactorData).refactor();
 
         deleteEmptyModules(refactorData.getNewStructure().getStructure());
+        cleanFitness();
         return refactorData.getNewStructure();
     }
 
@@ -47,5 +50,11 @@ public class RefactorServiceImpl implements RefactorService {
                 }
             }
         }
+    }
+
+    private void cleanFitness() {
+        refactorData.getNewStructure().getAllArtifacts().stream()
+                .parallel()
+                .forEach(item -> item.setFitness(new DDDFitness()));
     }
 }

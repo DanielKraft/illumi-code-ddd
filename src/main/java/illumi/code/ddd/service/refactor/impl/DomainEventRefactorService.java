@@ -6,8 +6,6 @@ import illumi.code.ddd.model.artifacts.Artifact;
 import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Field;
 import illumi.code.ddd.model.artifacts.Package;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 

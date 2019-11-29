@@ -41,6 +41,11 @@ class InitializeService {
         refactorData.getNewStructure().addPackage(refactorData.getModelModule());
         refactorData.getDomainModule().addContains(refactorData.getModelModule());
 
+        Package impl = new Package("impl",
+                String.format("%s.impl", refactorData.getModelModule().getPath()));
+        refactorData.getNewStructure().addPackage(impl);
+        refactorData.getModelModule().addContains(impl);
+
         refactorData.getNewStructure().setStructure(structure);
     }
 

@@ -65,7 +65,7 @@ public abstract class File extends Artifact {
         this.annotations = (ArrayList<Annotation>) new JavaArtifactService(driver, getPath()).getAnnotations(annotations);
     }
 
-    public List<Interface> getInterfaces() {
+    public List<Interface> getImplInterfaces() {
         return implInterfaces;
     }
 

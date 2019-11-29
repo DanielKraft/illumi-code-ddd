@@ -12,11 +12,17 @@ public class Method {
 	private String visibility;
 	private String name;
 	private String signature;
-	
+
 	public Method( Record record ) {
 		this.visibility = record.get( "visibility" ).asString();
 		this.name = record.get( "name" ).asString();
 		this.signature = record.get( "signature" ).asString();
+	}
+
+	public Method( Method method ) {
+		this.visibility = method.visibility;
+		this.name = method.name;
+		this.signature = method.signature;
 	}
 	
 	public Method(String visibility, String name, String signature) {

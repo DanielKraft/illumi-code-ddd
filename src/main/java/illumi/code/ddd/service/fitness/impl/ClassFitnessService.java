@@ -200,7 +200,7 @@ public class ClassFitnessService {
 
     private void evaluateRepositoryInterfaces() {
         boolean containsInterface = false;
-        for (Interface i : artifact.getInterfaces()) {
+        for (Interface i : artifact.getImplInterfaces()) {
             if (i.getName().endsWith(REPOSITORY)) {
                 containsInterface = true;
                 break;
@@ -232,7 +232,7 @@ public class ClassFitnessService {
 
     private void evaluateFactoryInterfaces() {
         boolean containsInterface = false;
-        for (Interface i : artifact.getInterfaces()) {
+        for (Interface i : artifact.getImplInterfaces()) {
             if (i.getName().endsWith(FACTORY)) {
                 containsInterface = true;
                 break;
