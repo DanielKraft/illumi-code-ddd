@@ -53,9 +53,6 @@
 ## Workflow
 ![Workflow of illumi-code-ddd](/gfx/illumi-code-ddd-workflow-English.png?raw=true "Workflow")
 
-## Thesis
-The thesis is available in the following repository: [bachelor-thesis](https://github.com/DanielKraft/bachelor-thesis)
-
 ## Author
 [**Kraft, Daniel**](https://github.com/DanielKraft)
 
