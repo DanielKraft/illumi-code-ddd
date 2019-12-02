@@ -41,8 +41,6 @@ public class RepositoryRefactorService extends DefaultRefactorService {
                         refactorRepository(model, (Class) artifact);
                     }
                 });
-
-
     }
 
     private void refactorRepository(Package model, Package impl, Interface repository) {
@@ -51,42 +49,17 @@ public class RepositoryRefactorService extends DefaultRefactorService {
             repository.setPath(repository.getPath() + REPOSITORY);
         }
 
-        Class repositoryImpl = getImpl(impl, repository);
+        Class repositoryImpl = getImpl(impl, repository, DDDType.REPOSITORY);
         refactorRepositoryMethods(model, repository);
 
         if (repositoryImpl != null) {
             refactorRepositoryMethods(model, repositoryImpl);
         } else {
-            repositoryImpl = createRepositoryImpl(impl, repository);
+            repositoryImpl = createImpl(impl, repository, DDDType.REPOSITORY);
             impl.addContains(repositoryImpl);
             getRefactorData().getNewStructure().addClass(repositoryImpl);
             LOGGER.info(LOG_CREATE, repositoryImpl.getPath());
         }
-    }
-
-    private Class getImpl(Package impl, Interface repository) {
-        for (Artifact item : impl.getContains()) {
-            if (item instanceof Class
-                    && item.isTypeOf(DDDType.REPOSITORY)
-                    && item.getName().toLowerCase().contains(repository.getName().toLowerCase())) {
-                return (Class) item;
-            }
-        }
-        return null;
-    }
-
-    private Class createRepositoryImpl(Package impl, Interface repository) {
-        String name = String.format("%sImpl", repository.getName());
-        String path = String.format("%s.%s", impl.getPath(), name);
-        Class repositoryImpl = new Class(name, path);
-        repositoryImpl.setType(DDDType.REPOSITORY);
-        repositoryImpl.setDomain(repository.getDomain());
-
-        repositoryImpl.addImplInterface(repository);
-
-        copyMethods(repository, repositoryImpl);
-
-        return repositoryImpl;
     }
 
     private void refactorRepository(Package model, Class repositoryImpl) {
@@ -98,7 +71,7 @@ public class RepositoryRefactorService extends DefaultRefactorService {
         refactorRepositoryMethods(model, repositoryImpl);
 
         if (repositoryImpl.getImplInterfaces().isEmpty()) {
-            Interface repository = createRepository(model, repositoryImpl);
+            Interface repository = createInterface(model, repositoryImpl, DDDType.REPOSITORY);
             model.addContains(repository);
             getRefactorData().getNewStructure().addInterface(repository);
             LOGGER.info(LOG_CREATE, repository.getPath());
@@ -109,28 +82,8 @@ public class RepositoryRefactorService extends DefaultRefactorService {
         }
     }
 
-    private Interface createRepository(Package model, Class repositoryImpl) {
-        String name = repositoryImpl.getName().replace("Impl", "");
-        String path = String.format("%s.%s", model.getPath(), name);
-        Interface repository = new Interface(name, path);
-        repository.setType(DDDType.REPOSITORY);
-        repository.setDomain(repositoryImpl.getDomain());
-
-        repository.addImplInterface(repository);
-
-        copyMethods(repositoryImpl, repository);
-
-        return repository;
-    }
-
-    private void copyMethods(File oldRepo, File newRepo) {
-        oldRepo.getMethods().stream()
-                .parallel()
-                .forEach(method -> newRepo.addMethod(new Method(method)));
-    }
-
     private void refactorRepositoryMethods(Package model, File repository) {
-        Class entity = getEntityOfRepository(model, repository);
+        Class entity = getEntity(model, repository);
         if (entity != null) {
             String id = getIdOfEntity(entity);
 
@@ -153,39 +106,5 @@ public class RepositoryRefactorService extends DefaultRefactorService {
                         repository.getDDDFitness().getIssues().remove(issue);
                     });
         }
-    }
-
-    private Class getEntityOfRepository(Package model, File repository) {
-        for (Artifact artifact : model.getContains()) {
-            if (artifact instanceof Class
-                    && repository.getName().toLowerCase().contains(artifact.getName().toLowerCase())) {
-                return (Class) artifact;
-            }
-        }
-        return null;
-    }
-
-    private String getIdOfEntity(Class entity) {
-        for (Field field : entity.getFields()) {
-            if (Field.isId(field)) {
-                return field.getType();
-            }
-        }
-
-        if (entity.getSuperClass() != null) {
-            return getIdOfEntity(entity.getSuperClass());
-        }
-
-        return "";
-    }
-
-    private Method createMethod(String name, String attribute) {
-        return createMethod("void", name, attribute);
-    }
-
-    private Method createMethod(String value, String name, String attribute) {
-        String signature = String.format("%s %s(%s)", value, name, attribute);
-        LOGGER.info(LOG_CREATE, signature);
-        return new Method(PUBLIC, name, signature);
     }
 }
