@@ -39,6 +39,7 @@ public class AggregateRootRefactorService extends DefaultRefactorService {
             Class repositoryImpl = createImpl(impl, repository, DDDType.REPOSITORY);
             impl.addContains(repositoryImpl);
             getRefactorData().getNewStructure().addClass(repositoryImpl);
+            LOGGER.info(LOG_CREATE, repositoryImpl.getPath());
         }
 
         Interface factory = getInterface(DDDType.FACTORY, model, root);
@@ -48,6 +49,7 @@ public class AggregateRootRefactorService extends DefaultRefactorService {
             factoryImpl.addField(new Field("private", "repository", repository.getPath()));
             impl.addContains(factoryImpl);
             getRefactorData().getNewStructure().addClass(factoryImpl);
+            LOGGER.info(LOG_CREATE, factoryImpl.getPath());
         }
     }
 
@@ -81,6 +83,7 @@ public class AggregateRootRefactorService extends DefaultRefactorService {
         model.addContains(repository);
         getRefactorData().getNewStructure().addInterface(repository);
 
+        LOGGER.info(LOG_CREATE, repository.getPath());
         return repository;
     }
 
@@ -97,6 +100,7 @@ public class AggregateRootRefactorService extends DefaultRefactorService {
         model.addContains(factory);
         getRefactorData().getNewStructure().addInterface(factory);
 
+        LOGGER.info(LOG_CREATE, factory.getPath());
         return factory;
     }
 }
