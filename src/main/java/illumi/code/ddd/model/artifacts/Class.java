@@ -3,14 +3,14 @@ package illumi.code.ddd.model.artifacts;
 import java.util.ArrayList;
 import java.util.List;
 
-import illumi.code.ddd.service.analyse.ClassAnalyseService;
-import illumi.code.ddd.service.fitness.ClassFitnessService;
+import illumi.code.ddd.service.analyse.impl.ClassAnalyseService;
+import illumi.code.ddd.service.fitness.impl.ClassFitnessService;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.Record;
 
 import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.service.JavaArtifactService;
-import illumi.code.ddd.service.StructureService;
+import illumi.code.ddd.model.DDDStructure;
 
 /**
  * Entity-Class: Class
@@ -48,6 +48,10 @@ public class Class extends File {
 		return superClass;
 	}
 
+	public void setSuperClass(Class superClass) {
+		this.superClass = superClass;
+	}
+
 	public void setSuperClass(Driver driver, List<Class> classes) {
 		this.superClass = new JavaArtifactService(driver, getPath()).getSuperClass(classes);
 	}
@@ -76,15 +80,15 @@ public class Class extends File {
 		this.used.add(path);
 	}
 
-	public void setType(StructureService structureService) {
-		new ClassAnalyseService(this, structureService).setType();
+	public void setType(DDDStructure structure) {
+		new ClassAnalyseService(this, structure).setType();
 	}
 
 	public void setDomainEvent() {
 		new ClassAnalyseService(this).setDomainEvent();
 	}
 	
-	public void evaluate(StructureService structureService) {
-		setFitness(new ClassFitnessService(this, structureService).evaluate());
+	public void evaluate(DDDStructure structure) {
+		setFitness(new ClassFitnessService(this, structure).evaluate());
 	}
 }

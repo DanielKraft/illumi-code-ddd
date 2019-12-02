@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.neo4j.driver.v1.Record;
 
-import illumi.code.ddd.model.DDDFitness;
-import illumi.code.ddd.model.DDDIssueType;
-import illumi.code.ddd.service.StructureService;
+import illumi.code.ddd.model.fitness.DDDFitness;
+import illumi.code.ddd.model.fitness.DDDIssueType;
+import illumi.code.ddd.model.DDDStructure;
 
 public class Field {
 	
@@ -37,7 +37,12 @@ public class Field {
 	public String getType() {
 		return type;
 	}
-	public static void evaluateEntity(Class artifact, StructureService structureService, DDDFitness fitness) {
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public static void evaluateEntity(Class artifact, DDDStructure structure, DDDFitness fitness) {
 		boolean containsId = false;
 		for (Field field : artifact.getFields()) {
 			if (isId(field)) {
@@ -47,7 +52,7 @@ public class Field {
 			Method.evaluateEntity(artifact, field, fitness);
 
 			// Is type of field Entity or Value Object?
-			fitness.addIssue(field.getType().contains(structureService.getPath()), DDDIssueType.MAJOR,
+			fitness.addIssue(field.getType().contains(structure.getPath()), DDDIssueType.MAJOR,
 					String.format("The Field '%s' of the Entity '%s' is not a type of an Entity or a Value Object", field.getName(), artifact.getName()));
 		}
 		
@@ -62,7 +67,7 @@ public class Field {
 		return field.getName().toUpperCase().endsWith("ID");
 	}
 	
-	public static void evaluateValueObject(Class artifact, StructureService structureService, DDDFitness fitness) {
+	public static void evaluateValueObject(Class artifact, DDDStructure structure, DDDFitness fitness) {
 		boolean containsId = false;
 		for (Field field : artifact.getFields()) {
 			if (Field.isId(field)
@@ -71,7 +76,7 @@ public class Field {
 			}
 			
 			// Is type of field Value Object or standard type?
-			fitness.addIssue(field.getType().contains(structureService.getPath()) || field.getType().contains("java.lang."), DDDIssueType.MAJOR,
+			fitness.addIssue(isValidType(structure, field), DDDIssueType.MAJOR,
 					String.format("The Field '%s' of Value Object '%s' is not a Value Object or a standard type.", field.getName(), artifact.getName()));
 			
 			// Has the field a getter and an immutable setter?
@@ -81,7 +86,13 @@ public class Field {
 		fitness.addIssue(!containsId, DDDIssueType.BLOCKER,
 				String.format("The Value Object '%s' contains an ID.", artifact.getName()));
 	}
-	
+
+	private static boolean isValidType(DDDStructure structure, Field field) {
+		return (field.getType().contains(structure.getPath())
+				|| field.getType().contains("java."))
+				&& !field.getType().contains("java.util.");
+	}
+
 	public static void evaluateDomainEvent(Class artifact, DDDFitness fitness) {
 		boolean containsTime = false;
 		boolean containsId = false;

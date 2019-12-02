@@ -160,7 +160,7 @@ class ClassTest {
 	    	
 	    	artifact.setImplInterfaces(driver, interfaces);
 	    	
-			ArrayList<Interface> result = (ArrayList<Interface>) artifact.getInterfaces();
+			ArrayList<Interface> result = (ArrayList<Interface>) artifact.getImplInterfaces();
 
 			assertAll(	() -> assertEquals(1, result.size()),
 
@@ -177,7 +177,7 @@ class ClassTest {
 	    	
 	    	artifact.setImplInterfaces(driver, interfaces);
 	    	
-			ArrayList<Interface> result = (ArrayList<Interface>) artifact.getInterfaces();
+			ArrayList<Interface> result = (ArrayList<Interface>) artifact.getImplInterfaces();
 	    		    	
 	    	assertEquals(0, result.size());
 	    }
@@ -189,7 +189,7 @@ class ClassTest {
 		
 		artifact.setImplInterfaces(null, null);
 		
-		ArrayList<Interface> result = (ArrayList<Interface>) artifact.getInterfaces();
+		ArrayList<Interface> result = (ArrayList<Interface>) artifact.getImplInterfaces();
 		
 		assertEquals(0, result.size());
 	}
@@ -259,7 +259,7 @@ class ClassTest {
 			ArrayList<String> result = (ArrayList<String>) artifact.getDependencies();
 
 			assertEquals(1, result.size());
-			assertEquals("de.test.SuperClass", result.get(0));
+			assertEquals("SuperClass", result.get(0));
 		}
 	}
 

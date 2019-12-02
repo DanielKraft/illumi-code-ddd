@@ -3,7 +3,7 @@ package illumi.code.ddd.model.artifacts;
 import org.json.JSONObject;
 import org.neo4j.driver.v1.Record;
 
-import illumi.code.ddd.model.DDDFitness;
+import illumi.code.ddd.model.fitness.DDDFitness;
 import illumi.code.ddd.model.DDDType;
 
 public abstract class Artifact {
@@ -18,9 +18,7 @@ public abstract class Artifact {
 	private DDDFitness fitness;
 	
 	public Artifact(Record record, DDDType type) {
-		this.name = record.get( "name" ).asString();
-		this.path = record.get( "path" ).asString();
-		this.type = type;
+		this(record.get( "name" ).asString(), record.get( "path" ).asString(), type);
 	}
 	
 	public Artifact(String name, String path, DDDType type) {
@@ -33,11 +31,19 @@ public abstract class Artifact {
 	public String getName() {
 		return this.name;
 	}
-	
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public String getPath() {
 		return this.path;
 	}
-	
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
 	public String getDomain() {
 		return domain;
 	}
@@ -75,7 +81,7 @@ public abstract class Artifact {
 				.put("name", name)
 				.put("DDD", type)
 				.put("domain", domain)
-				.put("fitness", fitness != null ? getFitness() : null)
-				.put("issues", fitness != null ? fitness.getIssues() : null);
+				.put("fitness", getFitness())
+				.put("issues", !fitness.getIssues().isEmpty() ? fitness.getIssues() : null);
 	}
 }

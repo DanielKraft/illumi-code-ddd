@@ -1,6 +1,6 @@
 package illumi.code.ddd.model.artifacts;
 
-import illumi.code.ddd.service.fitness.AnnotationFitnessService;
+import illumi.code.ddd.service.fitness.impl.AnnotationFitnessService;
 import org.neo4j.driver.v1.Record;
 
 import illumi.code.ddd.model.DDDType;

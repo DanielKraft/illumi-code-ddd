@@ -20,13 +20,13 @@ public class JavaArtifactService {
 	private static final String QUERY_FIELDS 				= "MATCH (a:Java)-[:DECLARES]->(f:Field) WHERE a.fqn = {path} RETURN DISTINCT f.name as name, f.signature as type, f.visibility as visibility";
 	private static final String QUERY_METHODS 				= "MATCH (a:Java)-[:DECLARES]->(m:Method) WHERE a.fqn = {path} RETURN DISTINCT m.visibility as visibility, m.name as name, m.signature as signature";
 
-	private static final String QUERY_SUPER 				= "MATCH (a:Java)-[:EXTENDS]->(c:Class) WHERE a.fqn = {path} RETURN DISTINCT c.fqn as superClass";
+	private static final String QUERY_SUPER 				= "MATCH (a:Java)-[:EXTENDS]->(super) WHERE a.fqn = {path} RETURN DISTINCT super.fqn as superClass";
 	private static final String QUERY_IMPL 					= "MATCH (a:Java)-[:IMPLEMENTS]->(i:Interface) WHERE a.fqn={path} RETURN DISTINCT i.fqn as interface";
 
 	private static final String QUERY_PARENT_ANNOTATIONS 	= "MATCH (parent:Java)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} RETURN DISTINCT type.fqn as annotation";
 	private static final String QUERY_CHILD_ANNOTATIONS		= "MATCH (parent:Java)-[:DECLARES]->(child:Java)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} AND (child:Field OR child:Method) RETURN DISTINCT type.fqn as annotation";
 
-	private static final String QUERY_DEPENDENCIES 			= "MATCH (artifact:Java)-[:DEPENDS_ON]->(dependency:Java) WHERE artifact.fqn={path} AND dependency.fqn CONTAINS {rootPath} RETURN dependency.fqn as dependencies";
+	private static final String QUERY_DEPENDENCIES 			= "MATCH (artifact:Java)-[:DEPENDS_ON]->(dependency:Java) WHERE artifact.fqn={path} AND dependency.fqn CONTAINS {rootPath} RETURN DISTINCT dependency.name as dependencies";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JavaArtifactService.class);
 

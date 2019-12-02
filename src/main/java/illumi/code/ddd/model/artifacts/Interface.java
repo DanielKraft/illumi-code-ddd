@@ -1,7 +1,7 @@
 package illumi.code.ddd.model.artifacts;
 
-import illumi.code.ddd.service.analyse.InterfaceAnalyseService;
-import illumi.code.ddd.service.fitness.InterfaceFitnessService;
+import illumi.code.ddd.service.analyse.impl.InterfaceAnalyseService;
+import illumi.code.ddd.service.fitness.impl.InterfaceFitnessService;
 import org.neo4j.driver.v1.Record;
 
 import illumi.code.ddd.model.DDDType;

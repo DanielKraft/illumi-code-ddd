@@ -4,19 +4,25 @@ import java.util.List;
 
 import org.neo4j.driver.v1.Record;
 
-import illumi.code.ddd.model.DDDFitness;
-import illumi.code.ddd.model.DDDIssueType;
+import illumi.code.ddd.model.fitness.DDDFitness;
+import illumi.code.ddd.model.fitness.DDDIssueType;
 
 public class Method {
 			
 	private String visibility;
 	private String name;
 	private String signature;
-	
+
 	public Method( Record record ) {
 		this.visibility = record.get( "visibility" ).asString();
 		this.name = record.get( "name" ).asString();
 		this.signature = record.get( "signature" ).asString();
+	}
+
+	public Method( Method method ) {
+		this.visibility = method.visibility;
+		this.name = method.name;
+		this.signature = method.signature;
 	}
 	
 	public Method(String visibility, String name, String signature) {
@@ -28,13 +34,25 @@ public class Method {
 	public String getVisibility() {
 		return visibility;
 	}
-	
+
+	public void setVisibility(String visibility) {
+		this.visibility = visibility;
+	}
+
 	public String getName() {
 		return name;
 	}
 
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public String getSignature() {
 		return signature;
+	}
+
+	public void setSignature(String signature) {
+		this.signature = signature;
 	}
 
 	public static void evaluateNeededMethods(Class artifact, DDDFitness fitness) {
@@ -53,7 +71,7 @@ public class Method {
 	
 	private static boolean isNeededMethod(Method method) {
 		// equals() or hashCode()? 
-		return method.getName().equals("equals") || method.getName().equals("hashCode");
+		return method.getName().equalsIgnoreCase("equals") || method.getName().equalsIgnoreCase("hashCode");
 	}
 
 	static void evaluateEntity(Class artifact, Field field, DDDFitness fitness) {
@@ -108,14 +126,11 @@ public class Method {
 
 	static void evaluateDomainEvent(Class artifact, Field field, DDDFitness fitness) {
 		boolean containsGetter = false;
-		boolean containsSetter = false;
 
 		for (Method method : artifact.getMethods()) {
 			if (method.getName().toUpperCase().startsWith("GET" + field.getName().toUpperCase())) {
 				containsGetter = true;
 			} else if (method.getName().toUpperCase().startsWith("SET" + field.getName().toUpperCase())) {
-				containsSetter = true;
-
 				fitness.addIssue(isMethodImmutable(artifact, method), DDDIssueType.CRITICAL,
 						String.format("The method '%s(...)' is not immutable.", method.getName()));
 			}
@@ -123,9 +138,6 @@ public class Method {
 
 		fitness.addIssue(containsGetter, DDDIssueType.MINOR,
 				String.format("The field '%s' of the Domain Event '%s' has no getter.", field.getName(), artifact.getName()));
-
-		fitness.addIssue(!containsSetter, DDDIssueType.MAJOR,
-				String.format("The domain event '%s' contains a setter for the field '%s'.", artifact.getName(), field.getName()));
 	}
 	
 	public static void evaluateRepository(String name, List<Method> methods, DDDFitness fitness) {
