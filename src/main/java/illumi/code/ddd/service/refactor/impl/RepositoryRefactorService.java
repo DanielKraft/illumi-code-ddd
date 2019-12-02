@@ -13,8 +13,6 @@ import java.util.ArrayList;
 public class RepositoryRefactorService extends DefaultRefactorService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RepositoryRefactorService.class);
-    public static final String REPOSITORY_IMPL = "RepositoryImpl";
-    public static final String REPOSITORY = "Repository";
 
     RepositoryRefactorService(DDDRefactorData refactorData) {
         super(refactorData);

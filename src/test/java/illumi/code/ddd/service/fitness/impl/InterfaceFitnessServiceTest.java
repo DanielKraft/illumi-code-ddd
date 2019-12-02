@@ -73,10 +73,10 @@ class InterfaceFitnessServiceTest {
 		InterfaceFitnessService service = new InterfaceFitnessService(artifact);
 		final DDDFitness result = service.evaluate();
 		
-		assertAll(	() -> assertEquals(85.71, 	result.calculateFitness(), 				"Fitness"),
-				 	() -> assertEquals(DDDRating.C, 	result.getscore(), 						"Rating"),
-				 	() -> assertEquals(7, 		result.getNumberOfCriteria(), 			"Total Criteria"),
-				 	() -> assertEquals(6, 		result.getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
+		assertAll(	() -> assertEquals(75.0, 	result.calculateFitness(), 				"Fitness"),
+				 	() -> assertEquals(DDDRating.D, 	result.getscore(), 						"Rating"),
+				 	() -> assertEquals(4, 		result.getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(3, 		result.getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
 				 	() -> assertEquals(1, 		result.getIssues().size(), 				"#Issues"));
 	}
 	
@@ -93,9 +93,9 @@ class InterfaceFitnessServiceTest {
 		
 		assertAll(	() -> assertEquals(0.0, 	result.calculateFitness(), 				"Fitness"),
 				 	() -> assertEquals(DDDRating.F, 	result.getscore(), 						"Rating"),
-				 	() -> assertEquals(7, 		result.getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(4, 		result.getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(0, 		result.getNumberOfFulfilledCriteria(),	"Fulfilled Criteria"),
-				 	() -> assertEquals(4, 		result.getIssues().size(), 				"#Issues"));
+				 	() -> assertEquals(3, 		result.getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test

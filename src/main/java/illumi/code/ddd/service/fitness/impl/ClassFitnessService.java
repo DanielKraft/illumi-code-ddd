@@ -5,12 +5,9 @@ import illumi.code.ddd.model.fitness.DDDIssueType;
 import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.artifacts.*;
 import illumi.code.ddd.model.artifacts.Class;
-import illumi.code.ddd.model.artifacts.Package;
 import illumi.code.ddd.model.DDDStructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
 
 public class ClassFitnessService {
 
@@ -131,7 +128,7 @@ public class ClassFitnessService {
         boolean factoryAvailable = false;
         boolean serviceAvailable = false;
 
-        for (Artifact tmpArtifact : getDomainModule(artifact.getDomain())) {
+        for (Artifact tmpArtifact : structure.getAllArtifacts()) {
             if (isAggregateRootRepository(tmpArtifact)) {
                 repoAvailable = true;
             } else if(isAggregateRootFactory(tmpArtifact) ) {
@@ -152,24 +149,18 @@ public class ClassFitnessService {
     }
 
     private boolean isAggregateRootRepository(Artifact artifact) {
-        return artifact.isTypeOf(DDDType.REPOSITORY) && artifact.getName().contains(this.artifact.getName() + REPOSITORY);
+        return artifact.isTypeOf(DDDType.REPOSITORY)
+                && artifact.getName().toLowerCase().contains(this.artifact.getName().toLowerCase());
     }
 
     private boolean isAggregateRootFactory(Artifact artifact) {
-        return artifact.isTypeOf(DDDType.FACTORY) && artifact.getName().contains(this.artifact.getName() + FACTORY);
+        return artifact.isTypeOf(DDDType.FACTORY)
+                && artifact.getName().toLowerCase().contains(this.artifact.getName().toLowerCase());
     }
 
     private boolean isAggregateRootService(Artifact artifact) {
-        return artifact.isTypeOf(DDDType.SERVICE) && artifact.getName().contains(this.artifact.getName());
-    }
-
-    private ArrayList<Artifact> getDomainModule(String domain) {
-        for (Package module : structure.getPackages()) {
-            if (module.getName().contains(domain)) {
-                return (ArrayList<Artifact>) module.getContains();
-            }
-        }
-        return new ArrayList<>();
+        return artifact.isTypeOf(DDDType.SERVICE)
+                && artifact.getName().toLowerCase().contains(this.artifact.getName().toLowerCase());
     }
 
     private void evaluateDomainEvent() {

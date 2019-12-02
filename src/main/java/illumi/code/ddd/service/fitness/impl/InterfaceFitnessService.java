@@ -2,7 +2,6 @@ package illumi.code.ddd.service.fitness.impl;
 
 import illumi.code.ddd.model.fitness.DDDFitness;
 import illumi.code.ddd.model.fitness.DDDIssueType;
-import illumi.code.ddd.model.artifacts.Field;
 import illumi.code.ddd.model.artifacts.Interface;
 import illumi.code.ddd.model.artifacts.Method;
 import org.slf4j.Logger;
@@ -63,8 +62,6 @@ public class InterfaceFitnessService {
         evaluateFactoryName();
 
         evaluatePath();
-
-        Field.evaluateFactory(artifact.getName(), artifact.getFields(), fitness);
 
         Method.evaluateFactory(artifact.getName(), artifact.getMethods(), fitness);
     }

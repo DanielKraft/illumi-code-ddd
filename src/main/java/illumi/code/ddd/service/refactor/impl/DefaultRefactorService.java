@@ -14,7 +14,11 @@ public abstract class DefaultRefactorService implements ArtifactRefactorService 
 
     static final String PRIVATE = "private";
     static final String PUBLIC = "public";
-    public static final String LOG_CREATE = "Create {}";
+    static final String LOG_CREATE = "Create {}";
+    static final String REPOSITORY_IMPL = "RepositoryImpl";
+    static final String REPOSITORY = "Repository";
+    static final String FACTORY_IMPL = "FactoryImpl";
+    static final String FACTORY = "Factory";
 
     private DDDRefactorData refactorData;
 

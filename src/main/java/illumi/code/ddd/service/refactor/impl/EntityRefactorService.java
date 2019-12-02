@@ -51,7 +51,7 @@ public class EntityRefactorService extends DefaultRefactorService {
 
     private void refactorId(Class artifact) {
         if (needsId(artifact)) {
-            Field id = new Field(PRIVATE, "id", "java.lang.long");
+            Field id = new Field(PRIVATE, "id", "java.lang.Long");
             artifact.addField(id);
         }
     }
@@ -149,9 +149,12 @@ public class EntityRefactorService extends DefaultRefactorService {
                 artifact.addMethod(createGetter(field));
             }
 
-            if (!field.getName().toLowerCase().endsWith("id")
-                    && needsMethod(artifact, "set" + field.getName())) {
-                artifact.addMethod(createSetter(field));
+            if (needsMethod(artifact, "set" + field.getName())) {
+                if (!field.getName().toLowerCase().endsWith("id")) {
+                    artifact.addMethod(createSetter(field));
+                } else {
+                    artifact.addMethod(createSideEffectFreeSetter(field));
+                }
             }
         }
     }

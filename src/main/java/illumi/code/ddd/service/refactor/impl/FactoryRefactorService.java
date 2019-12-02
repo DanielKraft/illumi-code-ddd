@@ -13,8 +13,6 @@ import java.util.ArrayList;
 public class FactoryRefactorService  extends DefaultRefactorService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FactoryRefactorService.class);
-    public static final String FACTORY_IMPL = "FactoryImpl";
-    public static final String FACTORY = "Factory";
 
     FactoryRefactorService(DDDRefactorData refactorData) {
         super(refactorData);

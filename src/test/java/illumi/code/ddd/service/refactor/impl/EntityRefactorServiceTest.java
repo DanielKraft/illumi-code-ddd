@@ -17,18 +17,15 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class EntityRefactorServiceTest {
 
-    private DDDStructure structure;
     private EntityRefactorService service;
     private DDDRefactorData refactorData;
 
-    private Package module;
-
     @BeforeEach
     void init() {
-        structure = new DDDStructure();
+        DDDStructure structure = new DDDStructure();
         structure.setPath("de.test");
 
-        module = new Package("test", "de.test");
+        Package module = new Package("test", "de.test");
         module.setType(DDDType.MODULE);
 
         Class root = new Class("Root", "de.test.Root");
@@ -80,7 +77,7 @@ class EntityRefactorServiceTest {
         service.refactor();
 
         assertAll(  () -> assertEquals(2, entity.getFields().size(), "#Field"),
-                () -> assertEquals(7, entity.getMethods().size(), "#Method"));
+                    () -> assertEquals(8, entity.getMethods().size(), "#Method"));
     }
 
     @Test
@@ -110,7 +107,7 @@ class EntityRefactorServiceTest {
         service.refactor();
 
         assertAll(  () -> assertEquals(2, entity.getFields().size(), "#Field"),
-                    () -> assertEquals(5, entity.getMethods().size(), "#Method"));
+                    () -> assertEquals(6, entity.getMethods().size(), "#Method"));
     }
 
     @Test
@@ -125,7 +122,7 @@ class EntityRefactorServiceTest {
         service.refactor();
 
         assertAll(  () -> assertEquals(2, entity.getFields().size(), "#Field"),
-                    () -> assertEquals(5, entity.getMethods().size(), "#Method"));
+                    () -> assertEquals(6, entity.getMethods().size(), "#Method"));
     }
 
     @Test

@@ -18,9 +18,7 @@ public abstract class Artifact {
 	private DDDFitness fitness;
 	
 	public Artifact(Record record, DDDType type) {
-		this.name = record.get( "name" ).asString();
-		this.path = record.get( "path" ).asString();
-		this.type = type;
+		this(record.get( "name" ).asString(), record.get( "path" ).asString(), type);
 	}
 	
 	public Artifact(String name, String path, DDDType type) {
@@ -83,7 +81,7 @@ public abstract class Artifact {
 				.put("name", name)
 				.put("DDD", type)
 				.put("domain", domain)
-				.put("fitness", fitness != null ? getFitness() : null)
-				.put("issues", fitness != null ? fitness.getIssues() : null);
+				.put("fitness", getFitness())
+				.put("issues", !fitness.getIssues().isEmpty() ? fitness.getIssues() : null);
 	}
 }

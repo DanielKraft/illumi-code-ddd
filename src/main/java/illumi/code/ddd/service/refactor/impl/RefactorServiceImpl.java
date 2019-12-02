@@ -34,6 +34,8 @@ public class RefactorServiceImpl implements RefactorService {
         new ValueObjectRefactorService(refactorData).refactor();
         new DomainEventRefactorService(refactorData).refactor();
         new RepositoryRefactorService(refactorData).refactor();
+        new FactoryRefactorService(refactorData).refactor();
+        new AggregateRootRefactorService(refactorData).refactor();
 
         deleteEmptyModules(refactorData.getNewStructure().getStructure());
         cleanFitness();

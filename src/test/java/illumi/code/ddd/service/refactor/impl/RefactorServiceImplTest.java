@@ -53,6 +53,6 @@ class RefactorServiceImplTest {
         final DDDStructure result = service.refactor();
 
         assertAll(	() -> assertEquals(13, result.getPackages().size(), "#Package"),
-                    () -> assertEquals(4, result.getClasses().size(), "#Class"));
+                    () -> assertEquals(8, result.getClasses().size(), "#Class"));
     }
 }

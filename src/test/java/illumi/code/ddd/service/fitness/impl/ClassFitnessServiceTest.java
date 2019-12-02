@@ -164,21 +164,25 @@ class ClassFitnessServiceTest {
 		aggregate.setType(DDDType.AGGREGATE_ROOT);
 		aggregate.setDomain("aggregate");
 		domain.addContains(aggregate);
+		structure.addClass(aggregate);
 		
 		Class repository = new Class("AggregateRepository", "de.test.aggregate.AggregateRepository");
 		repository.setType(DDDType.REPOSITORY);
 		repository.setDomain("aggregate");
 		domain.addContains(repository);
+		structure.addClass(repository);
 		
 		Class factory = new Class("AggregateFactory", "de.test.aggregate.AggregateFactory");
 		factory.setType(DDDType.FACTORY);
 		factory.setDomain("aggregate");
 		domain.addContains(factory);
+		structure.addClass(factory);
 		
 		Class serviceClass = new Class("AggregateService", "de.test.aggregate.AggregateService");
 		serviceClass.setType(DDDType.SERVICE);
 		serviceClass.setDomain("aggregate");
 		domain.addContains(serviceClass);
+		structure.addClass(serviceClass);
 
 		ClassFitnessService service = new ClassFitnessService(aggregate, structure);
 		final DDDFitness result = service.evaluate();
@@ -200,21 +204,25 @@ class ClassFitnessServiceTest {
 		aggregate.setType(DDDType.AGGREGATE_ROOT);
 		aggregate.setDomain("aggregate");
 		domain.addContains(aggregate);
+		structure.addClass(aggregate);
 		
 		Class repository = new Class("Repository", "de.test.aggregate.Repository");
 		repository.setType(DDDType.REPOSITORY);
 		repository.setDomain("aggregate");
 		domain.addContains(repository);
+		structure.addClass(repository);
 		
 		Class factory = new Class("Factory", "de.test.aggregate.Factory");
 		factory.setType(DDDType.FACTORY);
 		factory.setDomain("aggregate");
 		domain.addContains(factory);
+		structure.addClass(factory);
 		
 		Class serviceClass = new Class("Service", "de.test.aggregate.Service");
 		serviceClass.setType(DDDType.SERVICE);
 		serviceClass.setDomain("aggregate");
 		domain.addContains(serviceClass);
+		structure.addClass(serviceClass);
 
 		ClassFitnessService service = new ClassFitnessService(aggregate, structure);
 		final DDDFitness result = service.evaluate();
