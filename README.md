@@ -53,6 +53,50 @@
 ## Workflow
 ![Workflow of illumi-code-ddd](/gfx/illumi-code-ddd-workflow-English.png?raw=true "Workflow")
 
+## Setup
+### Needed software
+- docker
+
+### jQAssistant
+> Scan the artifacts from the directory ${PROJECT_PATH}/${ARTIFACT_DIRECTORY}
+```shell
+docker run -v ${PROJECT_PATH}:/project jensnerche/jqassistant scan -f ${ARTIFACT_DIRECTORY}
+```
+
+> Run Neo4j server at port 7474 and 7687
+```shell
+docker run -it -v ${PROJECT_PATH}:/project -p 7474:7474 -p 7687:7687 jensnerche/jqassistant server -embeddedListenAddress 0.0.0.0
+```
+
+### illumi-code-ddd
+```shell
+git clone https://github.com/DanielKraft/illumi-code-ddd.git
+cd illumi-code-ddd
+./gradlew run
+```
+
+## Getting started
+### Reading & Analyzing
+> Import the existing system and assign the Domain-Driven Design building blocks
+```shell
+http://localhost:8040/analyse/${PACKAGE_FQN}
+```
+### Assessing
+> Calculate the metrics for the existing system 
+```shell
+http://localhost:8040/metric
+```
+### Improving
+> Improve the existing system based on Domain-Driven Design
+```shell
+http://localhost:8040/refactor
+```
+### Evaluating
+> Calculate the metrics of the improved system
+```shell
+http://localhost:8040/metric
+```
+
 ## Author
 [**Kraft, Daniel**](https://github.com/DanielKraft)
 
