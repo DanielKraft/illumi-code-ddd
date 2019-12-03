@@ -76,8 +76,8 @@ public class MetricServiceImpl implements MetricService {
 		allArtifacts.stream()
 			.parallel()
 			.forEachOrdered(artifact -> {
-				if (artifact.getFitness() < 100.0
-						|| !artifact.getDDDFitness().getIssues().isEmpty()) {
+				if (!artifact.getDDDFitness().getIssues().isEmpty()
+						|| artifact.getFitness() < 100.0) {
 					json.add(artifact.toJSONSummary());
 				}
 			});

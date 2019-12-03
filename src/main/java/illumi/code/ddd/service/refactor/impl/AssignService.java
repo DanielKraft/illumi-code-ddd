@@ -114,7 +114,7 @@ class AssignService {
         for (String dependency : artifact.getDependencies()) {
             for (Class aClass : refactorData.getOldStructure().getClasses()) {
                 if (aClass != artifact
-                        && aClass.getName().equalsIgnoreCase(dependency)) {
+                        && aClass.getPath().equalsIgnoreCase(dependency)) {
                     String domain = getDomainOf(aClass);
                     if (domain != null) {
                         return domain;

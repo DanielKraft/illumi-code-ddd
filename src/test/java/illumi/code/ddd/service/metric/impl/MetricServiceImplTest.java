@@ -34,12 +34,14 @@ class MetricServiceImplTest {
 		fitness.addFailedCriteria(DDDIssueType.INFO, "Test");
 		domain.setFitness(fitness);
 		structure.addPackage(domain);
+
 		Class entity = new Class("Entity", "de.test.domain.Entity");
 		entity.setType(DDDType.ENTITY);
 		entity.setDomain("domain");
 		entity.setFitness(new DDDFitness(15, 9));
 		domain.addContains(entity);
 		structure.addClass(entity);
+
 		Class repo = new Class("EntityRepository", "de.test.domain.EntityRepository");
 		repo.setType(DDDType.REPOSITORY);
 		repo.setDomain("domain");
@@ -51,9 +53,10 @@ class MetricServiceImplTest {
 		infrastructure.setType(DDDType.MODULE);
 		infrastructure.setFitness(new DDDFitness(5, 3));
 		structure.addPackage(infrastructure);
+
 		Class controller = new Class("EntityController", "de.test.infrastructure.EntityController");
 		controller.setType(DDDType.CONTROLLER);
-		controller.setFitness(new DDDFitness(12, 7));
+		controller.setFitness(new DDDFitness(12, 12));
 		infrastructure.addContains(controller);
 		structure.addClass(controller);
 		
@@ -74,8 +77,8 @@ class MetricServiceImplTest {
 						.put("score", DDDRating.D)
 						.put("criteria", new JSONObject()
 								.put("total", 40)
-								.put("fulfilled", 25))
-						.put("fitness", 62.5)
+								.put("fulfilled", 30))
+						.put("fitness", 75)
 						.put("#Issues", 1))
 				.put("DDD", new JSONObject()
 				        .put("#APPLICATION_SERVICE",	0)
@@ -89,11 +92,6 @@ class MetricServiceImplTest {
 				        .put("#ENTITY", 				1)
 				        .put("#AGGREGATE_ROOT", 		0))
 				.put("hotspots", new JSONArray()
-						.put(new JSONObject()
-								.put("name", "EntityController")
-								.put("DDD", DDDType.CONTROLLER)
-								.put("fitness", 58.33)
-								.put("issues", new JSONArray()))
 						.put(new JSONObject()
 								.put("name", "infrastructure")
 								.put("DDD", DDDType.MODULE)

@@ -145,8 +145,8 @@ class AssignServiceTest {
     void testAssignWithDependency() {
         Class artifact = new Class("Entity", "de.test.Entity");
         artifact.setType(DDDType.ENTITY);
-        artifact.addDependencies("Test");
-        artifact.addDependencies("Root");
+        artifact.addDependencies("de.test.Test");
+        artifact.addDependencies("de.test.Root");
         module.addContains(artifact);
         structure.addClass(artifact);
 
@@ -166,7 +166,7 @@ class AssignServiceTest {
 
         Class artifact = new Class("Entity", "de.test.Entity");
         artifact.setType(DDDType.ENTITY);
-        artifact.addDependencies("Model");
+        artifact.addDependencies("de.test.Model");
         module.addContains(artifact);
         structure.addClass(artifact);
 

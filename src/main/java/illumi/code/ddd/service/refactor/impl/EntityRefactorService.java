@@ -82,6 +82,7 @@ public class EntityRefactorService extends DefaultRefactorService {
                 String newType = newValueObject.getPath();
                 field.setType(newType);
                 refactorGetterAndSetter(artifact, oldType, newType);
+                artifact.addDependencies(newValueObject.getName());
             }
         }
     }

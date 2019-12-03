@@ -26,7 +26,7 @@ public class JavaArtifactService {
 	private static final String QUERY_PARENT_ANNOTATIONS 	= "MATCH (parent:Java)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} RETURN DISTINCT type.fqn as annotation";
 	private static final String QUERY_CHILD_ANNOTATIONS		= "MATCH (parent:Java)-[:DECLARES]->(child:Java)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} AND (child:Field OR child:Method) RETURN DISTINCT type.fqn as annotation";
 
-	private static final String QUERY_DEPENDENCIES 			= "MATCH (artifact:Java)-[:DEPENDS_ON]->(dependency:Java) WHERE artifact.fqn={path} AND dependency.fqn CONTAINS {rootPath} RETURN DISTINCT dependency.name as dependencies";
+	private static final String QUERY_DEPENDENCIES 			= "MATCH (artifact:Java)-[:DEPENDS_ON]->(dependency:Java) WHERE artifact.fqn={path} AND dependency.fqn CONTAINS {rootPath} RETURN DISTINCT dependency.fqn as dependencies";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JavaArtifactService.class);
 

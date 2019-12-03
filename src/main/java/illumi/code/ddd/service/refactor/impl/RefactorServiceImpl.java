@@ -39,6 +39,9 @@ public class RefactorServiceImpl implements RefactorService {
 
         deleteEmptyModules(refactorData.getNewStructure().getStructure());
         cleanFitness();
+
+        refactorDependencies();
+
         return refactorData.getNewStructure();
     }
 
@@ -58,5 +61,30 @@ public class RefactorServiceImpl implements RefactorService {
         refactorData.getNewStructure().getAllArtifacts().stream()
                 .parallel()
                 .forEachOrdered(item -> item.setFitness(new DDDFitness()));
+    }
+
+    private void refactorDependencies() {
+        refactorData.getNewStructure().getClasses().stream()
+                .parallel()
+                .forEachOrdered(artifact -> {
+                    for (String dependency : new ArrayList<>(artifact.getDependencies())) {
+                        String[] split = dependency.split("[.]");
+                        String name = split[split.length-1];
+                        String newPath = findNewPath(name);
+                        if (newPath != null) {
+                            artifact.getDependencies().remove(dependency);
+                            artifact.addDependencies(newPath);
+                        }
+                    }
+                });
+    }
+
+    private String findNewPath(String name) {
+        for (Artifact artifact : refactorData.getNewStructure().getAllArtifacts()) {
+            if (artifact.getName().equals(name)) {
+                return artifact.getPath();
+            }
+        }
+        return null;
     }
 }

@@ -67,6 +67,14 @@ public class Class extends File {
 
 	public void setDependencies(Driver driver, String path) {
 		this.dependencies = (ArrayList<String>) new JavaArtifactService(driver, getPath()).getDependencies(path);
+
+		if (superClass != null) {
+			this.dependencies.remove(superClass.getPath());
+		}
+
+		for (Interface implInterface : getImplInterfaces()) {
+			this.dependencies.remove(implInterface.getPath());
+		}
 	}
 
 	public void addDependencies(String path) {
@@ -99,6 +107,10 @@ public class Class extends File {
 
 		if (superClass != null) {
 			result.put("extends", superClass.getPath());
+		}
+
+		if (!dependencies.isEmpty()) {
+			result.put("depends", dependencies);
 		}
 
 		return result;
