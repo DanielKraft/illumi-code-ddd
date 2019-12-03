@@ -6,7 +6,6 @@ import javax.inject.Inject;
 
 import illumi.code.ddd.model.DDDStructure;
 import illumi.code.ddd.service.metric.MetricService;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import illumi.code.ddd.model.fitness.DDDFitness;
@@ -17,10 +16,9 @@ import illumi.code.ddd.model.artifacts.Artifact;
 public class MetricServiceImpl implements MetricService {
 	    
     private DDDStructure structure;
-	private DDDStructure oldStructure;
 
 	public @Inject MetricServiceImpl() {
-		this.oldStructure = null;
+		// Needed for @Inject
 	}
     
     @Override
