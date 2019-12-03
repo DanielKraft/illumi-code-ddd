@@ -65,7 +65,7 @@ docker run -v ${PROJECT_PATH}:/project jensnerche/jqassistant scan -f ${ARTIFACT
 
 > Run Neo4j server at port 7474 and 7687
 ```shell
-docker run -it -v ${PROJECT_PATH}:/project -p 7474:7474 -p 7687:7687 jensnerche/jqassistant server -embeddedListenAddress 0.0.0.0
+docker run -it -m 5GB -v ${PROJECT_PATH}:/project -p 7474:7474 -p 7687:7687 jensnerche/jqassistant server -embeddedListenAddress 0.0.0.0
 ```
 
 ### illumi-code-ddd
