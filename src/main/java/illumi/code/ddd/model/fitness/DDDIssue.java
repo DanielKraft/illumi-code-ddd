@@ -15,4 +15,12 @@ public class DDDIssue {
 	public String getDescription() {
 		return description;
 	}
+
+	public DDDIssueType getType() {
+		return type;
+	}
+
+	public String toString() {
+		return String.format("[%s] %s", type, description);
+	}
 }

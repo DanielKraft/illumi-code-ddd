@@ -72,7 +72,6 @@ public class AggregateRootRefactorService extends DefaultRefactorService {
         repository.setDomain(root.getDomain());
 
         String id = getIdOfEntity(root);
-        System.out.println(name + " " + id);
 
         repository.addMethod(createMethod(id, "nextIdentity", ""));
         repository.addMethod(createMethod(root.getPath(), "findById", id));

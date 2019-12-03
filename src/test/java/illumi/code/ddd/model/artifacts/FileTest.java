@@ -44,10 +44,8 @@ class FileTest {
 
     @Test
     void getUMLVisibilityOfNull() {
-        final String expected = "~";
-
         final String result = File.getUMLVisibility(null);
 
-        assertEquals(expected, result);
+        assertNull(result);
     }
 }

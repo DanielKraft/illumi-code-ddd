@@ -131,7 +131,7 @@ public abstract class File extends Artifact {
 
 
     static String getUMLVisibility(String visibility) {
-        String umlVisibility = "~";
+        String umlVisibility = null;
         if (visibility != null) {
             switch(visibility) {
                 case "public":
@@ -142,6 +142,9 @@ public abstract class File extends Artifact {
                     break;
                 case "protected":
                     umlVisibility = "#";
+                    break;
+                default:
+                    umlVisibility = "~";
                     break;
             }
         }

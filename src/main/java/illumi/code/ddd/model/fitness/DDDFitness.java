@@ -30,11 +30,11 @@ public class DDDFitness {
 		return numberOfFulfilledCriteria;
 	}
 
-	public DDDFitness addIssue(boolean successful, DDDIssueType type, String message) {
+	public void addIssue(boolean successful, DDDIssueType type, String message) {
 		if (successful) {
-			return addSuccessfulCriteria(type);
+			addSuccessfulCriteria(type);
 		} else {
-			return addFailedCriteria(type, message);
+			addFailedCriteria(type, message);
 		}
 	}
 
@@ -86,7 +86,17 @@ public class DDDFitness {
 	}
 
 	public List<DDDIssue> getIssues() {
+		issues.sort((DDDIssue i1, DDDIssue i2) -> Integer.compare(i2.getType().weight, i1.getType().weight));
 		return issues;
+	}
+
+	public List<String> getSortedIssues() {
+		ArrayList<String> result = new ArrayList<>();
+		getIssues().stream()
+				.parallel()
+				.forEachOrdered(dddIssue -> result.add(dddIssue.toString()));
+
+		return result;
 	}
 	
 }

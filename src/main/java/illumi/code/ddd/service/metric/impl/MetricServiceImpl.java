@@ -34,7 +34,7 @@ public class MetricServiceImpl implements MetricService {
 		return new JSONObject()
 				.put("metric", fitness.summary())
 				.put("DDD", calcArtifactMetric(allArtifacts))
-				.put("rating", toJSON(allArtifacts));
+				.put("hotspots", toJSON(allArtifacts));
 	}
 
 	private DDDFitness calcFitness(ArrayList<Artifact> allArtifacts) {
@@ -73,7 +73,11 @@ public class MetricServiceImpl implements MetricService {
 		ArrayList<JSONObject> json = new ArrayList<>();
 		allArtifacts.stream()
 			.parallel()
-			.forEachOrdered(artifact -> json.add(artifact.toJSONSummary()));
+			.forEachOrdered(artifact -> {
+				if (!artifact.getDDDFitness().getIssues().isEmpty()) {
+					json.add(artifact.toJSONSummary());
+				}
+			});
 		return json;
 	}
 }
