@@ -90,12 +90,35 @@ class MetricServiceImplTest {
 				        .put("#AGGREGATE_ROOT", 		0))
 				.put("hotspots", new JSONArray()
 						.put(new JSONObject()
-							.put("name", "domain")
-							.put("DDD", DDDType.MODULE)
-							.put("fitness", 66.67)
-							.put("issues", new JSONArray()
-								.put("[INFO] Test"))));
-		
+								.put("name", "EntityController")
+								.put("DDD", DDDType.CONTROLLER)
+								.put("fitness", 58.33)
+								.put("issues", new JSONArray()))
+						.put(new JSONObject()
+								.put("name", "infrastructure")
+								.put("DDD", DDDType.MODULE)
+								.put("fitness", 60)
+								.put("issues", new JSONArray()))
+						.put(new JSONObject()
+								.put("name", "Entity")
+								.put("domain", "domain")
+								.put("DDD", DDDType.ENTITY)
+								.put("fitness", 60)
+								.put("issues", new JSONArray()))
+						.put(new JSONObject()
+								.put("name", "domain")
+								.put("DDD", DDDType.MODULE)
+								.put("fitness", 66.67)
+								.put("issues", new JSONArray()
+										.put("[INFO] Test")))
+						.put(new JSONObject()
+								.put("name", "EntityRepository")
+								.put("domain", "domain")
+								.put("DDD", DDDType.REPOSITORY)
+								.put("fitness", 80)
+								.put("issues", new JSONArray()))
+				);
+
 		final JSONObject result = service.getMetric();
 		
 		assertEquals(expected.toString(), result.toString());

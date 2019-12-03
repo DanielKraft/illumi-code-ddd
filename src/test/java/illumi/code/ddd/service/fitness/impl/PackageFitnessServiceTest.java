@@ -52,7 +52,7 @@ class PackageFitnessServiceTest {
 				 	() -> assertEquals(DDDRating.A, 	result.getScore(), 						"Rating"),
 				 	() -> assertEquals(0, 		result.getNumberOfCriteria(), 			"Total Criteria"),
 				 	() -> assertEquals(0, 		result.getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
-				 	() -> assertEquals(1, 		result.getIssues().size(), 				"#Issues"));
+				 	() -> assertEquals(0, 		result.getIssues().size(), 				"#Issues"));
 	}
 	
 	@Test
