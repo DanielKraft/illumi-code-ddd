@@ -56,7 +56,7 @@ public class FactoryRefactorService  extends DefaultRefactorService {
             factoryImpl = createImpl(impl, factory, DDDType.FACTORY);
             impl.addContains(factoryImpl);
             getRefactorData().getNewStructure().addClass(factoryImpl);
-            LOGGER.info(LOG_CREATE, factoryImpl.getPath());
+            LOGGER.info(LOG_CREATE, FACTORY, factoryImpl.getPath());
         }
     }
 
@@ -72,7 +72,7 @@ public class FactoryRefactorService  extends DefaultRefactorService {
             Interface repository = createInterface(model, factoryImpl, DDDType.FACTORY);
             model.addContains(repository);
             getRefactorData().getNewStructure().addInterface(repository);
-            LOGGER.info(LOG_CREATE, repository.getPath());
+            LOGGER.info(LOG_CREATE, REPOSITORY, repository.getPath());
         } else {
             factoryImpl.getImplInterfaces().stream()
                     .parallel()

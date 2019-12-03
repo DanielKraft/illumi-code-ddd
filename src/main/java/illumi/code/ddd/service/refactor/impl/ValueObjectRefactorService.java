@@ -43,7 +43,7 @@ public class ValueObjectRefactorService extends DefaultRefactorService {
                 artifact.getFields().remove(field);
             } else {
                 if (needsGetter(artifact, field)) {
-                    artifact.addMethod(createGetter(field));
+                    artifact.addMethod(createValueObjectGetter(field));
                 }
 
                 if (needsSideEffectFreeSetter(artifact, field)) {
@@ -75,13 +75,5 @@ public class ValueObjectRefactorService extends DefaultRefactorService {
     private void refactorGetter(Field field, Method method) {
         method.setSignature(method.getSignature().replace(method.getName(), field.getName()));
         method.setName(field.getName());
-    }
-
-    @Override
-    Method createGetter(Field field) {
-        String name = field.getName();
-        String signature = String.format("%s %s()", field.getType(), name);
-        LOGGER.info("Create {}", signature);
-        return new Method(PUBLIC, name, signature);
     }
 }

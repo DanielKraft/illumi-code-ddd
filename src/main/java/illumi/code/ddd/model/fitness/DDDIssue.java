@@ -12,10 +12,6 @@ public class DDDIssue {
 		this.description = description;
 	}
 
-	public DDDIssueType getType() {
-		return type;
-	}
-
 	public String getDescription() {
 		return description;
 	}

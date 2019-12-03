@@ -5,6 +5,7 @@ import java.util.List;
 
 import illumi.code.ddd.service.analyse.impl.ClassAnalyseService;
 import illumi.code.ddd.service.fitness.impl.ClassFitnessService;
+import org.json.JSONObject;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.Record;
 
@@ -90,5 +91,16 @@ public class Class extends File {
 	
 	public void evaluate(DDDStructure structure) {
 		setFitness(new ClassFitnessService(this, structure).evaluate());
+	}
+
+	@Override
+	public JSONObject toJSON() {
+		JSONObject result = super.toJSON();
+
+		if (superClass != null) {
+			result.put("extends", superClass.getPath());
+		}
+
+		return result;
 	}
 }

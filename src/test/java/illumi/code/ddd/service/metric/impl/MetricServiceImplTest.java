@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
 
 import illumi.code.ddd.model.DDDStructure;
+import illumi.code.ddd.model.fitness.DDDIssue;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;

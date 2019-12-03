@@ -80,8 +80,15 @@ public abstract class Artifact {
 		return new JSONObject()
 				.put("name", name)
 				.put("DDD", type)
+				.put("fitness", getFitness());
+	}
+
+	public JSONObject toJSONSummary() {
+		return new JSONObject()
+				.put("name", name)
+				.put("DDD", type)
 				.put("domain", domain)
 				.put("fitness", getFitness())
-				.put("issues", !fitness.getIssues().isEmpty() ? fitness.getIssues() : null);
+				.put("issues", fitness.getIssues());
 	}
 }

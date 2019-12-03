@@ -56,7 +56,7 @@ public class RepositoryRefactorService extends DefaultRefactorService {
             repositoryImpl = createImpl(impl, repository, DDDType.REPOSITORY);
             impl.addContains(repositoryImpl);
             getRefactorData().getNewStructure().addClass(repositoryImpl);
-            LOGGER.info(LOG_CREATE, repositoryImpl.getPath());
+            LOGGER.info(LOG_CREATE, REPOSITORY, repositoryImpl.getPath());
         }
     }
 
@@ -72,7 +72,7 @@ public class RepositoryRefactorService extends DefaultRefactorService {
             Interface repository = createInterface(model, repositoryImpl, DDDType.REPOSITORY);
             model.addContains(repository);
             getRefactorData().getNewStructure().addInterface(repository);
-            LOGGER.info(LOG_CREATE, repository.getPath());
+            LOGGER.info(LOG_CREATE, REPOSITORY, repository.getPath());
         } else {
             repositoryImpl.getImplInterfaces().stream()
                     .parallel()

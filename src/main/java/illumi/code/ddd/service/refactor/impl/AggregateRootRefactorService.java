@@ -39,7 +39,7 @@ public class AggregateRootRefactorService extends DefaultRefactorService {
             Class repositoryImpl = createImpl(impl, repository, DDDType.REPOSITORY);
             impl.addContains(repositoryImpl);
             getRefactorData().getNewStructure().addClass(repositoryImpl);
-            LOGGER.info(LOG_CREATE, repositoryImpl.getPath());
+            LOGGER.info(LOG_CREATE, REPOSITORY, repositoryImpl.getPath());
         }
 
         Interface factory = getInterface(DDDType.FACTORY, model, root);
@@ -49,7 +49,7 @@ public class AggregateRootRefactorService extends DefaultRefactorService {
             factoryImpl.addField(new Field("private", "repository", repository.getPath()));
             impl.addContains(factoryImpl);
             getRefactorData().getNewStructure().addClass(factoryImpl);
-            LOGGER.info(LOG_CREATE, factoryImpl.getPath());
+            LOGGER.info(LOG_CREATE, FACTORY, factoryImpl.getPath());
         }
     }
 
@@ -72,6 +72,7 @@ public class AggregateRootRefactorService extends DefaultRefactorService {
         repository.setDomain(root.getDomain());
 
         String id = getIdOfEntity(root);
+        System.out.println(name + " " + id);
 
         repository.addMethod(createMethod(id, "nextIdentity", ""));
         repository.addMethod(createMethod(root.getPath(), "findById", id));
@@ -83,7 +84,7 @@ public class AggregateRootRefactorService extends DefaultRefactorService {
         model.addContains(repository);
         getRefactorData().getNewStructure().addInterface(repository);
 
-        LOGGER.info(LOG_CREATE, repository.getPath());
+        LOGGER.info(LOG_CREATE, REPOSITORY, repository.getPath());
         return repository;
     }
 
@@ -100,7 +101,7 @@ public class AggregateRootRefactorService extends DefaultRefactorService {
         model.addContains(factory);
         getRefactorData().getNewStructure().addInterface(factory);
 
-        LOGGER.info(LOG_CREATE, factory.getPath());
+        LOGGER.info(LOG_CREATE, FACTORY, factory.getPath());
         return factory;
     }
 }

@@ -14,11 +14,12 @@ public abstract class DefaultRefactorService implements ArtifactRefactorService 
 
     static final String PRIVATE = "private";
     static final String PUBLIC = "public";
-    static final String LOG_CREATE = "Create {}";
+    static final String LOG_CREATE = "Create {} {}";
     static final String REPOSITORY_IMPL = "RepositoryImpl";
     static final String REPOSITORY = "Repository";
     static final String FACTORY_IMPL = "FactoryImpl";
     static final String FACTORY = "Factory";
+    static final String METHOD = "Method";
 
     private DDDRefactorData refactorData;
 
@@ -140,38 +141,45 @@ public abstract class DefaultRefactorService implements ArtifactRefactorService 
 
     Method createMethod(String value, String name, String attribute) {
         String signature = String.format("%s %s(%s)", value, name, attribute);
-        LOGGER.info(LOG_CREATE, signature);
+        LOGGER.info(LOG_CREATE, METHOD, signature);
         return new Method(PUBLIC, name, signature);
     }
 
     Method createEquals() {
-        LOGGER.info("Create java.lang.Boolean equals(Object)");
+        LOGGER.info("Create Method java.lang.Boolean equals(Object)");
         return new Method(PUBLIC, "equals", "java.lang.Boolean equals(Object)");
     }
 
     Method createHashCode() {
-        LOGGER.info("Create java.lang.Integer hashCode()");
+        LOGGER.info("Create Method java.lang.Integer hashCode()");
         return new Method(PUBLIC, "hashCode", "java.lang.Integer hashCode()");
     }
 
     Method createGetter(Field field) {
         String name = String.format("get%s", modifyFirstChar(field.getName()));
         String signature = String.format("%s %s()", field.getType(), name);
-        LOGGER.info(LOG_CREATE, signature);
+        LOGGER.info(LOG_CREATE, METHOD, signature);
         return new Method(PUBLIC, name, signature);
     }
 
     Method createSetter(Field field) {
         String name = String.format("set%s", modifyFirstChar(field.getName()));
         String signature = String.format("void %s(%s)", name, field.getType());
-        LOGGER.info(LOG_CREATE, signature);
+        LOGGER.info(LOG_CREATE, METHOD, signature);
+        return new Method(PUBLIC, name, signature);
+    }
+
+    Method createValueObjectGetter(Field field) {
+        String name = field.getName();
+        String signature = String.format("%s %s()", field.getType(), name);
+        LOGGER.info(LOG_CREATE, METHOD, signature);
         return new Method(PUBLIC, name, signature);
     }
 
     Method createSideEffectFreeSetter(Field field) {
         String name = String.format("set%s", modifyFirstChar(field.getName()));
         String signature = String.format("void %s(%s)", name, field.getType());
-        LOGGER.info(LOG_CREATE, signature);
+        LOGGER.info(LOG_CREATE, METHOD, signature);
         return new Method(PRIVATE, name, signature);
     }
 

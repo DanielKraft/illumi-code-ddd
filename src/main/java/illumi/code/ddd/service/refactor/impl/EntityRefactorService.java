@@ -118,10 +118,10 @@ public class EntityRefactorService extends DefaultRefactorService {
         newValueObject.addField(new Field(PRIVATE, field.getName(), field.getType()));
         newValueObject.addMethod(createEquals());
         newValueObject.addMethod(createHashCode());
-        newValueObject.addMethod(new Method(PUBLIC, field.getName(), field.getType()));
-        newValueObject.addMethod(new Method(PRIVATE, "set" + modifyFirstChar(field.getName()), path));
+        newValueObject.addMethod(createValueObjectGetter(field));
+        newValueObject.addMethod(createSideEffectFreeSetter(field));
 
-        LOGGER.info("Created {}", newValueObject.getPath());
+        LOGGER.info(LOG_CREATE, "ValueObject", newValueObject.getPath());
         return newValueObject;
     }
 

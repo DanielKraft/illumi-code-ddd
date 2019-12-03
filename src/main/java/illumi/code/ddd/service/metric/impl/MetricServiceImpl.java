@@ -73,7 +73,7 @@ public class MetricServiceImpl implements MetricService {
 		ArrayList<JSONObject> json = new ArrayList<>();
 		allArtifacts.stream()
 			.parallel()
-			.forEachOrdered(artifact -> json.add(artifact.toJSON()));
+			.forEachOrdered(artifact -> json.add(artifact.toJSONSummary()));
 		return json;
 	}
 }
