@@ -128,7 +128,7 @@ public class EntityRefactorService extends DefaultRefactorService {
     private void refactorGetterAndSetter(Class artifact, String oldType, String newType) {
         artifact.getMethods().stream()
                 .parallel()
-                .forEach(method -> method.setSignature(method.getSignature().replace(oldType, newType)));
+                .forEachOrdered(method -> method.setSignature(method.getSignature().replace(oldType, newType)));
     }
 
     private String generateName(String entityName, Field field) {

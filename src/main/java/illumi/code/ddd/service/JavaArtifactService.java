@@ -50,7 +50,7 @@ public class JavaArtifactService {
 
 			result.stream()
 				.parallel()
-				.forEach(item -> dependencies.add(item.get("dependencies").asString()));
+				.forEachOrdered(item -> dependencies.add(item.get("dependencies").asString()));
 
 			return dependencies;
 		} catch (Exception e) {
@@ -73,7 +73,7 @@ public class JavaArtifactService {
 		ArrayList<Field> fields = new ArrayList<>();
 		result.stream()
 			.parallel()
-			.forEach(item -> {
+			.forEachOrdered(item -> {
 				if (!item.get( "name" ).isNull()) {
 					fields.add(new Field( item ));
 		        }
@@ -95,7 +95,7 @@ public class JavaArtifactService {
 		ArrayList<Method> methods = new ArrayList<>();
 		result.stream()
 			.parallel()
-			.forEach(item -> {
+			.forEachOrdered(item -> {
 				if (!item.get( "name" ).isNull()) {
 			        Method newMethod = new Method( item );
 			        methods.add(newMethod);
@@ -118,7 +118,7 @@ public class JavaArtifactService {
 		ArrayList<Interface> implInterfaces = new ArrayList<>();
 		result.stream()
 			.parallel()
-			.forEach(item -> {
+			.forEachOrdered(item -> {
 				for (Interface i : interfaces) {
 					if (i.getPath().contains(item.get( "interface" ).asString())) {
 						implInterfaces.add(i);
@@ -165,7 +165,7 @@ public class JavaArtifactService {
 		session.run( query, Values.parameters( "path", path ) )
 			.stream()
 			.parallel()
-			.forEach(item -> {
+			.forEachOrdered(item -> {
 				for (Annotation a : annotations) {
 					if (a.getPath().contains(item.get("annotation").asString())) {
 						result.add(a);

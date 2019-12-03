@@ -38,10 +38,9 @@ public class DDDFitness {
 		}
 	}
 
-	public DDDFitness addFailedCriteria(DDDIssueType type, String description) {
+	public void addFailedCriteria(DDDIssueType type, String description) {
 		numberOfCriteria += type.weight;
 		issues.add(new DDDIssue(type, description));
-		return this;
 	}
 	
 	public DDDFitness addSuccessfulCriteria(DDDIssueType type) {
@@ -65,7 +64,7 @@ public class DDDFitness {
 		return 100.0;
 	}
 	
-	public DDDRating getscore() {
+	public DDDRating getScore() {
 		double fitness = calculateFitness();
 		if (fitness >= DDDRating.A.lowerBorder) 		return DDDRating.A;
 		else if (fitness >= DDDRating.B.lowerBorder)	return DDDRating.B;
@@ -77,7 +76,7 @@ public class DDDFitness {
 	
 	public JSONObject summary() {
 		return new JSONObject()
-				.put("score", getscore())
+				.put("score", getScore())
 				.put("criteria", new JSONObject()
 						.put("total", numberOfCriteria)
 						.put("fulfilled", numberOfFulfilledCriteria))

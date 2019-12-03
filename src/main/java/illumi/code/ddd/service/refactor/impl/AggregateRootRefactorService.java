@@ -24,7 +24,7 @@ public class AggregateRootRefactorService extends DefaultRefactorService {
 
         new ArrayList<>(model.getContains()).stream()
                 .parallel()
-                .forEach(artifact -> {
+                .forEachOrdered(artifact -> {
                     if (artifact instanceof Class
                             && artifact.isTypeOf(DDDType.AGGREGATE_ROOT)) {
                         refactorAggregateRoot(model, impl, (Class) artifact);

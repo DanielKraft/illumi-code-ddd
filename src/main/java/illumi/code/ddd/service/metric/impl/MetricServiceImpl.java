@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import illumi.code.ddd.model.DDDStructure;
 import illumi.code.ddd.service.metric.MetricService;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import illumi.code.ddd.model.fitness.DDDFitness;
@@ -16,10 +17,11 @@ import illumi.code.ddd.model.artifacts.Artifact;
 public class MetricServiceImpl implements MetricService {
 	    
     private DDDStructure structure;
-    
-    public @Inject MetricServiceImpl() {
-    	// @Inject is needed
-    }
+	private DDDStructure oldStructure;
+
+	public @Inject MetricServiceImpl() {
+		this.oldStructure = null;
+	}
     
     @Override
     public void setStructure(DDDStructure structure) {
@@ -58,7 +60,7 @@ public class MetricServiceImpl implements MetricService {
 				.put("#CONTROLLER", countArtifact(DDDType.CONTROLLER, allArtifacts))
 				.put("#INFRASTRUCTUR", countArtifact(DDDType.INFRASTRUCTURE, allArtifacts));
 	}
-	
+
 	private int countArtifact(DDDType type, ArrayList<Artifact> allArtifacts) {
 		int ctr = 0;
 		for (Artifact artifact : allArtifacts) {
@@ -74,7 +76,8 @@ public class MetricServiceImpl implements MetricService {
 		allArtifacts.stream()
 			.parallel()
 			.forEachOrdered(artifact -> {
-				if (!artifact.getDDDFitness().getIssues().isEmpty()) {
+				if (artifact.getFitness() < 100.0
+						|| !artifact.getDDDFitness().getIssues().isEmpty()) {
 					json.add(artifact.toJSONSummary());
 				}
 			});

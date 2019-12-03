@@ -27,7 +27,7 @@ public class PackageFitnessService {
         } else if (isApplication()) {
             return evaluateApplicationModule();
         } else {
-            return new DDDFitness().addFailedCriteria(DDDIssueType.INFO, String.format("The module '%s' is no DDD-Module.", module.getName()));
+            return new DDDFitness();
         }
     }
 

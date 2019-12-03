@@ -57,6 +57,6 @@ public class RefactorServiceImpl implements RefactorService {
     private void cleanFitness() {
         refactorData.getNewStructure().getAllArtifacts().stream()
                 .parallel()
-                .forEach(item -> item.setFitness(new DDDFitness()));
+                .forEachOrdered(item -> item.setFitness(new DDDFitness()));
     }
 }

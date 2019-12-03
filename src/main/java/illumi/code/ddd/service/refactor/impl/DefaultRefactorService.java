@@ -35,7 +35,7 @@ public abstract class DefaultRefactorService implements ArtifactRefactorService 
     public void refactor() {
         refactorData.getDomainModule().getContains().stream()
                 .parallel()
-                .forEach(item -> {
+                .forEachOrdered(item -> {
                     if (item instanceof Package) {
                         if (!item.getName().equalsIgnoreCase("model")) {
                             Package model = getModelOfDomain(item);
@@ -192,7 +192,7 @@ public abstract class DefaultRefactorService implements ArtifactRefactorService 
     void copyMethods(File oldFile, File newFile) {
         oldFile.getMethods().stream()
                 .parallel()
-                .forEach(method -> newFile.addMethod(new Method(method)));
+                .forEachOrdered(method -> newFile.addMethod(new Method(method)));
     }
 
     String toSingular(String name) {

@@ -24,7 +24,7 @@ public class RepositoryRefactorService extends DefaultRefactorService {
 
         model.getContains().stream()
                 .parallel()
-                .forEach(artifact -> {
+                .forEachOrdered(artifact -> {
                     if (artifact instanceof Interface
                             && artifact.isTypeOf(DDDType.REPOSITORY)) {
                         refactorRepository(model, impl, (Interface) artifact);
@@ -33,7 +33,7 @@ public class RepositoryRefactorService extends DefaultRefactorService {
 
         impl.getContains().stream()
                 .parallel()
-                .forEach(artifact -> {
+                .forEachOrdered(artifact -> {
                     if (artifact instanceof Class
                             && artifact.isTypeOf(DDDType.REPOSITORY)) {
                         refactorRepository(model, (Class) artifact);
@@ -76,7 +76,7 @@ public class RepositoryRefactorService extends DefaultRefactorService {
         } else {
             repositoryImpl.getImplInterfaces().stream()
                     .parallel()
-                    .forEach(repo -> refactorRepositoryMethods(model, repo));
+                    .forEachOrdered(repo -> refactorRepositoryMethods(model, repo));
         }
     }
 
@@ -87,7 +87,7 @@ public class RepositoryRefactorService extends DefaultRefactorService {
 
             new ArrayList<>(repository.getDDDFitness().getIssues()).stream()
                     .parallel()
-                    .forEach(issue -> {
+                    .forEachOrdered(issue -> {
                         if (issue.getDescription().contains("no nextIdentity")) {
                             repository.addMethod(createMethod(id, "nextIdentity", ""));
                         } else if (issue.getDescription().contains("no findBy/get")) {
