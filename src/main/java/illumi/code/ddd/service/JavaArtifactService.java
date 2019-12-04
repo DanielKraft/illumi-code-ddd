@@ -26,7 +26,7 @@ public class JavaArtifactService {
 	private static final String QUERY_PARENT_ANNOTATIONS 	= "MATCH (parent:Java)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} RETURN DISTINCT type.fqn as annotation";
 	private static final String QUERY_CHILD_ANNOTATIONS		= "MATCH (parent:Java)-[:DECLARES]->(child:Java)-[:ANNOTATED_BY]->(annotation:Annotation)-[:OF_TYPE]->(type:Type) WHERE parent.fqn = {path} AND (child:Field OR child:Method) RETURN DISTINCT type.fqn as annotation";
 
-	private static final String QUERY_DEPENDENCIES 			= "MATCH (artifact:Java)-[:DEPENDS_ON]->(dependency:Java) WHERE artifact.fqn={path} AND dependency.fqn CONTAINS {rootPath} RETURN DISTINCT dependency.name as dependencies";
+	private static final String QUERY_DEPENDENCIES 			= "MATCH (artifact:Java)-[:DEPENDS_ON]->(dependency:Java) WHERE artifact.fqn={path} AND dependency.fqn CONTAINS {rootPath} RETURN DISTINCT dependency.fqn as dependencies";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JavaArtifactService.class);
 
@@ -50,7 +50,7 @@ public class JavaArtifactService {
 
 			result.stream()
 				.parallel()
-				.forEach(item -> dependencies.add(item.get("dependencies").asString()));
+				.forEachOrdered(item -> dependencies.add(item.get("dependencies").asString()));
 
 			return dependencies;
 		} catch (Exception e) {
@@ -73,7 +73,7 @@ public class JavaArtifactService {
 		ArrayList<Field> fields = new ArrayList<>();
 		result.stream()
 			.parallel()
-			.forEach(item -> {
+			.forEachOrdered(item -> {
 				if (!item.get( "name" ).isNull()) {
 					fields.add(new Field( item ));
 		        }
@@ -95,7 +95,7 @@ public class JavaArtifactService {
 		ArrayList<Method> methods = new ArrayList<>();
 		result.stream()
 			.parallel()
-			.forEach(item -> {
+			.forEachOrdered(item -> {
 				if (!item.get( "name" ).isNull()) {
 			        Method newMethod = new Method( item );
 			        methods.add(newMethod);
@@ -118,7 +118,7 @@ public class JavaArtifactService {
 		ArrayList<Interface> implInterfaces = new ArrayList<>();
 		result.stream()
 			.parallel()
-			.forEach(item -> {
+			.forEachOrdered(item -> {
 				for (Interface i : interfaces) {
 					if (i.getPath().contains(item.get( "interface" ).asString())) {
 						implInterfaces.add(i);
@@ -165,7 +165,7 @@ public class JavaArtifactService {
 		session.run( query, Values.parameters( "path", path ) )
 			.stream()
 			.parallel()
-			.forEach(item -> {
+			.forEachOrdered(item -> {
 				for (Annotation a : annotations) {
 					if (a.getPath().contains(item.get("annotation").asString())) {
 						result.add(a);

@@ -82,6 +82,7 @@ public class EntityRefactorService extends DefaultRefactorService {
                 String newType = newValueObject.getPath();
                 field.setType(newType);
                 refactorGetterAndSetter(artifact, oldType, newType);
+                artifact.addDependencies(newValueObject.getName());
             }
         }
     }
@@ -118,17 +119,17 @@ public class EntityRefactorService extends DefaultRefactorService {
         newValueObject.addField(new Field(PRIVATE, field.getName(), field.getType()));
         newValueObject.addMethod(createEquals());
         newValueObject.addMethod(createHashCode());
-        newValueObject.addMethod(new Method(PUBLIC, field.getName(), field.getType()));
-        newValueObject.addMethod(new Method(PRIVATE, "set" + modifyFirstChar(field.getName()), path));
+        newValueObject.addMethod(createValueObjectGetter(field));
+        newValueObject.addMethod(createSideEffectFreeSetter(field));
 
-        LOGGER.info("Created {}", newValueObject.getPath());
+        LOGGER.info(LOG_CREATE, "ValueObject", newValueObject.getPath());
         return newValueObject;
     }
 
     private void refactorGetterAndSetter(Class artifact, String oldType, String newType) {
         artifact.getMethods().stream()
                 .parallel()
-                .forEach(method -> method.setSignature(method.getSignature().replace(oldType, newType)));
+                .forEachOrdered(method -> method.setSignature(method.getSignature().replace(oldType, newType)));
     }
 
     private String generateName(String entityName, Field field) {

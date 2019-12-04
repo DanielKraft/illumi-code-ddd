@@ -1,6 +1,7 @@
 package illumi.code.ddd.model;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -120,7 +121,7 @@ public class DDDStructure {
 		all.addAll(this.enums);
 		all.addAll(this.annotations);
 
-		all.sort((Artifact a1, Artifact a2) -> Double.compare(a2.getFitness(), a1.getFitness()));
+		all.sort(Comparator.comparingDouble(Artifact::getFitness));
 		return all;
 	}
 	

@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
 
 import illumi.code.ddd.model.DDDStructure;
+import illumi.code.ddd.model.fitness.DDDIssue;
+import illumi.code.ddd.model.fitness.DDDIssueType;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;
@@ -28,14 +30,18 @@ class MetricServiceImplTest {
 		DDDStructure structure = new DDDStructure();
 		Package domain = new Package("domain", "de.test.domain");
 		domain.setType(DDDType.MODULE);
-		domain.setFitness(new DDDFitness(3, 2));
+		DDDFitness fitness = new DDDFitness(3, 2);
+		fitness.addFailedCriteria(DDDIssueType.INFO, "Test");
+		domain.setFitness(fitness);
 		structure.addPackage(domain);
+
 		Class entity = new Class("Entity", "de.test.domain.Entity");
 		entity.setType(DDDType.ENTITY);
 		entity.setDomain("domain");
 		entity.setFitness(new DDDFitness(15, 9));
 		domain.addContains(entity);
 		structure.addClass(entity);
+
 		Class repo = new Class("EntityRepository", "de.test.domain.EntityRepository");
 		repo.setType(DDDType.REPOSITORY);
 		repo.setDomain("domain");
@@ -47,11 +53,12 @@ class MetricServiceImplTest {
 		infrastructure.setType(DDDType.MODULE);
 		infrastructure.setFitness(new DDDFitness(5, 3));
 		structure.addPackage(infrastructure);
-		Class contoller = new Class("EntityController", "de.test.infrastructure.EntityController");
-		contoller.setType(DDDType.CONTROLLER);
-		contoller.setFitness(new DDDFitness(12, 7));
-		infrastructure.addContains(contoller);
-		structure.addClass(contoller);
+
+		Class controller = new Class("EntityController", "de.test.infrastructure.EntityController");
+		controller.setType(DDDType.CONTROLLER);
+		controller.setFitness(new DDDFitness(12, 12));
+		infrastructure.addContains(controller);
+		structure.addClass(controller);
 		
 		ArrayList<Artifact> data = new ArrayList<>();
 		data.add(domain);
@@ -70,9 +77,9 @@ class MetricServiceImplTest {
 						.put("score", DDDRating.D)
 						.put("criteria", new JSONObject()
 								.put("total", 40)
-								.put("fulfilled", 25))
-						.put("fitness", 62.5)
-						.put("#Issues", 0))
+								.put("fulfilled", 30))
+						.put("fitness", 75)
+						.put("#Issues", 1))
 				.put("DDD", new JSONObject()
 				        .put("#APPLICATION_SERVICE",	0)
 				        .put("#VALUE_OBJECT", 			0)
@@ -84,35 +91,32 @@ class MetricServiceImplTest {
 				        .put("#SERVICE", 				0)
 				        .put("#ENTITY", 				1)
 				        .put("#AGGREGATE_ROOT", 		0))
-				.put("rating", new JSONArray()
+				.put("hotspots", new JSONArray()
 						.put(new JSONObject()
-								.put("DDD", 	"REPOSITORY")
-								.put("fitness", 80.0)
+								.put("name", "infrastructure")
+								.put("DDD", DDDType.MODULE)
+								.put("fitness", 60)
+								.put("issues", new JSONArray()))
+						.put(new JSONObject()
+								.put("name", "Entity")
 								.put("domain", "domain")
-								.put("name", 	"EntityRepository")
-								.put("issues", new ArrayList<>()))
+								.put("DDD", DDDType.ENTITY)
+								.put("fitness", 60)
+								.put("issues", new JSONArray()))
 						.put(new JSONObject()
-								.put("DDD", 	"MODULE")
+								.put("name", "domain")
+								.put("DDD", DDDType.MODULE)
 								.put("fitness", 66.67)
-								.put("name", 	"domain")
-								.put("issues", new ArrayList<>()))
+								.put("issues", new JSONArray()
+										.put("[INFO] Test")))
 						.put(new JSONObject()
-								.put("DDD", 	"MODULE")
-								.put("fitness", 60.0)
-								.put("name", 	"infrastructure")
-								.put("issues", new ArrayList<>()))
-						.put(new JSONObject()
-								.put("DDD", 	"ENTITY")
-								.put("fitness", 60.0)
-								.put("domain", 	"domain")
-								.put("name", 	"Entity")
-								.put("issues", new ArrayList<>()))
-						.put(new JSONObject()
-								.put("DDD", 	"CONTROLLER")
-								.put("fitness", 58.33)
-								.put("name", 	"EntityController")
-								.put("issues", new ArrayList<>())));
-		
+								.put("name", "EntityRepository")
+								.put("domain", "domain")
+								.put("DDD", DDDType.REPOSITORY)
+								.put("fitness", 80)
+								.put("issues", new JSONArray()))
+				);
+
 		final JSONObject result = service.getMetric();
 		
 		assertEquals(expected.toString(), result.toString());

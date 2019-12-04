@@ -6,6 +6,7 @@ import illumi.code.ddd.model.artifacts.Artifact;
 import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Package;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
@@ -14,12 +15,12 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class RefactorServiceImplTest {
 
     private RefactorServiceImpl service;
+    private Class root;
 
-    @BeforeAll
+    @BeforeEach
     void init() {
         service = new RefactorServiceImpl();
 
@@ -35,7 +36,7 @@ class RefactorServiceImplTest {
         module.addContains(root2);
         structure.addClass(root2);
 
-        Class root = new Class("Root", "de.test.Root");
+        root = new Class("Root", "de.test.Root");
         root.setType(DDDType.AGGREGATE_ROOT);
         root.setDomain("domain0");
         module.addContains(root);
@@ -50,6 +51,16 @@ class RefactorServiceImplTest {
 
     @Test
     void testRefactor() {
+        final DDDStructure result = service.refactor();
+
+        assertAll(	() -> assertEquals(13, result.getPackages().size(), "#Package"),
+                    () -> assertEquals(8, result.getClasses().size(), "#Class"));
+    }
+
+    @Test
+    void testRefactorInvalidDependency() {
+        root.addDependencies("de.test.Class");
+
         final DDDStructure result = service.refactor();
 
         assertAll(	() -> assertEquals(13, result.getPackages().size(), "#Package"),

@@ -24,7 +24,7 @@ public class FactoryRefactorService  extends DefaultRefactorService {
 
         model.getContains().stream()
                 .parallel()
-                .forEach(artifact -> {
+                .forEachOrdered(artifact -> {
                     if (artifact instanceof Interface
                             && artifact.isTypeOf(DDDType.FACTORY)) {
                         refactorFactory(model, impl, (Interface) artifact);
@@ -33,7 +33,7 @@ public class FactoryRefactorService  extends DefaultRefactorService {
 
         impl.getContains().stream()
                 .parallel()
-                .forEach(artifact -> {
+                .forEachOrdered(artifact -> {
                     if (artifact instanceof Class
                             && artifact.isTypeOf(DDDType.FACTORY)) {
                         refactorFactory(model, (Class) artifact);
@@ -56,7 +56,7 @@ public class FactoryRefactorService  extends DefaultRefactorService {
             factoryImpl = createImpl(impl, factory, DDDType.FACTORY);
             impl.addContains(factoryImpl);
             getRefactorData().getNewStructure().addClass(factoryImpl);
-            LOGGER.info(LOG_CREATE, factoryImpl.getPath());
+            LOGGER.info(LOG_CREATE, FACTORY, factoryImpl.getPath());
         }
     }
 
@@ -72,11 +72,11 @@ public class FactoryRefactorService  extends DefaultRefactorService {
             Interface repository = createInterface(model, factoryImpl, DDDType.FACTORY);
             model.addContains(repository);
             getRefactorData().getNewStructure().addInterface(repository);
-            LOGGER.info(LOG_CREATE, repository.getPath());
+            LOGGER.info(LOG_CREATE, REPOSITORY, repository.getPath());
         } else {
             factoryImpl.getImplInterfaces().stream()
                     .parallel()
-                    .forEach(repo -> refactorFactoryMethods(model, repo));
+                    .forEachOrdered(repo -> refactorFactoryMethods(model, repo));
         }
     }
 
@@ -85,7 +85,7 @@ public class FactoryRefactorService  extends DefaultRefactorService {
         if (entity != null) {
             new ArrayList<>(repository.getDDDFitness().getIssues()).stream()
                     .parallel()
-                    .forEach(issue -> {
+                    .forEachOrdered(issue -> {
                         if (issue.getDescription().contains("no create")) {
                             repository.addMethod(createMethod(entity.getPath(), "create", "..."));
                         }

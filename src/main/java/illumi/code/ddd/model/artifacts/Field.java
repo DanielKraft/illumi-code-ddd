@@ -42,6 +42,11 @@ public class Field {
 		this.type = type;
 	}
 
+	public String getUMLSignature() {
+		String umlVisibility = File.getUMLVisibility(visibility);
+		return String.format("%s %s: %s", umlVisibility, name, type);
+	}
+
 	public static void evaluateEntity(Class artifact, DDDStructure structure, DDDFitness fitness) {
 		boolean containsId = false;
 		for (Field field : artifact.getFields()) {

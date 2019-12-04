@@ -29,8 +29,8 @@ class PackageAnalyseServiceTest {
 		
 		Class entity1 = new Class("Entity1", "de.test.domain.Entity1");
 		entity1.setType(DDDType.ENTITY);
-		entity1.addDependencies("Entity2");
-		entity1.addDependencies("Entity4");
+		entity1.addDependencies("de.test.domain.Entity2");
+		entity1.addDependencies("de.test.domain.Entity4");
 		module.addContains(entity1);
 		
 		Class entity2 = new Class("Entity2", "de.test.domain.Entity2");
@@ -39,8 +39,8 @@ class PackageAnalyseServiceTest {
 		
 		Class entity3 = new Class("Entity3", "de.test.domain.Entity3");
 		entity3.setType(DDDType.ENTITY);
-		entity3.addDependencies("Entity2");
-		entity3.addDependencies("ValueObject");
+		entity3.addDependencies("de.test.domain.Entity2");
+		entity3.addDependencies("de.test.domain.ValueObject");
 		module.addContains(entity3);
 		
 		Class entity4 = new Class("Entity4", "de.test.domain.Entity4");
@@ -53,8 +53,8 @@ class PackageAnalyseServiceTest {
 
 		Class root = new Class("Root", "de.test.domain.Root");
 		root.setType(DDDType.ENTITY);
-		root.addDependencies("Entity1");
-		root.addDependencies("Entity3");
+		root.addDependencies("de.test.domain.Entity1");
+		root.addDependencies("de.test.domain.Entity3");
 		module.addContains(root);
 
 		PackageAnalyseService service = new PackageAnalyseService(module, structure);

@@ -55,6 +55,13 @@ public class Method {
 		this.signature = signature;
 	}
 
+	public String getUMLSignature() {
+		String umlVisibility = File.getUMLVisibility(visibility);
+
+		String[] split = signature.split(" ");
+		return String.format("%s %s: %s", umlVisibility, split[1], split[0]);
+	}
+
 	public static void evaluateNeededMethods(Class artifact, DDDFitness fitness) {
 		int ctr = 0;
 		for (Method method : artifact.getMethods()) {
@@ -65,7 +72,7 @@ public class Method {
 		if (ctr >= 2) {
 			fitness.addSuccessfulCriteria(DDDIssueType.MAJOR);
 		} else if (artifact.getSuperClass() == null) {
-			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The Entity '%s' does not containts all needed methods (equals/hashCode).", artifact.getName()));
+			fitness.addFailedCriteria(DDDIssueType.MAJOR, String.format("The Entity '%s' does not contains all needed methods (equals/hashCode).", artifact.getName()));
 		}
 	}
 	

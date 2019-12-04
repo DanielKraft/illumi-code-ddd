@@ -16,10 +16,10 @@ import illumi.code.ddd.model.artifacts.Artifact;
 public class MetricServiceImpl implements MetricService {
 	    
     private DDDStructure structure;
-    
-    public @Inject MetricServiceImpl() {
-    	// @Inject is needed
-    }
+
+	public @Inject MetricServiceImpl() {
+		// Needed for @Inject
+	}
     
     @Override
     public void setStructure(DDDStructure structure) {
@@ -34,7 +34,7 @@ public class MetricServiceImpl implements MetricService {
 		return new JSONObject()
 				.put("metric", fitness.summary())
 				.put("DDD", calcArtifactMetric(allArtifacts))
-				.put("rating", toJSON(allArtifacts));
+				.put("hotspots", toJSON(allArtifacts));
 	}
 
 	private DDDFitness calcFitness(ArrayList<Artifact> allArtifacts) {
@@ -58,7 +58,7 @@ public class MetricServiceImpl implements MetricService {
 				.put("#CONTROLLER", countArtifact(DDDType.CONTROLLER, allArtifacts))
 				.put("#INFRASTRUCTUR", countArtifact(DDDType.INFRASTRUCTURE, allArtifacts));
 	}
-	
+
 	private int countArtifact(DDDType type, ArrayList<Artifact> allArtifacts) {
 		int ctr = 0;
 		for (Artifact artifact : allArtifacts) {
@@ -73,7 +73,12 @@ public class MetricServiceImpl implements MetricService {
 		ArrayList<JSONObject> json = new ArrayList<>();
 		allArtifacts.stream()
 			.parallel()
-			.forEachOrdered(artifact -> json.add(artifact.toJSON()));
+			.forEachOrdered(artifact -> {
+				if (!artifact.getDDDFitness().getIssues().isEmpty()
+						|| artifact.getFitness() < 100.0) {
+					json.add(artifact.toJSONSummary());
+				}
+			});
 		return json;
 	}
 }

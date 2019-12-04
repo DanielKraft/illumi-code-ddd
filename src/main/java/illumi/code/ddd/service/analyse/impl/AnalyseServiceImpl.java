@@ -73,7 +73,7 @@ public class AnalyseServiceImpl implements AnalyseService {
 		ArrayList<Artifact> artifacts = new ArrayList<>();
 		result.stream()
 			.parallel()
-			.forEach(item -> {
+			.forEachOrdered(item -> {
 				List<Object> types = item.get( "types" ).asList();
 				Artifact artifact;
 
@@ -104,7 +104,7 @@ public class AnalyseServiceImpl implements AnalyseService {
 	private void analyzeClasses() {
 		structure.getClasses().stream()
 			.parallel()
-			.forEach(item -> {
+			.forEachOrdered(item -> {
 				item.setFields(driver);
 				item.setMethods(driver);
 				item.setSuperClass(driver, structure.getClasses());
@@ -119,13 +119,13 @@ public class AnalyseServiceImpl implements AnalyseService {
 		
 		structure.getClasses().stream()
 			.parallel()
-			.forEach(item -> item.setType(structure));
+			.forEachOrdered(item -> item.setType(structure));
 	}
 	
 	private void analyzeInterfaces() {
 		structure.getInterfaces().stream()
 			.parallel()
-			.forEach(item -> {
+			.forEachOrdered(item -> {
 				item.setFields(driver);
 				item.setMethods(driver);
 				item.setImplInterfaces(driver, structure.getInterfaces());
@@ -138,7 +138,7 @@ public class AnalyseServiceImpl implements AnalyseService {
 	private void analyzeEnums() {
 		structure.getEnums().stream()
 			.parallel()
-			.forEach(item -> {
+			.forEachOrdered(item -> {
 				item.setFields(driver);
 				item.setAnnotations(driver, structure.getAnnotations());
 			});
@@ -147,7 +147,7 @@ public class AnalyseServiceImpl implements AnalyseService {
 	private void analyzeAnnotations() {
 		structure.getAnnotations().stream()
 			.parallel()
-			.forEach(item -> {
+			.forEachOrdered(item -> {
 				item.setFields(driver);
 				item.setMethods(driver);
 				item.setAnnotations(driver, structure.getAnnotations());
@@ -157,7 +157,7 @@ public class AnalyseServiceImpl implements AnalyseService {
     private void setupDomains() {
 		structure.getClasses().stream()
 			.parallel()
-			.forEach(item -> {
+			.forEachOrdered(item -> {
 				if (item.isTypeOf(DDDType.ENTITY)
 					|| item.isTypeOf(DDDType.VALUE_OBJECT)
 					|| item.isTypeOf(DDDType.REPOSITORY) 
@@ -168,7 +168,7 @@ public class AnalyseServiceImpl implements AnalyseService {
 		
 		structure.getInterfaces().stream()
 			.parallel()
-			.forEach(item -> {
+			.forEachOrdered(item -> {
 				if (item.isTypeOf(DDDType.REPOSITORY)
 					|| item.isTypeOf(DDDType.FACTORY)) {
 					addDomain(item);
@@ -177,7 +177,7 @@ public class AnalyseServiceImpl implements AnalyseService {
 		
 		structure.getEnums().stream()
 			.parallel()
-			.forEach(this::addDomain);
+			.forEachOrdered(this::addDomain);
 	}
 
 	private void addDomain(Artifact item) {
@@ -190,12 +190,12 @@ public class AnalyseServiceImpl implements AnalyseService {
     private void analyseDomains() {
     	structure.getPackages().stream()
     		.parallel()
-    		.forEach(item -> item.setAggregateRoot(structure));
+    		.forEachOrdered(item -> item.setAggregateRoot(structure));
     }
 
 	private void findEvents() {
 		structure.getClasses().stream()
 			.parallel()
-			.forEach(Class::setDomainEvent);
+			.forEachOrdered(Class::setDomainEvent);
 	}
 }

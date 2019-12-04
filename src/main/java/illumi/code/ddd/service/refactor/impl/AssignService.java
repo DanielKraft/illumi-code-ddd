@@ -114,7 +114,7 @@ class AssignService {
         for (String dependency : artifact.getDependencies()) {
             for (Class aClass : refactorData.getOldStructure().getClasses()) {
                 if (aClass != artifact
-                        && aClass.getName().equalsIgnoreCase(dependency)) {
+                        && aClass.getPath().equalsIgnoreCase(dependency)) {
                     String domain = getDomainOf(aClass);
                     if (domain != null) {
                         return domain;
@@ -234,13 +234,13 @@ class AssignService {
     private void refactorFieldDependencies(String oldPath, String newPath, File artifact) {
         artifact.getFields().stream()
                 .parallel()
-                .forEach(field -> field.setType(field.getType().replace(oldPath, newPath)));
+                .forEachOrdered(field -> field.setType(field.getType().replace(oldPath, newPath)));
     }
 
     private void refactorMethodDependencies(String oldPath, String newPath, File artifact) {
         artifact.getMethods().stream()
                 .parallel()
-                .forEach(method -> method.setSignature(method.getSignature().replace(oldPath, newPath)));
+                .forEachOrdered(method -> method.setSignature(method.getSignature().replace(oldPath, newPath)));
     }
 
     private void refactorDomains() {
@@ -258,13 +258,13 @@ class AssignService {
         if (module != null) {
             module.getContains().stream()
                     .parallel()
-                    .forEach(item -> item.setDomain(domain));
+                    .forEachOrdered(item -> item.setDomain(domain));
         }
     }
 
     private void cleanDomain() {
         refactorData.getNewStructure().getAllArtifacts().stream()
                 .parallel()
-                .forEach(item -> item.setDomain(null));
+                .forEachOrdered(item -> item.setDomain(null));
     }
 }

@@ -29,15 +29,15 @@ public class DDDController {
 	@Inject
 	RefactorService refactorService;
 
-	private DDDStructure structure;
+	private DDDStructure newStructure;
 
     @Get("/analyse/{path}") 
     @Produces(MediaType.APPLICATION_JSON) 
     public HttpResponse<String> getArtifacts(String path) {
     	LOGGER.info("HTTP GET: analyse/{}", path);
-    	structure = new DDDStructure();
-		analyseService.setStructure(structure);
-		fitnessService.setStructure(structure);
+    	newStructure = new DDDStructure();
+		analyseService.setStructure(newStructure);
+		fitnessService.setStructure(newStructure);
     	analyseService.analyzeStructure(path);
 		return HttpResponse.ok(fitnessService.getStructureWithFitness().toString());
     }
@@ -46,23 +46,20 @@ public class DDDController {
     @Produces(MediaType.APPLICATION_JSON) 
     public HttpResponse<String> getMetrics() {
 		LOGGER.info("HTTP GET: metric/");
-		if (structure != null) {
-			metricService.setStructure(structure);
+		if (newStructure != null) {
+			metricService.setStructure(newStructure);
 			return HttpResponse.ok(metricService.getMetric().toString());
 		}
 		return HttpResponse.badRequest("{\"message\":\"No project has been analyzed!\"}");
     }
-
-
-
 	@Get("/refactor")
 	@Produces(MediaType.APPLICATION_JSON)
 	public HttpResponse<String> refactor() {
 		LOGGER.info("HTTP GET: refactor/");
-		if (structure != null) {
-			refactorService.setOldStructure(structure);
-			structure = refactorService.refactor();
-			fitnessService.setStructure(structure);
+		if (newStructure != null) {
+			refactorService.setOldStructure(newStructure);
+			newStructure = refactorService.refactor();
+			fitnessService.setStructure(newStructure);
 			return HttpResponse.ok(fitnessService.getStructureWithFitness().toString());
 		}
 		return HttpResponse.badRequest("{\"message\":\"No project has been analyzed!\"}");

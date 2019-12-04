@@ -30,18 +30,17 @@ public class DDDFitness {
 		return numberOfFulfilledCriteria;
 	}
 
-	public DDDFitness addIssue(boolean successful, DDDIssueType type, String message) {
+	public void addIssue(boolean successful, DDDIssueType type, String message) {
 		if (successful) {
-			return addSuccessfulCriteria(type);
+			addSuccessfulCriteria(type);
 		} else {
-			return addFailedCriteria(type, message);
+			addFailedCriteria(type, message);
 		}
 	}
 
-	public DDDFitness addFailedCriteria(DDDIssueType type, String description) {
+	public void addFailedCriteria(DDDIssueType type, String description) {
 		numberOfCriteria += type.weight;
 		issues.add(new DDDIssue(type, description));
-		return this;
 	}
 	
 	public DDDFitness addSuccessfulCriteria(DDDIssueType type) {
@@ -65,7 +64,7 @@ public class DDDFitness {
 		return 100.0;
 	}
 	
-	public DDDRating getscore() {
+	public DDDRating getScore() {
 		double fitness = calculateFitness();
 		if (fitness >= DDDRating.A.lowerBorder) 		return DDDRating.A;
 		else if (fitness >= DDDRating.B.lowerBorder)	return DDDRating.B;
@@ -77,7 +76,7 @@ public class DDDFitness {
 	
 	public JSONObject summary() {
 		return new JSONObject()
-				.put("score", getscore())
+				.put("score", getScore())
 				.put("criteria", new JSONObject()
 						.put("total", numberOfCriteria)
 						.put("fulfilled", numberOfFulfilledCriteria))
@@ -86,7 +85,17 @@ public class DDDFitness {
 	}
 
 	public List<DDDIssue> getIssues() {
+		issues.sort((DDDIssue i1, DDDIssue i2) -> Integer.compare(i2.getType().weight, i1.getType().weight));
 		return issues;
+	}
+
+	public List<String> getSortedIssues() {
+		ArrayList<String> result = new ArrayList<>();
+		getIssues().stream()
+				.parallel()
+				.forEachOrdered(dddIssue -> result.add(dddIssue.toString()));
+
+		return result;
 	}
 	
 }

@@ -2,6 +2,7 @@ package illumi.code.ddd.model.artifacts;
 
 import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.service.JavaArtifactService;
+import org.json.JSONObject;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.Record;
 
@@ -77,4 +78,76 @@ public abstract class File extends Artifact {
         this.implInterfaces.add(implInterface);
     }
 
+    @Override
+    public JSONObject toJSON() {
+        JSONObject result = super.toJSON();
+
+        fieldsToJSON(result);
+
+        methodsToJSON(result);
+
+        interfacesToJSON(result);
+
+        return result;
+    }
+
+    private void fieldsToJSON(JSONObject result) {
+        if (!fields.isEmpty()) {
+            ArrayList<String> fieldSig = new ArrayList<>();
+
+            fields.stream()
+                    .parallel()
+                    .forEachOrdered(field -> fieldSig.add(field.getUMLSignature()));
+
+            result.put("fields", fieldSig);
+        }
+    }
+
+    private void methodsToJSON(JSONObject result) {
+        if (!methods.isEmpty()) {
+
+            ArrayList<String> methodSig = new ArrayList<>();
+
+            methods.stream()
+                    .parallel()
+                    .forEachOrdered(method -> methodSig.add(method.getUMLSignature()));
+
+            result.put("methods", methodSig);
+        }
+    }
+
+    private void interfacesToJSON(JSONObject result) {
+        if (!implInterfaces.isEmpty()) {
+            ArrayList<String> impl = new ArrayList<>();
+
+            implInterfaces.stream()
+                    .parallel()
+                    .forEachOrdered(implInterface -> impl.add(implInterface.getPath()));
+
+            result.put("implements", impl);
+        }
+    }
+
+
+
+    static String getUMLVisibility(String visibility) {
+        String umlVisibility = null;
+        if (visibility != null) {
+            switch(visibility) {
+                case "public":
+                    umlVisibility = "+";
+                    break;
+                case "private":
+                    umlVisibility = "-";
+                    break;
+                case "protected":
+                    umlVisibility = "#";
+                    break;
+                default:
+                    umlVisibility = "~";
+                    break;
+            }
+        }
+        return umlVisibility;
+    }
 }

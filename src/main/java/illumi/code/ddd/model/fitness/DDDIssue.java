@@ -12,11 +12,15 @@ public class DDDIssue {
 		this.description = description;
 	}
 
+	public String getDescription() {
+		return description;
+	}
+
 	public DDDIssueType getType() {
 		return type;
 	}
 
-	public String getDescription() {
-		return description;
+	public String toString() {
+		return String.format("[%s] %s", type, description);
 	}
 }

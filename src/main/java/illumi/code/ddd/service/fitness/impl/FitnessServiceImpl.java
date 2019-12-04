@@ -39,7 +39,7 @@ public class FitnessServiceImpl implements FitnessService {
 		LOGGER.info("Evaluation of Modules");
 		structure.getPackages().stream()
 			.parallel()
-			.forEach(module -> {
+			.forEachOrdered(module -> {
 				LOGGER.info("DDD:MODULE:{}", module.getName());
 				module.evaluate(structure);
 			});
@@ -49,21 +49,21 @@ public class FitnessServiceImpl implements FitnessService {
 		LOGGER.info("Evaluation of Classes");
 		structure.getClasses().stream()
 			.parallel()
-			.forEach(item -> item.evaluate(structure));
+			.forEachOrdered(item -> item.evaluate(structure));
 	}
 
 	private void evaluateInterfaces() {
 		LOGGER.info("Evaluation of Interfaces");
 		structure.getInterfaces().stream()
 			.parallel()
-			.forEach(Interface::evaluate);
+			.forEachOrdered(Interface::evaluate);
 	}
 	
 	private void evaluateAnnotations() {
 		LOGGER.info("Evaluation of Annotations");
 		structure.getAnnotations().stream()
 			.parallel()
-			.forEach(item -> {
+			.forEachOrdered(item -> {
 				LOGGER.info("DDD:INFRASTRUCTUR:{}", item.getName());
 				item.evaluate();
 			});

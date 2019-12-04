@@ -61,10 +61,10 @@ public class PackageAnalyseService {
     private void setUsed(ArrayList<Class> entities) {
         entities.stream()
             .parallel()
-            .forEach(artifact -> {
+            .forEachOrdered(artifact -> {
                 for (Class entity: entities) {
-                    if (entity != artifact && entity.getDependencies().contains(artifact.getName())) {
-                        artifact.addUsed(entity.getName());
+                    if (entity != artifact && entity.getDependencies().contains(artifact.getPath())) {
+                        artifact.addUsed(entity.getPath());
                     }
                 }
             });

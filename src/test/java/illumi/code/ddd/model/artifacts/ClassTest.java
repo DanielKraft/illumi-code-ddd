@@ -2,6 +2,7 @@ package illumi.code.ddd.model.artifacts;
 
 import java.util.ArrayList;
 
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -259,7 +260,36 @@ class ClassTest {
 			ArrayList<String> result = (ArrayList<String>) artifact.getDependencies();
 
 			assertEquals(1, result.size());
-			assertEquals("SuperClass", result.get(0));
+			assertEquals("de.test.SuperClass", result.get(0));
+		}
+	}
+
+	@Test
+	void testSetDependenciesWithSuperClass() {
+		Class artifact = new Class("Class", "de.test.Class");
+		try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
+			artifact.setSuperClass(new Class("SuperClass", "de.test.SuperClass"));
+
+			artifact.setDependencies(driver, "de.test");
+
+			ArrayList<String> result = (ArrayList<String>) artifact.getDependencies();
+
+			assertEquals(0, result.size());
+		}
+	}
+
+	@Test
+	void testSetDependenciesWithInterface() {
+		Class artifact = new Class("Class", "de.test.Class");
+		try (Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI())) {
+			artifact.addImplInterface(new Interface("Int", "de.test.Int"));
+			artifact.addImplInterface(new Interface("SuperClass", "de.test.SuperClass"));
+
+			artifact.setDependencies(driver, "de.test");
+
+			ArrayList<String> result = (ArrayList<String>) artifact.getDependencies();
+
+			assertEquals(0, result.size());
 		}
 	}
 
@@ -317,5 +347,25 @@ class ClassTest {
 		ArrayList<Annotation> result = (ArrayList<Annotation>) artifact.getAnnotations();
     	
     	assertEquals(0, result.size());
+	}
+
+	@Test
+	void testToJSON() {
+		Class artifact = new Class("Class", "de.test.Class");
+		artifact.setSuperClass(new Class("Super", "de.test.Super"));
+		artifact.addDependencies("de.test.ClassId");
+
+		JSONObject result = artifact.toJSON();
+
+		assertNotNull(result);
+	}
+
+	@Test
+	void testToJSONWithoutDependencies() {
+		Class artifact = new Class("Class", "de.test.Class");
+
+		JSONObject result = artifact.toJSON();
+
+		assertNotNull(result);
 	}
 }

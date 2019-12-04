@@ -5,6 +5,7 @@ import java.util.List;
 
 import illumi.code.ddd.service.analyse.impl.PackageAnalyseService;
 import illumi.code.ddd.service.fitness.impl.PackageFitnessService;
+
 import org.neo4j.driver.v1.Record;
 
 import illumi.code.ddd.model.DDDType;
@@ -50,4 +51,5 @@ public class Package extends Artifact {
 	public void evaluate(DDDStructure structure) {
 		setFitness(new PackageFitnessService(this, structure).evaluate());
 	}
+
 }

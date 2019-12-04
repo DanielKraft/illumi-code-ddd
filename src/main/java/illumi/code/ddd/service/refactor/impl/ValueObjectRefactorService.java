@@ -5,14 +5,10 @@ import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.artifacts.*;
 import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Package;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
 public class ValueObjectRefactorService extends DefaultRefactorService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ValueObjectRefactorService.class);
 
     public ValueObjectRefactorService(DDDRefactorData refactorData) {
         super(refactorData);
@@ -43,7 +39,7 @@ public class ValueObjectRefactorService extends DefaultRefactorService {
                 artifact.getFields().remove(field);
             } else {
                 if (needsGetter(artifact, field)) {
-                    artifact.addMethod(createGetter(field));
+                    artifact.addMethod(createValueObjectGetter(field));
                 }
 
                 if (needsSideEffectFreeSetter(artifact, field)) {
@@ -75,13 +71,5 @@ public class ValueObjectRefactorService extends DefaultRefactorService {
     private void refactorGetter(Field field, Method method) {
         method.setSignature(method.getSignature().replace(method.getName(), field.getName()));
         method.setName(field.getName());
-    }
-
-    @Override
-    Method createGetter(Field field) {
-        String name = field.getName();
-        String signature = String.format("%s %s()", field.getType(), name);
-        LOGGER.info("Create {}", signature);
-        return new Method(PUBLIC, name, signature);
     }
 }
