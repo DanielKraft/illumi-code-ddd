@@ -27,10 +27,9 @@ public class MetricServiceImpl implements MetricService {
     
 	@Override
 	public JSONObject getMetric() {
-		ArrayList<Artifact> allArtifacts = (ArrayList<Artifact>) structure.getAllArtifacts();
-		DDDMetricService fitnessMetric = new DDDMetricService(allArtifacts);
+		DDDMetricService fitnessMetric = new DDDMetricService(structure.getAllArtifacts());
 
-		OODMetricService oodMetric = new OODMetricService((ArrayList<Package>) structure.getPackages());
+		OODMetricService oodMetric = new OODMetricService(structure.getPackages());
 
 		return new JSONObject()
 				.put("DDD", fitnessMetric.calculate())

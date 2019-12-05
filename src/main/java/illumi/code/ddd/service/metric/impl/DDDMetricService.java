@@ -6,13 +6,14 @@ import illumi.code.ddd.model.fitness.DDDFitness;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DDDMetricService {
 
     private ArrayList<Artifact> allArtifacts;
 
-    public DDDMetricService(ArrayList<Artifact> allArtifacts) {
-        this.allArtifacts = allArtifacts;
+    public DDDMetricService(List<Artifact> allArtifacts) {
+        this.allArtifacts = (ArrayList<Artifact>) allArtifacts;
     }
 
     public JSONObject calculate() {

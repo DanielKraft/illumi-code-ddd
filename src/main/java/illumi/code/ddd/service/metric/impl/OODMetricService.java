@@ -1,6 +1,7 @@
 package illumi.code.ddd.service.metric.impl;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import illumi.code.ddd.model.artifacts.*;
 
@@ -12,8 +13,8 @@ public class OODMetricService {
 
     private ArrayList<Package> packages;
 
-    public OODMetricService(ArrayList<Package> packages) {
-        this.packages = packages;
+    public OODMetricService(List<Package> packages) {
+        this.packages = (ArrayList<Package>) packages;
     }
 
     public JSONObject calculate() {
