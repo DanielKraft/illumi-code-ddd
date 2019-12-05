@@ -83,7 +83,6 @@ public class AnalyseServiceImpl implements AnalyseService {
 					structure.addPackage((Package) artifact);
 				} else if (types.contains("Class")) {
 					artifact = new Class(item);
-					((Class) artifact).setDependencies(driver, structure.getPath());
 					structure.addClass((Class) artifact);
 				} else if (types.contains("Interface")) {
 					artifact = new Interface(item);
@@ -110,6 +109,7 @@ public class AnalyseServiceImpl implements AnalyseService {
 				item.setSuperClass(driver, structure.getClasses());
 				item.setImplInterfaces(driver, structure.getInterfaces());
 				item.setAnnotations(driver, structure.getAnnotations());
+				item.setDependencies(driver, structure.getPath());
 				
 				if (item.getSuperClass() != null) {
 					item.setType(DDDType.ENTITY);
