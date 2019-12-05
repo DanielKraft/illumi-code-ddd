@@ -28,17 +28,12 @@ public class MetricServiceImpl implements MetricService {
 	@Override
 	public JSONObject getMetric() {
 		ArrayList<Artifact> allArtifacts = (ArrayList<Artifact>) structure.getAllArtifacts();
-		DDDFitnessMetricService fitnessMetric = new DDDFitnessMetricService(allArtifacts);
-		ArtifactMetricService artifactMetric = new ArtifactMetricService(allArtifacts);
+		DDDMetricService fitnessMetric = new DDDMetricService(allArtifacts);
 
 		OODMetricService oodMetric = new OODMetricService((ArrayList<Package>) structure.getPackages());
 
 		return new JSONObject()
-				.put("metric", 		fitnessMetric.calcFitness())
-				.put("DDD", 		artifactMetric.calcArtifactMetric())
-				.put("OOD",			oodMetric.calculate())
-				.put("hotspots", 	fitnessMetric.getHotspots());
+				.put("DDD", fitnessMetric.calculate())
+				.put("OOD", oodMetric.calculate());
 	}
-
-
 }

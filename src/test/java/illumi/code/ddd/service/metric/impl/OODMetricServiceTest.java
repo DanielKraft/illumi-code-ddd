@@ -61,20 +61,6 @@ class OODMetricServiceTest {
     }
 
     @Test
-    void testOODMetricWithoutArtifacts() {
-        packages = new ArrayList<>();
-        packages.add(new Package("test", "de.test"));
-
-        service = new OODMetricService(packages);
-
-        final JSONObject result = service.calculate();
-
-        final JSONObject expected = new JSONObject();
-
-        assertEquals(expected.toString(), result.toString());
-    }
-
-    @Test
     void testOODMetricWithInterface() {
         Interface repo = new Interface("Repository", "de.domain1.Repository");
         repo.setType(DDDType.REPOSITORY);
@@ -117,6 +103,39 @@ class OODMetricServiceTest {
                         .put("abstractness", 0.0)
                         .put("instability", 1.0)
                         .put("distance", 0.0));
+
+        assertEquals(expected.toString(), result.toString());
+    }
+
+    @Test
+    void testOODMetricWithoutArtifacts() {
+        packages = new ArrayList<>();
+        packages.add(new Package("test", "de.test"));
+
+        service = new OODMetricService(packages);
+
+        final JSONObject result = service.calculate();
+
+        final JSONObject expected = new JSONObject();
+
+        assertEquals(expected.toString(), result.toString());
+    }
+
+    @Test
+    void testOODMetricWithoutDependencies() {
+        packages = new ArrayList<>();
+        module1 = new Package("test", "de.test");
+        entity = new Class("Entity", "de.test.Entity");
+        entity.setType(DDDType.ENTITY);
+        module1.addContains(entity);
+        packages.add(module1);
+
+        service = new OODMetricService(packages);
+
+        final JSONObject result = service.calculate();
+
+        final JSONObject expected = new JSONObject()
+                .put("de.test", new JSONObject().put("abstractness", 0.0));
 
         assertEquals(expected.toString(), result.toString());
     }

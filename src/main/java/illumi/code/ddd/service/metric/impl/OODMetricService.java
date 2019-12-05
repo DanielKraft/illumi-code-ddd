@@ -128,7 +128,7 @@ public class OODMetricService {
     }
 
     private Double calculateDistance(Double abstractness, Double instability) {
-        if (abstractness != null) {
+        if (abstractness != null && instability != null) {
             return Math.round(Math.abs(abstractness + instability - 1.0) * 100.0) / 100.0;
         }
         return null;
