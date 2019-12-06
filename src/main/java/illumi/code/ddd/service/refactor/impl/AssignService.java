@@ -40,7 +40,6 @@ class AssignService {
                     refactorData.getApplicationModule().addContains(artifact);
                     break;
                 case INFRASTRUCTURE:
-                case CONTROLLER:
                     refactorData.getInfrastructureModule().addContains(artifact);
                     break;
                 case SERVICE:
@@ -147,7 +146,6 @@ class AssignService {
                     addArtifact(APPLICATION_PATH, artifact);
                     break;
                 case INFRASTRUCTURE:
-                case CONTROLLER:
                     refactorData.getInfrastructureModule().addContains(artifact);
                     break;
                 default:

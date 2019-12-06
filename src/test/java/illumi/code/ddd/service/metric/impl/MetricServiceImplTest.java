@@ -55,7 +55,7 @@ class MetricServiceImplTest {
 		structure.addPackage(infrastructure);
 
 		Class controller = new Class("EntityController", "de.test.infrastructure.EntityController");
-		controller.setType(DDDType.CONTROLLER);
+		controller.setType(DDDType.INFRASTRUCTURE);
 		controller.setFitness(new DDDFitness(12, 12));
 		infrastructure.addContains(controller);
 		structure.addClass(controller);
@@ -79,10 +79,10 @@ class MetricServiceImplTest {
 							.put("fitness", 75)
 							.put("#Issues", 1))
 					.put("artifact", new JSONObject()
-							.put("#CONTROLLER", 			1)
-							.put("#MODULE", 				2)
-							.put("#REPOSITORY", 			1)
-							.put("#ENTITY", 				1))
+							.put("#MODULE",			2)
+							.put("#REPOSITORY",		1)
+							.put("#INFRASTRUCTUR",	1)
+							.put("#ENTITY",			1))
 					.put("hotspot", new JSONArray()
 							.put(new JSONObject()
 									.put("name", "infrastructure")
@@ -108,13 +108,11 @@ class MetricServiceImplTest {
 									.put("fitness", 80)
 									.put("issues", new JSONArray()))))
 				.put("OOD", new JSONObject()
-						.put("de.test.domain", new JSONObject()
-								.put("abstractness", 0))
-						.put("de.test.infrastructure", new JSONObject()
-								.put("abstractness", 0)));
+						.put("module", new JSONObject()
+							.put("de.test.domain", new JSONObject().put("abstractness", 0))
+							.put("de.test.infrastructure", new JSONObject().put("abstractness", 0))));
 
 		final JSONObject result = service.getMetric();
-		
 		assertEquals(expected.toString(), result.toString());
 	}
 }

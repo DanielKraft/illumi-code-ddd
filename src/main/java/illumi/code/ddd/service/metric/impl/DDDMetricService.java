@@ -54,7 +54,6 @@ public class DDDMetricService {
                 .put("#REPOSITORY",             countArtifact(DDDType.REPOSITORY))
                 .put("#SERVICE",                countArtifact(DDDType.SERVICE))
                 .put("#APPLICATION_SERVICE",    countArtifact(DDDType.APPLICATION_SERVICE))
-                .put("#CONTROLLER",             countArtifact(DDDType.CONTROLLER))
                 .put("#INFRASTRUCTUR",          countArtifact(DDDType.INFRASTRUCTURE));
     }
 

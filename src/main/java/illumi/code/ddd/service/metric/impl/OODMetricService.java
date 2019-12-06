@@ -13,18 +13,48 @@ public class OODMetricService {
 
     private ArrayList<Package> packages;
 
+    private int distanceCtr;
+    private double distanceSum;
+    private double minDistance;
+    private double maxDistance;
+
     public OODMetricService(List<Package> packages) {
         this.packages = (ArrayList<Package>) packages;
+        this.distanceCtr = 0;
+        this.distanceSum = 0.0;
+        this.minDistance = 1.0;
+        this.maxDistance = 0.0;
     }
 
     public JSONObject calculate() {
+        return new JSONObject()
+                .put("module", calculateModule())
+                .put("distance", calculateMetric());
+    }
+
+    private JSONObject calculateModule() {
         JSONObject result = new JSONObject();
 
         packages.stream()
                 .parallel()
                 .forEachOrdered(module -> result.put(module.getPath(), analyseModule(module)));
 
-        return result;
+        return result.isEmpty() ? null : result;
+    }
+
+    private JSONObject calculateMetric() {
+        if (minDistance != 1) {
+            return new JSONObject()
+                    .put("avg", calculateAvg())
+                    .put("min", round(minDistance))
+                    .put("max", round(maxDistance));
+        }
+        return null;
+    }
+
+    private double calculateAvg() {
+        double avg = distanceSum / distanceCtr;
+        return round(avg);
     }
 
     private JSONObject analyseModule(Package module) {
@@ -34,9 +64,16 @@ public class OODMetricService {
 
         if (abstractness != null) {
             return new JSONObject()
-                    .put("abstractness", abstractness)
-                    .put("instability", instability)
-                    .put("distance", distance);
+                    .put("abstractness", round(abstractness))
+                    .put("instability", round(instability))
+                    .put("distance", round(distance));
+        }
+        return null;
+    }
+
+    private Double round(Double value) {
+        if (value != null) {
+            return (double) Math.round(value * 100.0) / 100.0;
         }
         return null;
     }
@@ -45,8 +82,7 @@ public class OODMetricService {
         long numberOfAbstracts = countNumberOfAbstracts(module);
         long numberOfClasses = countNumberOfClasses(module);
         if (numberOfClasses > 0) {
-            double abstractness = (double) numberOfAbstracts / numberOfClasses;
-            return Math.round(abstractness * 100.0) / 100.0;
+            return (double) numberOfAbstracts / numberOfClasses;
         }
         return null;
     }
@@ -66,8 +102,7 @@ public class OODMetricService {
         long numberOfEfferentCouplings = countEfferentCouplings(module);
         if (numberOfAfferentCouplings > 0
                 || numberOfEfferentCouplings > 0) {
-            double instability = (double) numberOfEfferentCouplings / (numberOfAfferentCouplings + numberOfEfferentCouplings);
-            return Math.round(instability * 100.0) / 100.0;
+            return (double) numberOfEfferentCouplings / (numberOfAfferentCouplings + numberOfEfferentCouplings);
         }
         return null;
     }
@@ -130,7 +165,19 @@ public class OODMetricService {
 
     private Double calculateDistance(Double abstractness, Double instability) {
         if (abstractness != null && instability != null) {
-            return Math.round(Math.abs(abstractness + instability - 1.0) * 100.0) / 100.0;
+            double distance = Math.abs(abstractness + instability - 1.0);
+            distanceSum += distance;
+            distanceCtr++;
+
+            if (distance < minDistance) {
+                minDistance = distance;
+            }
+
+            if (distance > maxDistance) {
+                maxDistance = distance;
+            }
+
+            return distance;
         }
         return null;
     }

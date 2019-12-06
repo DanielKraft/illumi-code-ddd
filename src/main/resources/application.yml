@@ -5,6 +5,7 @@ micronaut:
       port: 8040
       cors:
          enabled: true
+      idle-timeout: 20m
 neo4j:
    uri: bolt://localhost
    embedded:

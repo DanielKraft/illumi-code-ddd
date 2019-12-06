@@ -53,7 +53,6 @@ public class ClassFitnessService {
             case APPLICATION_SERVICE:
                 evaluateApplicationService();
                 break;
-            case CONTROLLER:
             case INFRASTRUCTURE:
             default:
                 evaluateInfrastructure();

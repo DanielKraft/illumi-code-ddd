@@ -48,14 +48,19 @@ class OODMetricServiceTest {
         final JSONObject result = service.calculate();
 
         final JSONObject expected = new JSONObject()
-                .put("de.domain1", new JSONObject()
-                        .put("abstractness", 0.0)
-                        .put("instability", 0.0)
-                        .put("distance", 1.0))
-                .put("de.domain2", new JSONObject()
-                        .put("abstractness", 0.0)
-                        .put("instability", 1.0)
-                        .put("distance", 0.0));
+                .put("distance", new JSONObject()
+                    .put("avg", 0.5)
+                    .put("min", 0)
+                    .put("max", 1))
+                .put("module", new JSONObject()
+                    .put("de.domain1", new JSONObject()
+                            .put("abstractness", 0.0)
+                            .put("instability", 0.0)
+                            .put("distance", 1.0))
+                    .put("de.domain2", new JSONObject()
+                            .put("abstractness", 0.0)
+                            .put("instability", 1.0)
+                            .put("distance", 0.0)));
 
         assertEquals(expected.toString(), result.toString());
     }
@@ -73,14 +78,19 @@ class OODMetricServiceTest {
         final JSONObject result = service.calculate();
 
         final JSONObject expected = new JSONObject()
-                .put("de.domain1", new JSONObject()
-                        .put("abstractness", 0.5)
-                        .put("instability", 0.0)
-                        .put("distance", 0.5))
-                .put("de.domain2", new JSONObject()
-                        .put("abstractness", 0.0)
-                        .put("instability", 1.0)
-                        .put("distance", 0.0));
+                .put("distance", new JSONObject()
+                    .put("avg", 0.25)
+                    .put("min", 0)
+                    .put("max", 0.5))
+                .put("module", new JSONObject()
+                    .put("de.domain1", new JSONObject()
+                            .put("abstractness", 0.5)
+                            .put("instability", 0.0)
+                            .put("distance", 0.5))
+                    .put("de.domain2", new JSONObject()
+                            .put("abstractness", 0.0)
+                            .put("instability", 1.0)
+                            .put("distance", 0.0)));
 
         assertEquals(expected.toString(), result.toString());
     }
@@ -95,14 +105,19 @@ class OODMetricServiceTest {
         final JSONObject result = service.calculate();
 
         final JSONObject expected = new JSONObject()
-                .put("de.domain1", new JSONObject()
-                        .put("abstractness", 0.0)
-                        .put("instability", 0.0)
-                        .put("distance", 1.0))
-                .put("de.domain2", new JSONObject()
-                        .put("abstractness", 0.0)
-                        .put("instability", 1.0)
-                        .put("distance", 0.0));
+                .put("distance", new JSONObject()
+                    .put("avg", 0.5)
+                    .put("min", 0)
+                    .put("max", 1))
+                .put("module", new JSONObject()
+                    .put("de.domain1", new JSONObject()
+                            .put("abstractness", 0.0)
+                            .put("instability", 0.0)
+                            .put("distance", 1.0))
+                    .put("de.domain2", new JSONObject()
+                            .put("abstractness", 0.0)
+                            .put("instability", 1.0)
+                            .put("distance", 0.0)));
 
         assertEquals(expected.toString(), result.toString());
     }
@@ -135,7 +150,8 @@ class OODMetricServiceTest {
         final JSONObject result = service.calculate();
 
         final JSONObject expected = new JSONObject()
-                .put("de.test", new JSONObject().put("abstractness", 0.0));
+                .put("module", new JSONObject()
+                    .put("de.test", new JSONObject().put("abstractness", 0.0)));
 
         assertEquals(expected.toString(), result.toString());
     }
