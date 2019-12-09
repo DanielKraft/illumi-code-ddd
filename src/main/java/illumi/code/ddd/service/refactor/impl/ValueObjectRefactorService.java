@@ -56,7 +56,7 @@ public class ValueObjectRefactorService extends DefaultRefactorService {
                 || method.getName().equalsIgnoreCase("set" + field.getName()));
     }
 
-    private boolean needsGetter(Class artifact, Field field) {
+    boolean needsGetter(Class artifact, Field field) {
         for (Method method : artifact.getMethods()) {
             if (method.getName().equalsIgnoreCase("get" + field.getName())) {
                 refactorGetter(field, method);

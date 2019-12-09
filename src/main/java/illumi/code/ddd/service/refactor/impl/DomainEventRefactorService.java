@@ -2,9 +2,8 @@ package illumi.code.ddd.service.refactor.impl;
 
 import illumi.code.ddd.model.DDDRefactorData;
 import illumi.code.ddd.model.DDDType;
-import illumi.code.ddd.model.artifacts.Artifact;
+import illumi.code.ddd.model.artifacts.*;
 import illumi.code.ddd.model.artifacts.Class;
-import illumi.code.ddd.model.artifacts.Field;
 import illumi.code.ddd.model.artifacts.Package;
 
 import java.util.ArrayList;
@@ -31,7 +30,7 @@ public class DomainEventRefactorService extends DefaultRefactorService {
                 refactorIdPath(model, field);
             }
 
-            if (needsMethod(artifact, "get" + field.getName())) {
+            if (needsGetter(artifact, field)) {
                 artifact.addMethod(createGetter(field));
             }
 
@@ -43,8 +42,12 @@ public class DomainEventRefactorService extends DefaultRefactorService {
 
     private void refactorIdPath(Package model, Field field) {
         for (Artifact artifact : model.getContains()) {
-            if (artifact instanceof Class && artifact.isTypeOf(DDDType.VALUE_OBJECT)) {
-                field.setType(artifact.getPath());
+            if (artifact instanceof Class
+                    && (artifact.isTypeOf(DDDType.ENTITY) || artifact.isTypeOf(DDDType.AGGREGATE_ROOT))
+                    && field.getName().toLowerCase().startsWith(artifact.getName().toLowerCase())) {
+
+
+                field.setType(getIdOfEntity((Class) artifact));
             }
         }
     }
