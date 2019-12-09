@@ -100,7 +100,7 @@ public class EntityRefactorService extends DefaultRefactorService {
 
                         if (field.getType().endsWith(item.getName())
                                 || toSingular(field.getName()).toLowerCase().contains(item.getName().toLowerCase())
-                                || item.getName().toLowerCase().equals(toSingular(field.getName()))) {
+                                || item.getName().equalsIgnoreCase(toSingular(field.getName()))) {
                             return (Class) item;
                         }
                         break;
