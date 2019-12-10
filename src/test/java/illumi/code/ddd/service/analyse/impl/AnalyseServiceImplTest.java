@@ -161,7 +161,7 @@ class AnalyseServiceImplTest {
 			assertAll("Should return DDD-Types of infrastructure",
 				() -> assertEquals(DDDType.INFRASTRUCTURE, infrastructure.getJSONObject(0).get("DDD"), 	" 0: " + infrastructure.getJSONObject(0).get("name")),
 				() -> assertEquals(DDDType.INFRASTRUCTURE, infrastructure.getJSONObject(1).get("DDD"), 	" 1: " + infrastructure.getJSONObject(0).get("name")),
-				() -> assertEquals(DDDType.CONTROLLER, infrastructure.getJSONObject(2).get("DDD"),	" 2: " + infrastructure.getJSONObject(0).get("name")),
+				() -> assertEquals(DDDType.INFRASTRUCTURE, infrastructure.getJSONObject(2).get("DDD"),	" 2: " + infrastructure.getJSONObject(0).get("name")),
 				() -> assertEquals(DDDType.INFRASTRUCTURE, infrastructure.getJSONObject(3).get("DDD"), 	" 3: " + infrastructure.getJSONObject(0).get("name")));
 			
 			

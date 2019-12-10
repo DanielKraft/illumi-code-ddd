@@ -77,9 +77,6 @@ public class DDDFitness {
 	public JSONObject summary() {
 		return new JSONObject()
 				.put("score", getScore())
-				.put("criteria", new JSONObject()
-						.put("total", numberOfCriteria)
-						.put("fulfilled", numberOfFulfilledCriteria))
 				.put("fitness", calculateFitness())
 				.put("#Issues", issues.size());
 	}

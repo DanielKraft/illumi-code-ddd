@@ -7,6 +7,8 @@ import illumi.code.ddd.service.analyse.AnalyseService;
 import illumi.code.ddd.service.fitness.FitnessService;
 import illumi.code.ddd.service.metric.MetricService;
 import illumi.code.ddd.service.refactor.RefactorService;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,9 +18,13 @@ import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Produces;
 
+import java.util.concurrent.TimeUnit;
+
 @Controller()
 public class DDDController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DDDController.class);
+
+	private long timeStart;
 
 	@Inject
 	AnalyseService analyseService;
@@ -34,34 +40,59 @@ public class DDDController {
     @Get("/analyse/{path}") 
     @Produces(MediaType.APPLICATION_JSON) 
     public HttpResponse<String> getArtifacts(String path) {
+		startTime();
     	LOGGER.info("HTTP GET: analyse/{}", path);
-    	newStructure = new DDDStructure();
+		newStructure = new DDDStructure();
 		analyseService.setStructure(newStructure);
 		fitnessService.setStructure(newStructure);
     	analyseService.analyzeStructure(path);
-		return HttpResponse.ok(fitnessService.getStructureWithFitness().toString());
+		JSONArray response = fitnessService.getStructureWithFitness();
+		stopTimestamp();
+		return HttpResponse.ok(response.toString());
     }
 
     @Get("/metric") 
     @Produces(MediaType.APPLICATION_JSON) 
     public HttpResponse<String> getMetrics() {
+		startTime();
 		LOGGER.info("HTTP GET: metric/");
 		if (newStructure != null) {
 			metricService.setStructure(newStructure);
-			return HttpResponse.ok(metricService.getMetric().toString());
+			JSONObject response = metricService.getMetric();
+			stopTimestamp();
+			return HttpResponse.ok(response.toString());
 		}
+		stopTimestamp();
 		return HttpResponse.badRequest("{\"message\":\"No project has been analyzed!\"}");
     }
 	@Get("/refactor")
 	@Produces(MediaType.APPLICATION_JSON)
 	public HttpResponse<String> refactor() {
+		startTime();
 		LOGGER.info("HTTP GET: refactor/");
 		if (newStructure != null) {
 			refactorService.setOldStructure(newStructure);
 			newStructure = refactorService.refactor();
 			fitnessService.setStructure(newStructure);
-			return HttpResponse.ok(fitnessService.getStructureWithFitness().toString());
+			JSONArray response = fitnessService.getStructureWithFitness();
+			stopTimestamp();
+			return HttpResponse.ok(response.toString());
 		}
+		stopTimestamp();
 		return HttpResponse.badRequest("{\"message\":\"No project has been analyzed!\"}");
+	}
+
+	private void startTime() {
+		timeStart = System.currentTimeMillis();
+	}
+
+	private void stopTimestamp() {
+		long ms = System.currentTimeMillis() - timeStart;
+		long min = TimeUnit.MILLISECONDS.toMinutes(ms);
+		long sec = TimeUnit.MILLISECONDS.toSeconds(ms);
+		ms -= sec * 1000;
+		sec -= min * 60;
+
+		LOGGER.info("[FINISHED] - {}min {}s {}ms", min, sec, ms);
 	}
 }

@@ -14,7 +14,7 @@ public abstract class DefaultRefactorService implements ArtifactRefactorService 
 
     static final String PRIVATE = "private";
     static final String PUBLIC = "public";
-    static final String LOG_CREATE = "Create {} {}";
+    static final String LOG_CREATE = "[CREATE] - {} - {}";
     static final String REPOSITORY_IMPL = "RepositoryImpl";
     static final String REPOSITORY = "Repository";
     static final String FACTORY_IMPL = "FactoryImpl";
@@ -125,10 +125,30 @@ public abstract class DefaultRefactorService implements ArtifactRefactorService 
         return true;
     }
 
+    boolean needsGetter(Class artifact, Field field) {
+        for (Method method : artifact.getMethods()) {
+            if (method.getName().equalsIgnoreCase("get" + field.getName())) {
+                refactorGetter(method, field);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    boolean needsSetter(Class artifact, Field field) {
+        for (Method method : artifact.getMethods()) {
+            if (method.getName().equalsIgnoreCase("set" + field.getName())) {
+                refactorSetter(method, field);
+                return false;
+            }
+        }
+        return true;
+    }
+
     boolean needsSideEffectFreeSetter(Class artifact, Field field) {
         for (Method method : artifact.getMethods()) {
             if (method.getName().equalsIgnoreCase("set" + field.getName())) {
-                refactorSetter(method);
+                refactorSideEffectFreeSetter(method, field);
                 return false;
             }
         }
@@ -146,12 +166,12 @@ public abstract class DefaultRefactorService implements ArtifactRefactorService 
     }
 
     Method createEquals() {
-        LOGGER.info("Create Method java.lang.Boolean equals(Object)");
+        LOGGER.info(LOG_CREATE, METHOD, "java.lang.Boolean equals(Object)");
         return new Method(PUBLIC, "equals", "java.lang.Boolean equals(Object)");
     }
 
     Method createHashCode() {
-        LOGGER.info("Create Method java.lang.Integer hashCode()");
+        LOGGER.info(LOG_CREATE, METHOD, "java.lang.Integer hashCode()");
         return new Method(PUBLIC, "hashCode", "java.lang.Integer hashCode()");
     }
 
@@ -183,9 +203,24 @@ public abstract class DefaultRefactorService implements ArtifactRefactorService 
         return new Method(PRIVATE, name, signature);
     }
 
-    private void refactorSetter(Method method) {
+    private void refactorGetter(Method method, Field field) {
+        if (!method.getSignature().contains(field.getType())) {
+            String split = method.getSignature().split(" ")[1];
+            method.setSignature(String.format("%s %s", field.getType(), split));
+        }
+    }
+
+    private void refactorSideEffectFreeSetter(Method method, Field field) {
         if (method.getVisibility().equalsIgnoreCase(PUBLIC)) {
             method.setVisibility(PRIVATE);
+        }
+        refactorSetter(method, field);
+    }
+
+    private void refactorSetter(Method method, Field field) {
+        if (!method.getSignature().contains(field.getType())) {
+            String split = method.getSignature().split("[(]")[0];
+            method.setSignature(String.format("%s(%s)", split, field.getType()));
         }
     }
 
@@ -193,16 +228,6 @@ public abstract class DefaultRefactorService implements ArtifactRefactorService 
         oldFile.getMethods().stream()
                 .parallel()
                 .forEachOrdered(method -> newFile.addMethod(new Method(method)));
-    }
-
-    String toSingular(String name) {
-        if (name.endsWith("ies")) {
-            return (name + "&").replace("ies&", "y");
-        }
-        if (name.endsWith("s")) {
-            return name.substring(0, name.length()-1);
-        }
-        return name;
     }
 
     String modifyFirstChar(String str) {

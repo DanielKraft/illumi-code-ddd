@@ -71,18 +71,20 @@ public class EntityRefactorService extends DefaultRefactorService {
 
     private void refactorFields(Package model, Class artifact) {
         for (Field field : artifact.getFields()) {
-            Class type = getTypeOfField(model, field);
-            if (type != null) {
-                field.setType(type.getPath());
-            } else {
-                Class newValueObject = createNewValueObject(artifact.getDomain(), model.getPath(), artifact.getName(), field);
-                getRefactorData().getNewStructure().addClass(newValueObject);
-                model.addContains(newValueObject);
-                String oldType = field.getType();
-                String newType = newValueObject.getPath();
-                field.setType(newType);
-                refactorGetterAndSetter(artifact, oldType, newType);
-                artifact.addDependencies(newValueObject.getName());
+            if (!field.getType().contains("java.util.")) {
+                Class type = getTypeOfField(model, field);
+                if (type != null) {
+                    field.setType(type.getPath());
+                } else {
+                    Class newValueObject = createNewValueObject(artifact.getDomain(), model.getPath(), artifact.getName(), field);
+                    getRefactorData().getNewStructure().addClass(newValueObject);
+                    model.addContains(newValueObject);
+                    String oldType = field.getType();
+                    String newType = newValueObject.getPath();
+                    field.setType(newType);
+                    refactorGetterAndSetter(artifact, field, oldType, newType);
+                    artifact.addDependencies(newValueObject.getName());
+                }
             }
         }
     }
@@ -96,9 +98,7 @@ public class EntityRefactorService extends DefaultRefactorService {
                     case VALUE_OBJECT:
                     case DOMAIN_EVENT:
 
-                        if (field.getType().endsWith(item.getName())
-                                || toSingular(field.getName()).toLowerCase().contains(item.getName().toLowerCase())
-                                || item.getName().toLowerCase().contains(toSingular(field.getName()))) {
+                        if (field.getType().endsWith(item.getName())) {
                             return (Class) item;
                         }
                         break;
@@ -126,10 +126,14 @@ public class EntityRefactorService extends DefaultRefactorService {
         return newValueObject;
     }
 
-    private void refactorGetterAndSetter(Class artifact, String oldType, String newType) {
+    private void refactorGetterAndSetter(Class artifact, Field field, String oldType, String newType) {
         artifact.getMethods().stream()
                 .parallel()
-                .forEachOrdered(method -> method.setSignature(method.getSignature().replace(oldType, newType)));
+                .forEachOrdered(method -> {
+                    if (method.getName().toLowerCase().endsWith(field.getName().toLowerCase())) {
+                        method.setSignature(method.getSignature().replace(oldType, newType));
+                    }
+                });
     }
 
     private String generateName(String entityName, Field field) {
@@ -146,11 +150,11 @@ public class EntityRefactorService extends DefaultRefactorService {
         }
 
         for (Field field : artifact.getFields()) {
-            if (needsMethod(artifact, "get" + field.getName())) {
+            if (needsGetter(artifact, field)) {
                 artifact.addMethod(createGetter(field));
             }
 
-            if (needsMethod(artifact, "set" + field.getName())) {
+            if (needsSetter(artifact,field)) {
                 if (!field.getName().toLowerCase().endsWith("id")) {
                     artifact.addMethod(createSetter(field));
                 } else {

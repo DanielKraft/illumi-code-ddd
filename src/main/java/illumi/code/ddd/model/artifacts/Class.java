@@ -39,7 +39,7 @@ public class Class extends File {
 		if (getName().toUpperCase().contains("REPOSITORY")) 	setType(DDDType.REPOSITORY);
 		if (getName().toUpperCase().contains("SERVICE")) 		setType(DDDType.SERVICE);
 		if (getName().toUpperCase().contains("APPLICATION"))	setType(DDDType.APPLICATION_SERVICE);
-		if (getName().toUpperCase().contains("CONTROLLER"))		setType(DDDType.CONTROLLER);
+		if (getName().toUpperCase().contains("CONTROLLER"))		setType(DDDType.INFRASTRUCTURE);
 		
 		this.dependencies = new ArrayList<>();
 		this.used = new ArrayList<>();

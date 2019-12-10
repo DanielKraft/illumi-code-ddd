@@ -85,7 +85,7 @@ class ClassTest {
 	void testInitController() {
 		Class artifact = new Class("ClassController", "de.test.ClassController");
 		
-		assertEquals(DDDType.CONTROLLER, artifact.getType());
+		assertEquals(DDDType.INFRASTRUCTURE, artifact.getType());
 	}
 	
 	@Test

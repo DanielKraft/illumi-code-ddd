@@ -233,7 +233,7 @@ class AssignServiceTest {
     @Test
     void testAssignInterfaceController() {
         Interface artifact = new Interface("Controller", "de.test.Controller");
-        artifact.setType(DDDType.CONTROLLER);
+        artifact.setType(DDDType.INFRASTRUCTURE);
         module.addContains(artifact);
         structure.addInterface(artifact);
 

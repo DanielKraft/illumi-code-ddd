@@ -38,9 +38,12 @@ class ClassFitnessServiceTest {
 		Class artifact = new Class("Entity", "de.test.domain.model.Entity");
 		artifact.setType(DDDType.ENTITY);
 		artifact.addField(new Field("private", "id", "de.test.EntityId"));
-		artifact.addField(new Field("private", "name", "String"));
-		artifact.addMethod(new Method("public", "getName", "String getName()"));
-		artifact.addMethod(new Method("public", "setName", "void setName(String)"));
+		artifact.addField(new Field("private", "names", "java.util.List"));
+		artifact.addField(new Field("private", "desc", "java.lang.String"));
+		artifact.addMethod(new Method("public", "getNames", "java.util.List getNames()"));
+		artifact.addMethod(new Method("public", "setNames", "void setNames(java.util.List)"));
+		artifact.addMethod(new Method("public", "getDesc", "java.lang.String getDesc()"));
+		artifact.addMethod(new Method("public", "setDesc", "void setDesc(java.lang.String)"));
 		artifact.addMethod(new Method("public", "hashCode", "int hashCode()"));
 		artifact.addMethod(new Method("public", "equals", "boolean equals()"));
 		artifact.addMethod(new Method("public", "hashCode", "int hashCode()"));
@@ -50,10 +53,10 @@ class ClassFitnessServiceTest {
 		ClassFitnessService service = new ClassFitnessService(artifact, structure);
 		final DDDFitness result = service.evaluate();
 		
-		assertAll(	() -> assertEquals(81.48, 	result.calculateFitness(), 				"Fitness"),
+		assertAll(	() -> assertEquals(84.38, 	result.calculateFitness(), 				"Fitness"),
 				 	() -> assertEquals(DDDRating.C, 	result.getScore(), 						"Rating"),
-				 	() -> assertEquals(27, 	result.getNumberOfCriteria(), 			"Total Criteria"),
-				 	() -> assertEquals(22, 	result.getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
+				 	() -> assertEquals(32, 	result.getNumberOfCriteria(), 			"Total Criteria"),
+				 	() -> assertEquals(27, 	result.getNumberOfFulfilledCriteria(), 	"Fulfilled Criteria"),
 				 	() -> assertEquals(3, 		result.getIssues().size(), 				"#Issues"));
 	}
 	

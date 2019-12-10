@@ -17,8 +17,6 @@ class DDDFitnessTest {
 		JSONObject result = fitness.summary();
 		assertAll("Should find an aggregate root",
 				() -> assertEquals(DDDRating.A, 	result.get("score"), 									"Score"),
-				() -> assertEquals(3, 		((JSONObject) result.get("criteria")).get("total"), 	"Total"),
-				() -> assertEquals(3, 		((JSONObject) result.get("criteria")).get("fulfilled"), "Fulfilled"),
 				() -> assertEquals(100.0, 	result.get("fitness"), 									"Fitness"));
 	}
 	
@@ -31,8 +29,6 @@ class DDDFitnessTest {
 		JSONObject result = fitness.summary();
 		
 		assertEquals(DDDRating.F, result.get("score"));
-		assertEquals(1, ((JSONObject) result.get("criteria")).get("total"));
-		assertEquals(0, ((JSONObject) result.get("criteria")).get("fulfilled"));
 		assertEquals(0.0, result.get("fitness"));
 	}
 	
@@ -47,8 +43,6 @@ class DDDFitnessTest {
 		JSONObject result = fitness.summary();
 		
 		assertEquals(DDDRating.D, result.get("score"));
-		assertEquals(10, ((JSONObject) result.get("criteria")).get("total"));
-		assertEquals(6, ((JSONObject) result.get("criteria")).get("fulfilled"));
 		assertEquals(60.0, result.get("fitness"));
 	}
 	

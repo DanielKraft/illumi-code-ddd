@@ -59,7 +59,6 @@ public class PackageFitnessService {
     private boolean containsOnlyDomain() {
         for (Artifact artifact : module.getContains()) {
             if (artifact.isTypeOf(DDDType.INFRASTRUCTURE)
-                    || artifact.isTypeOf(DDDType.CONTROLLER)
                     || artifact.isTypeOf(DDDType.APPLICATION_SERVICE)) {
                 return false;
             }
@@ -82,7 +81,7 @@ public class PackageFitnessService {
 
     private boolean isInfrastructure() {
         for (Artifact artifact : module.getContains()) {
-            if (artifact.getType() == DDDType.INFRASTRUCTURE || artifact.getType() == DDDType.CONTROLLER) {
+            if (artifact.getType() == DDDType.INFRASTRUCTURE) {
                 return true;
             }
         }
@@ -103,7 +102,7 @@ public class PackageFitnessService {
 
     private boolean containsOnlyInfrastructure() {
         for (Artifact artifact : module.getContains()) {
-            if (artifact.getType() != DDDType.INFRASTRUCTURE && artifact.getType() != DDDType.CONTROLLER) {
+            if (!artifact.isTypeOf(DDDType.INFRASTRUCTURE)) {
                 return false;
             }
         }

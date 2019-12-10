@@ -175,7 +175,7 @@ class PackageFitnessServiceTest {
 		entity.setType(DDDType.ENTITY);
 
 		Class controller = new Class("Controller", "de.test.domain.domain1.Controller");
-		controller.setType(DDDType.CONTROLLER);
+		controller.setType(DDDType.INFRASTRUCTURE);
 
 		Package module = new Package("domain1", "de.test.domain.domain1");
 		module.addContains(entity);
@@ -230,7 +230,7 @@ class PackageFitnessServiceTest {
 	@Test
 	void testEvaluateInvalidInfrastructureModule() {
 		Class controller = new Class("Controller", "de.test.infra.Controller");
-		controller.setType(DDDType.CONTROLLER);
+		controller.setType(DDDType.INFRASTRUCTURE);
 		
 		Class entity = new Class("Entity", "de.test.domain.domain1.Entity");
 		entity.setType(DDDType.ENTITY);
