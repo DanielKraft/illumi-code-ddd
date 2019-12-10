@@ -3,6 +3,7 @@ package illumi.code.ddd.service.metric.impl;
 import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.artifacts.Artifact;
 import illumi.code.ddd.model.fitness.DDDFitness;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,8 @@ public class DDDMetricService {
 
     public JSONObject calculate() {
         return new JSONObject()
-                .put("metric", calcFitness())
+                .put("metric", calcFitness()
+                        .put("statistic", allArtifacts.isEmpty() ? null : getStatistics()))
                 .put("artifact", calcArtifactMetric())
                 .put("hotspot", getHotspot());
     }
@@ -34,6 +36,23 @@ public class DDDMetricService {
                 .parallel()
                 .forEachOrdered(artifact -> fitness.add(artifact.getDDDFitness()));
         return fitness.summary();
+    }
+
+    private JSONObject getStatistics() {
+        LOGGER.info("[CALCULATE] - DDD - Statistic");
+        DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();
+        allArtifacts.forEach(artifact -> descriptiveStatistics.addValue(artifact.getFitness()));
+
+        return new JSONObject()
+                .put("avg", round(descriptiveStatistics.getMean()))
+                .put("median", round(descriptiveStatistics.getPercentile(50)))
+                .put("standard deviation", round(descriptiveStatistics.getStandardDeviation()))
+                .put("min", round(descriptiveStatistics.getMin()))
+                .put("max", round(descriptiveStatistics.getMax()));
+    }
+
+    private double round(double value) {
+        return Math.round(value * 100.0) / 100.0;
     }
 
     private ArrayList<JSONObject> getHotspot() {

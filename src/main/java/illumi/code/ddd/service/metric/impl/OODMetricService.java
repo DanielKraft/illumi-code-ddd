@@ -20,20 +20,9 @@ public class OODMetricService {
 
     private ArrayList<Double> distances;
 
-    private Double avg;
-    private Double median;
-    private Double standardDeviation;
-    private Double min;
-    private Double max;
-
     public OODMetricService(List<Package> packages) {
         this.packages = (ArrayList<Package>) packages;
         this.distances = new ArrayList<>();
-        this.min = null;
-        this.max = null;
-        this.avg = null;
-        this.median = null;
-        this.standardDeviation = null;
     }
 
     public JSONObject calculate() {
@@ -55,29 +44,18 @@ public class OODMetricService {
 
     private JSONObject calculateMetric() {
         LOGGER.info("[CALCULATE] - OOD - Distance");
-        calculateDistanceMetrics();
-        if (!distances.isEmpty()) {
-            return new JSONObject()
-                    .put("avg", round(avg))
-                    .put("median", round(median))
-                    .put("standard deviation", round(standardDeviation))
-                    .put("min", round(min))
-                    .put("max", round(max));
-        }
-        return null;
-    }
-
-    private void calculateDistanceMetrics() {
         if (!distances.isEmpty()) {
             DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();
             distances.forEach(descriptiveStatistics::addValue);
 
-            min = descriptiveStatistics.getMin();
-            max = descriptiveStatistics.getMax();
-            avg = descriptiveStatistics.getMean();
-            median = descriptiveStatistics.getPercentile(50);
-            standardDeviation = descriptiveStatistics.getStandardDeviation();
+            return new JSONObject()
+                    .put("avg", round(descriptiveStatistics.getMean()))
+                    .put("median", round(descriptiveStatistics.getPercentile(50)))
+                    .put("standard deviation", round(descriptiveStatistics.getStandardDeviation()))
+                    .put("min", round(descriptiveStatistics.getMin()))
+                    .put("max", round(descriptiveStatistics.getMax()));
         }
+        return null;
     }
 
     private JSONObject analyseModule(Package module) {
