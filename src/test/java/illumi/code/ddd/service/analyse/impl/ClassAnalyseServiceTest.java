@@ -22,7 +22,7 @@ class ClassAnalyseServiceTest {
 	}
 	
 	@Test
-	void testSetTypeWithAllreadySet() {
+	void testSetTypeWithAlreadySet() {
 		Class artifact = new Class("Value", "de.test.domain.Value");
 		artifact.setType(DDDType.VALUE_OBJECT);
 		structure.addClass(artifact);

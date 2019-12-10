@@ -25,7 +25,6 @@ public class DDDController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DDDController.class);
 
 	private long timeStart;
-	private long timeEnd;
 
 	@Inject
 	AnalyseService analyseService;
@@ -88,15 +87,12 @@ public class DDDController {
 	}
 
 	private void stopTimestamp() {
-		timeEnd = System.currentTimeMillis();
-		LOGGER.info("[FINISHED] - {}", convertTime(timeEnd - timeStart));
-	}
-
-	private String convertTime(long ms) {
+		long ms = System.currentTimeMillis() - timeStart;
 		long min = TimeUnit.MILLISECONDS.toMinutes(ms);
 		long sec = TimeUnit.MILLISECONDS.toSeconds(ms);
 		ms -= sec * 1000;
 		sec -= min * 60;
-		return String.format("%dmin %ds %dms", min, sec, ms);
+
+		LOGGER.info("[FINISHED] - {}min {}s {}ms", min, sec, ms);
 	}
 }

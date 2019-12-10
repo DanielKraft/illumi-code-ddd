@@ -98,8 +98,7 @@ public class EntityRefactorService extends DefaultRefactorService {
                     case VALUE_OBJECT:
                     case DOMAIN_EVENT:
 
-                        if (field.getType().endsWith(item.getName())
-                                || item.getName().equalsIgnoreCase(toSingular(field.getName()))) {
+                        if (field.getType().endsWith(item.getName())) {
                             return (Class) item;
                         }
                         break;

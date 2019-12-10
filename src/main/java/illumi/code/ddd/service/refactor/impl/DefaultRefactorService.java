@@ -230,16 +230,6 @@ public abstract class DefaultRefactorService implements ArtifactRefactorService 
                 .forEachOrdered(method -> newFile.addMethod(new Method(method)));
     }
 
-    String toSingular(String name) {
-        if (name.endsWith("ies")) {
-            return (name + "&").replace("ies&", "y");
-        }
-        if (name.endsWith("s")) {
-            return name.substring(0, name.length()-1);
-        }
-        return name;
-    }
-
     String modifyFirstChar(String str) {
         return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
