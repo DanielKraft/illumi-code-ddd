@@ -31,13 +31,13 @@ public class InterfaceFitnessService {
                 break;
             case SERVICE:
             default:
-                LOGGER.info("DDD:SERVICE:{}", artifact.getName());
+                LOGGER.info("[EVALUATE] - INTERFACE - DDD:SERVICE:{}", artifact.getName());
         }
         return fitness;
     }
 
     private void evaluateRepository() {
-        LOGGER.info("DDD:REPOSITORY:{}", artifact.getName());
+        LOGGER.info("[EVALUATE] - INTERFACE - DDD:REPOSITORY:{}", artifact.getName());
 
         evaluateRepositoryName();
 
@@ -57,7 +57,7 @@ public class InterfaceFitnessService {
     }
 
     private void evaluateFactory() {
-        LOGGER.info("DDD:FACTORY:{}", artifact.getName());
+        LOGGER.info("[EVALUATE] - INTERFACE - DDD:FACTORY:{}", artifact.getName());
 
         evaluateFactoryName();
 

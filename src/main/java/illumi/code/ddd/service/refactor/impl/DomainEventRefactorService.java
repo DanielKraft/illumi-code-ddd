@@ -45,8 +45,6 @@ public class DomainEventRefactorService extends DefaultRefactorService {
             if (artifact instanceof Class
                     && (artifact.isTypeOf(DDDType.ENTITY) || artifact.isTypeOf(DDDType.AGGREGATE_ROOT))
                     && field.getName().toLowerCase().startsWith(artifact.getName().toLowerCase())) {
-
-
                 field.setType(getIdOfEntity((Class) artifact));
             }
         }

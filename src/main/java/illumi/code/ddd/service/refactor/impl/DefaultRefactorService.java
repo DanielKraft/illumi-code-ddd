@@ -14,7 +14,7 @@ public abstract class DefaultRefactorService implements ArtifactRefactorService 
 
     static final String PRIVATE = "private";
     static final String PUBLIC = "public";
-    static final String LOG_CREATE = "Create {} {}";
+    static final String LOG_CREATE = "[CREATE] - {} - {}";
     static final String REPOSITORY_IMPL = "RepositoryImpl";
     static final String REPOSITORY = "Repository";
     static final String FACTORY_IMPL = "FactoryImpl";
@@ -166,12 +166,12 @@ public abstract class DefaultRefactorService implements ArtifactRefactorService 
     }
 
     Method createEquals() {
-        LOGGER.info("Create Method java.lang.Boolean equals(Object)");
+        LOGGER.info(LOG_CREATE, METHOD, "java.lang.Boolean equals(Object)");
         return new Method(PUBLIC, "equals", "java.lang.Boolean equals(Object)");
     }
 
     Method createHashCode() {
-        LOGGER.info("Create Method java.lang.Integer hashCode()");
+        LOGGER.info(LOG_CREATE, METHOD, "java.lang.Integer hashCode()");
         return new Method(PUBLIC, "hashCode", "java.lang.Integer hashCode()");
     }
 

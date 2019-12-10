@@ -103,4 +103,82 @@ class DomainEventRefactorServiceTest {
         assertAll(  () -> assertEquals(2, value.getFields().size(), "#Field"),
                     () -> assertEquals(4, value.getMethods().size(), "#Method"));
     }
+
+    @Test
+    void testRefactorEventIdOfEntity() {
+        Class entity = new Class("Entity", "de.test.Entity");
+        entity.setType(DDDType.ENTITY);
+        entity.addField(new Field("private", "id", "de.test.EntityId"));
+        refactorData.getNewStructure().addClass(entity);
+        refactorData.getModelModule().addContains(entity);
+
+        Class value = new Class("Event", "de.test.Event");
+        value.setType(DDDType.DOMAIN_EVENT);
+        value.addField(new Field("private", "entityId", "java.lang.Long"));
+        value.addField(new Field("private", "date", "java.lang.String"));
+        value.addMethod(new Method("public", "getEntityId", "de.test.EntityId getEntityId()"));
+        value.addMethod(new Method("private", "setEntityId", "void setEntityId(de.test.EntityId)"));
+        value.addMethod(new Method("public", "getDate", "java.time.Date getDate()"));
+        value.addMethod(new Method("private", "setDate", "void setDate(java.time.Date)"));
+        refactorData.getNewStructure().addClass(value);
+        refactorData.getModelModule().addContains(value);
+
+        service.refactor();
+
+        assertAll(  () -> assertEquals(2, value.getFields().size(), "#Field"),
+                    () -> assertEquals(4, value.getMethods().size(), "#Method"),
+                    () -> assertEquals("de.test.EntityId", value.getFields().get(0).getType(), "ID-field"));
+    }
+
+    @Test
+    void testRefactorEventIdOfAggregateRoot() {
+        Class root = new Class("AggregateRoot", "de.test.AggregateRoot");
+        root.setType(DDDType.AGGREGATE_ROOT);
+        root.addField(new Field("private", "id", "de.test.EntityId"));
+        refactorData.getNewStructure().addClass(root);
+        refactorData.getModelModule().addContains(root);
+
+        Class value = new Class("Event", "de.test.Event");
+        value.setType(DDDType.DOMAIN_EVENT);
+        value.addField(new Field("private", "aggregateRootId", "java.lang.Long"));
+        value.addField(new Field("private", "date", "java.lang.String"));
+        value.addMethod(new Method("public", "getEntityId", "de.test.EntityId getEntityId()"));
+        value.addMethod(new Method("private", "setEntityId", "void setEntityId(de.test.EntityId)"));
+        value.addMethod(new Method("public", "getDate", "java.time.Date getDate()"));
+        value.addMethod(new Method("private", "setDate", "void setDate(java.time.Date)"));
+        refactorData.getNewStructure().addClass(value);
+        refactorData.getModelModule().addContains(value);
+
+        service.refactor();
+
+        assertAll(  () -> assertEquals(2, value.getFields().size(), "#Field"),
+                    () -> assertEquals(6, value.getMethods().size(), "#Method"),
+                    () -> assertEquals("de.test.EntityId", value.getFields().get(0).getType(), "ID-field"));
+    }
+
+    @Test
+    void testRefactorEventIdEntityNotfound() {
+        Class root = new Class("AggregateRoot", "de.test.AggregateRoot");
+        root.setType(DDDType.AGGREGATE_ROOT);
+        root.addField(new Field("private", "id", "de.test.EntityId"));
+        refactorData.getNewStructure().addClass(root);
+        refactorData.getModelModule().addContains(root);
+
+        Class value = new Class("Event", "de.test.Event");
+        value.setType(DDDType.DOMAIN_EVENT);
+        value.addField(new Field("private", "entityId", "java.lang.Long"));
+        value.addField(new Field("private", "date", "java.lang.String"));
+        value.addMethod(new Method("public", "getEntityId", "de.test.EntityId getEntityId()"));
+        value.addMethod(new Method("private", "setEntityId", "void setEntityId(de.test.EntityId)"));
+        value.addMethod(new Method("public", "getDate", "java.time.Date getDate()"));
+        value.addMethod(new Method("private", "setDate", "void setDate(java.time.Date)"));
+        refactorData.getNewStructure().addClass(value);
+        refactorData.getModelModule().addContains(value);
+
+        service.refactor();
+
+        assertAll(  () -> assertEquals(2, value.getFields().size(), "#Field"),
+                    () -> assertEquals(4, value.getMethods().size(), "#Method"),
+                    () -> assertEquals("java.lang.Long", value.getFields().get(0).getType(), "ID-field"));
+    }
 }

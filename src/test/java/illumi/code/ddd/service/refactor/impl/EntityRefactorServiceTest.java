@@ -65,7 +65,7 @@ class EntityRefactorServiceTest {
         Class entity = new Class("Entity", "de.test.Entity");
         entity.setType(DDDType.ENTITY);
         entity.addField(new Field("private", "id", "de.test.EntityId"));
-        entity.addField(new Field("private", "entities", "de.test.List"));
+        entity.addField(new Field("private", "entities", "java.util.List"));
         entity.addMethod(new Method("public", "equals", "java.lang.Boolean equals(Object)"));
         entity.addMethod(new Method("public", "hashCode", "java.lang.Integer hashCode()"));
         entity.addMethod(new Method("public", "getId", "de.test.EntityId getId()"));

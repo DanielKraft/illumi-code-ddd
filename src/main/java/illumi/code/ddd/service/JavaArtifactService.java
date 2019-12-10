@@ -41,6 +41,7 @@ public class JavaArtifactService {
 
 	public List<String> getDependencies(String rootPath) {
 		try ( Session session = driver.session() ) {
+			LOGGER.info("[READ] - DEPENDENCY - {}", path);
 			Map<String, Object> params = new HashMap<>();
 			params.put("rootPath", rootPath);
 			params.put("path", path);
@@ -61,6 +62,7 @@ public class JavaArtifactService {
 
 	public List<Field> getFields() {
     	try ( Session session = driver.session() ) {
+			LOGGER.info("[READ] - FIELD - {}", path);
     		StatementResult result = session.run( QUERY_FIELDS, Values.parameters( "path", path ) );
         	return convertResultToFields(result);
     	} catch (Exception e) {
@@ -83,6 +85,7 @@ public class JavaArtifactService {
 	
 	public List<Method> getMethods() {
     	try ( Session session = driver.session() ) {
+			LOGGER.info("[READ] - METHOD - {}", path);
     		StatementResult result = session.run( QUERY_METHODS, Values.parameters( "path", path ) );
     		return convertResultToMethods(result);
     	} catch (Exception e) {
@@ -106,6 +109,7 @@ public class JavaArtifactService {
 	
 	public List<Interface> getImplInterfaces(List<Interface> interfaces) {
     	try ( Session session = driver.session() ) {
+			LOGGER.info("[READ] - IMPLEMENT - {}", path);
     		StatementResult result = session.run( QUERY_IMPL, Values.parameters( "path", path ) );
     		return convertResultToInterface(result, interfaces);
     	} catch (Exception e) {
@@ -132,6 +136,7 @@ public class JavaArtifactService {
 	
 	public Class getSuperClass(List<Class> classes) {
 		try ( Session session = driver.session() ) {
+			LOGGER.info("[READ] - EXTEND - {}", path);
     		StatementResult result = session.run( QUERY_SUPER, Values.parameters( "path", path ));
 							    		
 		    String superPath = result.hasNext() ? result.next().get("superClass").asString() : null;
@@ -152,6 +157,7 @@ public class JavaArtifactService {
 	public List<Annotation> getAnnotations(List<Annotation> annotations) {
 		ArrayList<Annotation> result = new ArrayList<>();
 		try ( Session session = driver.session() ) {
+			LOGGER.info("[READ] - ANNOTATION - {}", path);
 			getAnnotations(path, result, annotations, session, QUERY_PARENT_ANNOTATIONS);
     		
 			getAnnotations(path, result, annotations, session, QUERY_CHILD_ANNOTATIONS);

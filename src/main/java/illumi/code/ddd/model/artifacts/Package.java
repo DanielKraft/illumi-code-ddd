@@ -16,7 +16,6 @@ import illumi.code.ddd.model.DDDStructure;
  * @author Daniel Kraft
  */
 public class Package extends Artifact {
-		
 	private ArrayList<Artifact> contains;
 	
 	public Package(Record record) {

@@ -99,7 +99,6 @@ public class EntityRefactorService extends DefaultRefactorService {
                     case DOMAIN_EVENT:
 
                         if (field.getType().endsWith(item.getName())
-                                || toSingular(field.getName()).toLowerCase().contains(item.getName().toLowerCase())
                                 || item.getName().equalsIgnoreCase(toSingular(field.getName()))) {
                             return (Class) item;
                         }

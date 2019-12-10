@@ -66,7 +66,7 @@ public class ClassFitnessService {
     }
 
     private void evaluateEntity() {
-        LOGGER.info("DDD:ENTITY:{}", artifact.getName());
+        LOGGER.info("[EVALUATE] - CLASS - DDD:ENTITY:{}", artifact.getName());
 
         evaluatePath(String.format(DOMAIN, artifact.getDomain()),
                 String.format("The Entity '%s' is not placed at 'domain.%s.model'",
@@ -104,7 +104,7 @@ public class ClassFitnessService {
     }
 
     private void evaluateValueObject() {
-        LOGGER.info("DDD:VALUE_OBJECT:{}", artifact.getName());
+        LOGGER.info("[EVALUATE] - CLASS - DDD:VALUE_OBJECT:{}", artifact.getName());
 
         evaluatePath(String.format(DOMAIN, artifact.getDomain()),
                 String.format("The Value Object '%s' is not placed at 'domain.%s.model'", artifact.getName(), artifact.getDomain()));
@@ -116,7 +116,7 @@ public class ClassFitnessService {
     }
 
     private void evaluateAggregateRoot() {
-        LOGGER.info("DDD:AGGREGATE_ROOT:{}", artifact.getName());
+        LOGGER.info("[EVALUATE] - CLASS - DDD:AGGREGATE_ROOT:{}", artifact.getName());
         evaluateEntity();
 
         evaluateDomainStructure();
@@ -163,7 +163,7 @@ public class ClassFitnessService {
     }
 
     private void evaluateDomainEvent() {
-        LOGGER.info("DDD:DOMAIN_EVENT:{}", artifact.getName());
+        LOGGER.info("[EVALUATE] - CLASS - DDD:DOMAIN_EVENT:{}", artifact.getName());
 
         evaluatePath(String.format(DOMAIN, artifact.getDomain()),
                 String.format("The Domain Event '%s' is not placed at 'domain.%s.model'", artifact.getName(), artifact.getDomain()));
@@ -172,7 +172,7 @@ public class ClassFitnessService {
     }
 
     private void evaluateRepository() {
-        LOGGER.info("DDD:REPOSITORY:{}", artifact.getName());
+        LOGGER.info("[EVALUATE] - CLASS - DDD:REPOSITORY:{}", artifact.getName());
         evaluateRepositoryName();
 
         evaluatePath(String.format(DOMAIN + "impl.", artifact.getDomain()),
@@ -201,7 +201,7 @@ public class ClassFitnessService {
     }
 
     private void evaluateFactory() {
-        LOGGER.info("DDD:FACTORY:{}", artifact.getName());
+        LOGGER.info("[EVALUATE] - CLASS - DDD:FACTORY:{}", artifact.getName());
 
         evaluateFactoryName();
 
@@ -233,14 +233,14 @@ public class ClassFitnessService {
     }
 
     private void evaluateService() {
-        LOGGER.info("DDD:SERVICE:{}", artifact.getName());
+        LOGGER.info("[EVALUATE] - CLASS - DDD:SERVICE:{}", artifact.getName());
 
         evaluatePath("application." + artifact.getDomain() + ".",
                 String.format("The service '%s' should be placed at 'application.%s'", artifact.getName(), artifact.getDomain()));
     }
 
     private void evaluateApplicationService() {
-        LOGGER.info("DDD:APPLICATION_SERVICE:{}", artifact.getName());
+        LOGGER.info("[EVALUATE] - CLASS - DDD:APPLICATION_SERVICE:{}", artifact.getName());
 
         evaluateName();
 
@@ -254,7 +254,7 @@ public class ClassFitnessService {
     }
 
     private void evaluateInfrastructure() {
-        LOGGER.info("DDD:INFRASTRUCTURE:{}", artifact.getName());
+        LOGGER.info("[EVALUATE] - CLASS - DDD:INFRASTRUCTURE:{}", artifact.getName());
 
         evaluatePath("infrastructure.",
                 String.format("The infrastructure service '%s' is not part of an infrastructure module", artifact.getName()));

@@ -36,35 +36,31 @@ public class FitnessServiceImpl implements FitnessService {
 	}
 	
 	private void evaluateModules() {
-		LOGGER.info("Evaluation of Modules");
 		structure.getPackages().stream()
 			.parallel()
-			.forEachOrdered(module -> {
-				LOGGER.info("DDD:MODULE:{}", module.getName());
+			.forEach(module -> {
+				LOGGER.info("[EVALUATE] - MODULE - DDD:MODULE:{}", module.getName());
 				module.evaluate(structure);
 			});
 	}
 	
 	private void evaluateClasses() {
-		LOGGER.info("Evaluation of Classes");
 		structure.getClasses().stream()
 			.parallel()
-			.forEachOrdered(item -> item.evaluate(structure));
+			.forEach(item -> item.evaluate(structure));
 	}
 
 	private void evaluateInterfaces() {
-		LOGGER.info("Evaluation of Interfaces");
 		structure.getInterfaces().stream()
 			.parallel()
-			.forEachOrdered(Interface::evaluate);
+			.forEach(Interface::evaluate);
 	}
 	
 	private void evaluateAnnotations() {
-		LOGGER.info("Evaluation of Annotations");
 		structure.getAnnotations().stream()
 			.parallel()
-			.forEachOrdered(item -> {
-				LOGGER.info("DDD:INFRASTRUCTUR:{}", item.getName());
+			.forEach(item -> {
+				LOGGER.info("[EVALUATE] - ANNOTATION - DDD:INFRASTRUCTURE:{}", item.getName());
 				item.evaluate();
 			});
 	}

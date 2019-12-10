@@ -7,23 +7,33 @@ import illumi.code.ddd.model.artifacts.*;
 
 import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Package;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OODMetricService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(OODMetricService.class);
+
     private ArrayList<Package> packages;
 
-    private int distanceCtr;
-    private double distanceSum;
-    private double minDistance;
-    private double maxDistance;
+    private ArrayList<Double> distances;
+
+    private Double avg;
+    private Double median;
+    private Double standardDeviation;
+    private Double min;
+    private Double max;
 
     public OODMetricService(List<Package> packages) {
         this.packages = (ArrayList<Package>) packages;
-        this.distanceCtr = 0;
-        this.distanceSum = 0.0;
-        this.minDistance = 1.0;
-        this.maxDistance = 0.0;
+        this.distances = new ArrayList<>();
+        this.min = null;
+        this.max = null;
+        this.avg = null;
+        this.median = null;
+        this.standardDeviation = null;
     }
 
     public JSONObject calculate() {
@@ -33,6 +43,7 @@ public class OODMetricService {
     }
 
     private JSONObject calculateModule() {
+        LOGGER.info("[CALCULATE] - OOD - Module");
         JSONObject result = new JSONObject();
 
         packages.stream()
@@ -43,18 +54,30 @@ public class OODMetricService {
     }
 
     private JSONObject calculateMetric() {
-        if (minDistance != 1) {
+        LOGGER.info("[CALCULATE] - OOD - Distance");
+        calculateDistanceMetrics();
+        if (!distances.isEmpty()) {
             return new JSONObject()
-                    .put("avg", calculateAvg())
-                    .put("min", round(minDistance))
-                    .put("max", round(maxDistance));
+                    .put("avg", round(avg))
+                    .put("median", round(median))
+                    .put("standard deviation", round(standardDeviation))
+                    .put("min", round(min))
+                    .put("max", round(max));
         }
         return null;
     }
 
-    private double calculateAvg() {
-        double avg = distanceSum / distanceCtr;
-        return round(avg);
+    private void calculateDistanceMetrics() {
+        if (!distances.isEmpty()) {
+            DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();
+            distances.forEach(descriptiveStatistics::addValue);
+
+            min = descriptiveStatistics.getMin();
+            max = descriptiveStatistics.getMax();
+            avg = descriptiveStatistics.getMean();
+            median = descriptiveStatistics.getPercentile(50);
+            standardDeviation = descriptiveStatistics.getStandardDeviation();
+        }
     }
 
     private JSONObject analyseModule(Package module) {
@@ -166,16 +189,7 @@ public class OODMetricService {
     private Double calculateDistance(Double abstractness, Double instability) {
         if (abstractness != null && instability != null) {
             double distance = Math.abs(abstractness + instability - 1.0);
-            distanceSum += distance;
-            distanceCtr++;
-
-            if (distance < minDistance) {
-                minDistance = distance;
-            }
-
-            if (distance > maxDistance) {
-                maxDistance = distance;
-            }
+            distances.add(distance);
 
             return distance;
         }

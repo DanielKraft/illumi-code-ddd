@@ -4,11 +4,15 @@ import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.artifacts.Artifact;
 import illumi.code.ddd.model.fitness.DDDFitness;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DDDMetricService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DDDMetricService.class);
 
     private ArrayList<Artifact> allArtifacts;
 
@@ -24,6 +28,7 @@ public class DDDMetricService {
     }
 
     private JSONObject calcFitness() {
+        LOGGER.info("[CALCULATE] - DDD - Fitness");
         DDDFitness fitness = new DDDFitness();
         allArtifacts.stream()
                 .parallel()
@@ -32,6 +37,7 @@ public class DDDMetricService {
     }
 
     private ArrayList<JSONObject> getHotspot() {
+        LOGGER.info("[CALCULATE] - DDD - Hotspot");
         ArrayList<JSONObject> json = new ArrayList<>();
         allArtifacts.stream()
                 .parallel()
@@ -45,6 +51,7 @@ public class DDDMetricService {
     }
 
     private JSONObject calcArtifactMetric() {
+        LOGGER.info("[CALCULATE] - DDD - Artifact");
         return new JSONObject()
                 .put("#MODULE",                 countArtifact(DDDType.MODULE))
                 .put("#ENTITY",                 countArtifact(DDDType.ENTITY))

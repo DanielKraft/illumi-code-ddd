@@ -50,6 +50,8 @@ class OODMetricServiceTest {
         final JSONObject expected = new JSONObject()
                 .put("distance", new JSONObject()
                     .put("avg", 0.5)
+                    .put("median", 0.5)
+                    .put("standard deviation", 0.71)
                     .put("min", 0)
                     .put("max", 1))
                 .put("module", new JSONObject()
@@ -80,6 +82,8 @@ class OODMetricServiceTest {
         final JSONObject expected = new JSONObject()
                 .put("distance", new JSONObject()
                     .put("avg", 0.25)
+                    .put("median", 0.25)
+                    .put("standard deviation", 0.35)
                     .put("min", 0)
                     .put("max", 0.5))
                 .put("module", new JSONObject()
@@ -107,6 +111,8 @@ class OODMetricServiceTest {
         final JSONObject expected = new JSONObject()
                 .put("distance", new JSONObject()
                     .put("avg", 0.5)
+                    .put("median", 0.5)
+                    .put("standard deviation", 0.71)
                     .put("min", 0)
                     .put("max", 1))
                 .put("module", new JSONObject()
@@ -118,7 +124,6 @@ class OODMetricServiceTest {
                             .put("abstractness", 0.0)
                             .put("instability", 1.0)
                             .put("distance", 0.0)));
-
         assertEquals(expected.toString(), result.toString());
     }
 

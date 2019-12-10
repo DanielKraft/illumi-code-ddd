@@ -61,6 +61,7 @@ public class AnalyseServiceImpl implements AnalyseService {
 
 	private ArrayList<Artifact> getArtifacts(String path) {
     	try ( Session session = driver.session() ) {
+    		LOGGER.info("[READ] Artifacts of {}", path);
     		StatementResult result = session.run( QUERY_ARTIFACT, Values.parameters( "path", path ));
         	return convertResultToArtifacts(result);
     	} catch (Exception e) {
@@ -73,7 +74,7 @@ public class AnalyseServiceImpl implements AnalyseService {
 		ArrayList<Artifact> artifacts = new ArrayList<>();
 		result.stream()
 			.parallel()
-			.forEachOrdered(item -> {
+			.forEach(item -> {
 				List<Object> types = item.get( "types" ).asList();
 				Artifact artifact;
 
@@ -81,18 +82,23 @@ public class AnalyseServiceImpl implements AnalyseService {
 					artifact = new Package(item);
 					((Package) artifact).setContains(getArtifacts(artifact.getPath()));
 					structure.addPackage((Package) artifact);
+					LOGGER.info("[CREATE] - PACKAGE - {}", artifact.getPath());
 				} else if (types.contains("Class")) {
 					artifact = new Class(item);
 					structure.addClass((Class) artifact);
+					LOGGER.info("[CREATE] - CLASS - {}", artifact.getPath());
 				} else if (types.contains("Interface")) {
 					artifact = new Interface(item);
 					structure.addInterface((Interface) artifact);
+					LOGGER.info("[CREATE] - INTERFACE - {}", artifact.getPath());
 				} else if (types.contains("Enum")) {
 					artifact = new Enum(item);
 					structure.addEnum((Enum) artifact);
+					LOGGER.info("[CREATE] - ENUM - {}", artifact.getPath());
 				} else {
 					artifact = new Annotation(item);
 					structure.addAnnotation((Annotation) artifact);
+					LOGGER.info("[CREATE] - ANNOTATION - {}", artifact.getPath());
 				}
 
 				artifacts.add(artifact);
@@ -103,7 +109,7 @@ public class AnalyseServiceImpl implements AnalyseService {
 	private void analyzeClasses() {
 		structure.getClasses().stream()
 			.parallel()
-			.forEachOrdered(item -> {
+			.forEach(item -> {
 				item.setFields(driver);
 				item.setMethods(driver);
 				item.setSuperClass(driver, structure.getClasses());
@@ -125,7 +131,7 @@ public class AnalyseServiceImpl implements AnalyseService {
 	private void analyzeInterfaces() {
 		structure.getInterfaces().stream()
 			.parallel()
-			.forEachOrdered(item -> {
+			.forEach(item -> {
 				item.setFields(driver);
 				item.setMethods(driver);
 				item.setImplInterfaces(driver, structure.getInterfaces());
@@ -138,7 +144,7 @@ public class AnalyseServiceImpl implements AnalyseService {
 	private void analyzeEnums() {
 		structure.getEnums().stream()
 			.parallel()
-			.forEachOrdered(item -> {
+			.forEach(item -> {
 				item.setFields(driver);
 				item.setAnnotations(driver, structure.getAnnotations());
 			});
@@ -147,7 +153,7 @@ public class AnalyseServiceImpl implements AnalyseService {
 	private void analyzeAnnotations() {
 		structure.getAnnotations().stream()
 			.parallel()
-			.forEachOrdered(item -> {
+			.forEach(item -> {
 				item.setFields(driver);
 				item.setMethods(driver);
 				item.setAnnotations(driver, structure.getAnnotations());
@@ -157,7 +163,7 @@ public class AnalyseServiceImpl implements AnalyseService {
     private void setupDomains() {
 		structure.getClasses().stream()
 			.parallel()
-			.forEachOrdered(item -> {
+			.forEach(item -> {
 				if (item.isTypeOf(DDDType.ENTITY)
 					|| item.isTypeOf(DDDType.VALUE_OBJECT)
 					|| item.isTypeOf(DDDType.REPOSITORY) 
@@ -168,7 +174,7 @@ public class AnalyseServiceImpl implements AnalyseService {
 		
 		structure.getInterfaces().stream()
 			.parallel()
-			.forEachOrdered(item -> {
+			.forEach(item -> {
 				if (item.isTypeOf(DDDType.REPOSITORY)
 					|| item.isTypeOf(DDDType.FACTORY)) {
 					addDomain(item);
@@ -177,7 +183,7 @@ public class AnalyseServiceImpl implements AnalyseService {
 		
 		structure.getEnums().stream()
 			.parallel()
-			.forEachOrdered(this::addDomain);
+			.forEach(this::addDomain);
 	}
 
 	private void addDomain(Artifact item) {
@@ -190,12 +196,12 @@ public class AnalyseServiceImpl implements AnalyseService {
     private void analyseDomains() {
     	structure.getPackages().stream()
     		.parallel()
-    		.forEachOrdered(item -> item.setAggregateRoot(structure));
+    		.forEach(item -> item.setAggregateRoot(structure));
     }
 
 	private void findEvents() {
 		structure.getClasses().stream()
 			.parallel()
-			.forEachOrdered(Class::setDomainEvent);
+			.forEach(Class::setDomainEvent);
 	}
 }
