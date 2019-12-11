@@ -1,7 +1,6 @@
 package illumi.code.ddd.service.analyse.impl;
 
 import illumi.code.ddd.model.DDDType;
-import illumi.code.ddd.model.artifacts.Artifact;
 import illumi.code.ddd.model.artifacts.Class;
 import illumi.code.ddd.model.artifacts.Field;
 import illumi.code.ddd.model.artifacts.Method;
