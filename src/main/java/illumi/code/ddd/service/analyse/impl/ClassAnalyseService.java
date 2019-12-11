@@ -52,15 +52,14 @@ public class ClassAnalyseService {
             } else if (Field.isId(field)
                     && !(this.artifact.getName().toLowerCase().endsWith("id"))) {
                 return false;
-            } else if (field.getType().startsWith("java.lang.")
+            } else if (field.getType().startsWith("java.")
                     || field.getType().contains(structure.getPath())) {
                 ctr++;
             }
         }
         return !this.artifact.getFields().isEmpty()
                 && ctr == this.artifact.getFields().size()
-                && (canadiansGetterSetter()
-                || this.artifact.getMethods().isEmpty());
+                && containsModelMethods();
     }
 
     private boolean isEntity(DDDStructure structure) {
@@ -74,8 +73,7 @@ public class ClassAnalyseService {
         }
         return !this.artifact.getFields().isEmpty()
                 && !containsEntityName(structure)
-                && (canadiansGetterSetter()
-                || this.artifact.getMethods().isEmpty());
+                && containsModelMethods();
     }
 
     private boolean isService(DDDStructure structure) {
@@ -100,9 +98,31 @@ public class ClassAnalyseService {
         return StringUtils.isAllUpperCase(field.getName());
     }
 
-    private boolean canadiansGetterSetter() {
+
+    private boolean containsModelMethods() {
+        long constructors = artifact.getMethods().stream()
+                .filter(method -> method.getName().equalsIgnoreCase("<init>")).count();
+        return artifact.getMethods().isEmpty()
+                || constructors == artifact.getMethods().size()
+                || containsEqualsOrHashCode()
+                || containsGetterOrSetter();
+    }
+
+    private boolean containsEqualsOrHashCode() {
+
         for (Method method : this.artifact.getMethods()) {
-            if (method.getName().startsWith("get") ^ method.getName().startsWith("set")) {
+            if (method.getName().equalsIgnoreCase("equals")
+                    ^ method.getName().equalsIgnoreCase("hashCode")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean containsGetterOrSetter() {
+        for (Method method : this.artifact.getMethods()) {
+            if (method.getName().startsWith("get")
+                    ^ method.getName().startsWith("set")) {
                 return true;
             }
         }
@@ -143,6 +163,39 @@ public class ClassAnalyseService {
             default:
                 break;
         }
+    }
+
+    public void setInfrastructure() {
+        switch(this.artifact.getType()) {
+            case ENTITY:
+            case AGGREGATE_ROOT:
+            case VALUE_OBJECT:
+                if (onlyUsedByInfrastructure()) {
+                    this.artifact.setType(DDDType.INFRASTRUCTURE);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    private boolean onlyUsedByInfrastructure() {
+        boolean usedByInfra = false;
+        for (Class item : structure.getClasses()) {
+            if (usedByClass(item)){
+                if (!item.isTypeOf(DDDType.INFRASTRUCTURE)) {
+                    return false;
+                } else {
+                    usedByInfra = true;
+                }
+            }
+        }
+        return usedByInfra;
+    }
+
+    private boolean usedByClass(Class item) {
+        return item.getDependencies().contains(artifact.getPath())
+                || (item.getSuperClass() == artifact);
     }
 
     private boolean isDomainEvent() {

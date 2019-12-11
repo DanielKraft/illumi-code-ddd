@@ -40,6 +40,22 @@ class ClassAnalyseServiceTest {
 		artifact.addField(new Field("private", "nachname", "de.test.domain.Nachname"));
 		artifact.addMethod(new Method("public", "toString", "java.lang.String toString()"));
 		artifact.addMethod(new Method("public", "getName", "java.lang.String getName()"));
+		artifact.addMethod(new Method("public", "equals", "java.lang.String equals()"));
+		artifact.addMethod(new Method("public", "hashCode", "java.lang.String equals()"));
+		structure.addClass(artifact);
+
+		ClassAnalyseService service = new ClassAnalyseService(artifact, structure);
+		service.setType();
+
+		assertEquals(DDDType.VALUE_OBJECT, artifact.getType());
+	}
+
+	@Test
+	void testSetTypeToValueObjectWithConstructors() {
+		Class artifact = new Class("Value", "de.test.domain.Value");
+		artifact.addField(new Field("private", "name", "java.lang.String"));
+		artifact.addMethod(new Method("public", "<init>", "void <init>()"));
+		artifact.addMethod(new Method("public", "<init>", "void <init>(java.lang.String)"));
 		structure.addClass(artifact);
 
 		ClassAnalyseService service = new ClassAnalyseService(artifact, structure);
@@ -49,7 +65,7 @@ class ClassAnalyseServiceTest {
 	}
 	
 	@Test
-	void testSetTypeTovalueObjecttWithId() {
+	void testSetTypeToValueObjectWithId() {
 		Class artifact = new Class("ValueId", "de.test.domain.ValueId");
 		artifact.addField(new Field("private", "id", "java.lang.long"));
 		artifact.addMethod(new Method("public", "getId", "java.lang.long getId()"));
@@ -207,7 +223,71 @@ class ClassAnalyseServiceTest {
 
 		assertEquals(DDDType.INFRASTRUCTURE, artifact.getType());
 	}
-	
+
+	@Test
+	void testSetInfrastructureToInfrastructure() {
+		Class infra = new Class("Infra", "de.test.domain.Infra");
+		infra.setType(DDDType.INFRASTRUCTURE);
+		infra.addDependencies("de.test.domain.Entity");
+		structure.addClass(infra);
+
+		ClassAnalyseService service = new ClassAnalyseService(infra, structure);
+		service.setInfrastructure();
+
+		assertEquals(DDDType.INFRASTRUCTURE, infra.getType());
+	}
+
+	@Test
+	void testSetTypeToInfrastructureWithDependency() {
+		Class infra = new Class("Infra", "de.test.domain.Infra");
+		infra.setType(DDDType.INFRASTRUCTURE);
+		infra.addDependencies("de.test.domain.Entity");
+		structure.addClass(infra);
+
+		Class artifact = new Class("Entity", "de.test.domain.Entity");
+		artifact.setType(DDDType.ENTITY);
+		structure.addClass(artifact);
+
+		ClassAnalyseService service = new ClassAnalyseService(artifact, structure);
+		service.setInfrastructure();
+
+		assertEquals(DDDType.INFRASTRUCTURE, artifact.getType());
+	}
+
+	@Test
+	void testSetTypeToInfrastructureWithSuperclass() {
+		Class artifact = new Class("Entity", "de.test.domain.Entity");
+		artifact.setType(DDDType.ENTITY);
+		structure.addClass(artifact);
+
+		Class infra = new Class("Infra", "de.test.domain.Infra");
+		infra.setType(DDDType.INFRASTRUCTURE);
+		infra.setSuperClass(artifact);
+		structure.addClass(infra);
+
+		ClassAnalyseService service = new ClassAnalyseService(artifact, structure);
+		service.setInfrastructure();
+
+		assertEquals(DDDType.INFRASTRUCTURE, artifact.getType());
+	}
+
+	@Test
+	void testSetTypeNotToInfrastructure() {
+		Class infra = new Class("ValueObject", "de.test.domain.ValueObject");
+		infra.setType(DDDType.VALUE_OBJECT);
+		infra.addDependencies("de.test.domain.Entity");
+		structure.addClass(infra);
+
+		Class artifact = new Class("Entity", "de.test.domain.Entity");
+		artifact.setType(DDDType.ENTITY);
+		structure.addClass(artifact);
+
+		ClassAnalyseService service = new ClassAnalyseService(artifact, structure);
+		service.setInfrastructure();
+
+		assertEquals(DDDType.ENTITY, artifact.getType());
+	}
+
 	@Test
 	void testSetTypeToInfrastructure() {
 		Class artifact = new Class("Entity", "de.test.domain.Entity");
