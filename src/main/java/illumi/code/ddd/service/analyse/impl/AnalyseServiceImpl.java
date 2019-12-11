@@ -54,7 +54,9 @@ public class AnalyseServiceImpl implements AnalyseService {
     	
     	setupDomains();
     	analyseDomains();
-    	
+
+    	findInfrastructure();
+
     	findEvents();
     	return structure.getJSON();
     }
@@ -198,6 +200,12 @@ public class AnalyseServiceImpl implements AnalyseService {
     		.parallel()
     		.forEach(item -> item.setAggregateRoot(structure));
     }
+
+	private void findInfrastructure() {
+		structure.getClasses().stream()
+				.parallel()
+				.forEach(artifact -> artifact.setInfrastructure(structure));
+	}
 
 	private void findEvents() {
 		structure.getClasses().stream()

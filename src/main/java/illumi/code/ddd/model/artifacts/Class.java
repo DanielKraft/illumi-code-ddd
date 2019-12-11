@@ -96,6 +96,10 @@ public class Class extends File {
 	public void setDomainEvent() {
 		new ClassAnalyseService(this).setDomainEvent();
 	}
+
+	public void setInfrastructure(DDDStructure structure) {
+		new ClassAnalyseService(this, structure).setInfrastructure();
+	}
 	
 	public void evaluate(DDDStructure structure) {
 		setFitness(new ClassFitnessService(this, structure).evaluate());
