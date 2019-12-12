@@ -72,7 +72,7 @@ public class EntityRefactorService extends DefaultRefactorService {
     private void refactorFields(Package model, Class artifact) {
         for (Field field : artifact.getFields()) {
             if (!field.getType().contains("java.util.")) {
-                Class type = getTypeOfField(model, field);
+                File type = getTypeOfField(model, field);
                 if (type != null) {
                     field.setType(type.getPath());
                 } else {
@@ -89,22 +89,20 @@ public class EntityRefactorService extends DefaultRefactorService {
         }
     }
 
-    private Class getTypeOfField(Package model, Field field) {
+    private File getTypeOfField(Package model, Field field) {
         for (Artifact item : model.getContains()) {
-            if (item instanceof Class) {
-                switch (item.getType()) {
-                    case ENTITY:
-                    case AGGREGATE_ROOT:
-                    case VALUE_OBJECT:
-                    case DOMAIN_EVENT:
+            switch (item.getType()) {
+                case ENTITY:
+                case AGGREGATE_ROOT:
+                case VALUE_OBJECT:
+                case DOMAIN_EVENT:
 
-                        if (field.getType().endsWith(item.getName())) {
-                            return (Class) item;
-                        }
-                        break;
-                    default:
-                        break;
-                }
+                    if (field.getType().endsWith(item.getName())) {
+                        return (File) item;
+                    }
+                    break;
+                default:
+                    break;
             }
         }
         return null;
