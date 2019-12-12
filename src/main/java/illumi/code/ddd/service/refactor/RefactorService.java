@@ -4,7 +4,7 @@ import illumi.code.ddd.model.DDDStructure;
 
 public interface RefactorService {
 
-    void setOldStructure(DDDStructure oldStructure);
+  void setOldStructure(DDDStructure oldStructure);
 
-    DDDStructure refactor();
+  DDDStructure refactor();
 }

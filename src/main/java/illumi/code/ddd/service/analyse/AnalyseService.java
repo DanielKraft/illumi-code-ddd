@@ -4,8 +4,8 @@ import illumi.code.ddd.model.DDDStructure;
 import org.json.JSONArray;
 
 public interface AnalyseService {
-	
-	void setStructure(DDDStructure structure);
-	
-	JSONArray analyzeStructure(String path);
+
+  void setStructure(DDDStructure structure);
+
+  JSONArray analyzeStructure(String path);
 }
