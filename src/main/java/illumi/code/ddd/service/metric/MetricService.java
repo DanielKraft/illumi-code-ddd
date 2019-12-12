@@ -5,7 +5,7 @@ import org.json.JSONObject;
 
 public interface MetricService {
 
-	void setStructure(DDDStructure structure);
-	
-	JSONObject getMetric();
+  void setStructure(DDDStructure structure);
+
+  JSONObject getMetric();
 }

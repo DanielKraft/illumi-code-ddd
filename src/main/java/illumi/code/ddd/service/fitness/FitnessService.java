@@ -4,8 +4,8 @@ import illumi.code.ddd.model.DDDStructure;
 import org.json.JSONArray;
 
 public interface FitnessService {
-	
-	void setStructure(DDDStructure structure);
-	
-	JSONArray getStructureWithFitness();
+
+  void setStructure(DDDStructure structure);
+
+  JSONArray getStructureWithFitness();
 }

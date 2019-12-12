@@ -1,73 +1,86 @@
 package illumi.code.ddd.service.fitness.impl;
 
-import illumi.code.ddd.model.fitness.DDDFitness;
-import illumi.code.ddd.model.fitness.DDDIssueType;
 import illumi.code.ddd.model.artifacts.Interface;
 import illumi.code.ddd.model.artifacts.Method;
+import illumi.code.ddd.model.fitness.DDDFitness;
+import illumi.code.ddd.model.fitness.DDDIssueType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class InterfaceFitnessService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(InterfaceFitnessService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(InterfaceFitnessService.class);
 
-    private static final String REPOSITORY = "Repository";
-    private static final String FACTORY = "Factory";
+  private static final String REPOSITORY = "Repository";
+  private static final String FACTORY = "Factory";
 
-    private Interface artifact;
-    private DDDFitness fitness;
+  private Interface artifact;
+  private DDDFitness fitness;
 
-    public InterfaceFitnessService(Interface artifact) {
-        this.artifact = artifact;
-        this.fitness = new DDDFitness();
+  public InterfaceFitnessService(Interface artifact) {
+    this.artifact = artifact;
+    this.fitness = new DDDFitness();
+  }
+
+  /**
+   * Evaluates the fitness of an interface.
+   *
+   * @return DDDFitness
+   */
+  public DDDFitness evaluate() {
+    switch (artifact.getType()) {
+      case REPOSITORY:
+        evaluateRepository();
+        break;
+      case FACTORY:
+        evaluateFactory();
+        break;
+      case SERVICE:
+      default:
+        LOGGER.info("[EVALUATE] - INTERFACE - DDD:SERVICE:{}", artifact.getName());
     }
+    return fitness;
+  }
 
-    public DDDFitness evaluate() {
-        switch(artifact.getType()) {
-            case REPOSITORY:
-                evaluateRepository();
-                break;
-            case FACTORY:
-                evaluateFactory();
-                break;
-            case SERVICE:
-            default:
-                LOGGER.info("[EVALUATE] - INTERFACE - DDD:SERVICE:{}", artifact.getName());
-        }
-        return fitness;
-    }
+  private void evaluateRepository() {
+    LOGGER.info("[EVALUATE] - INTERFACE - DDD:REPOSITORY:{}", artifact.getName());
 
-    private void evaluateRepository() {
-        LOGGER.info("[EVALUATE] - INTERFACE - DDD:REPOSITORY:{}", artifact.getName());
+    evaluateRepositoryName();
 
-        evaluateRepositoryName();
+    evaluatePath();
 
-        evaluatePath();
+    Method.evaluateRepository(artifact.getName(), artifact.getMethods(), fitness);
+  }
 
-        Method.evaluateRepository(artifact.getName(), artifact.getMethods(), fitness);
-    }
+  private void evaluateRepositoryName() {
+    fitness.addIssue(artifact.getName().endsWith(REPOSITORY), DDDIssueType.INFO,
+        String.format(
+            "The name of the repository interface '%s' should end with 'Repository'",
+            artifact.getName()));
+  }
 
-    private void evaluateRepositoryName() {
-        fitness.addIssue(artifact.getName().endsWith(REPOSITORY), DDDIssueType.INFO,
-                String.format("The name of the repository interface '%s' should end with 'Repository'", artifact.getName()));
-    }
+  private void evaluatePath() {
+    fitness.addIssue(artifact.getPath().contains("domain." + artifact.getDomain() + ".model."),
+        DDDIssueType.MINOR,
+        String.format(
+            "The interface '%s' should be placed in 'domain.%s.model'",
+            artifact.getName(), artifact.getDomain()));
+  }
 
-    private void evaluatePath() {
-        fitness.addIssue(artifact.getPath().contains("domain." + artifact.getDomain() + ".model."), DDDIssueType.MINOR,
-                String.format("The interface '%s' should be placed in 'domain.%s.model'", artifact.getName(), artifact.getDomain()));
-    }
+  private void evaluateFactory() {
+    LOGGER.info("[EVALUATE] - INTERFACE - DDD:FACTORY:{}", artifact.getName());
 
-    private void evaluateFactory() {
-        LOGGER.info("[EVALUATE] - INTERFACE - DDD:FACTORY:{}", artifact.getName());
+    evaluateFactoryName();
 
-        evaluateFactoryName();
+    evaluatePath();
 
-        evaluatePath();
+    Method.evaluateFactory(artifact.getName(), artifact.getMethods(), fitness);
+  }
 
-        Method.evaluateFactory(artifact.getName(), artifact.getMethods(), fitness);
-    }
-
-    private void evaluateFactoryName() {
-        fitness.addIssue(artifact.getName().endsWith(FACTORY), DDDIssueType.INFO,
-                String.format("The name of the factory interface '%s' should end with 'FactoryImpl'", artifact.getName()));
-    }
+  private void evaluateFactoryName() {
+    fitness.addIssue(artifact.getName().endsWith(FACTORY), DDDIssueType.INFO,
+        String.format(
+            "The name of the factory interface '%s' should end with 'FactoryImpl'",
+            artifact.getName()));
+  }
 }
