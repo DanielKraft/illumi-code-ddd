@@ -26,8 +26,10 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: CheckStyle with Gradle
+      - name: CheckStyleMain with Gradle
         run: ./gradlew checkstyleMain
+      - name: CheckStyleTest with Gradle
+        run: ./gradlew checkstyleTest
       
   test:
     needs: build

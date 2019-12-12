@@ -55,22 +55,26 @@ public class AggregateRootRefactorServiceTest {
   @Test
   void testRefactorAggregateRoot() {
 
-    Interface repository = new Interface("RootRepository", "de.test.domain.root.model.RootRepository");
+    Interface repository =
+        new Interface("RootRepository", "de.test.domain.root.model.RootRepository");
     repository.setType(DDDType.REPOSITORY);
     model.addContains(repository);
     refactorData.getNewStructure().addInterface(repository);
 
-    Class repositoryImpl = new Class("RootRepositoryImpl", "de.test.domain.root.model.impl.RootRepositoryImpl");
+    Class repositoryImpl =
+        new Class("RootRepositoryImpl", "de.test.domain.root.model.impl.RootRepositoryImpl");
     repositoryImpl.setType(DDDType.REPOSITORY);
     impl.addContains(repositoryImpl);
     refactorData.getNewStructure().addClass(repositoryImpl);
 
-    Interface factory = new Interface("RootFactory", "de.test.domain.root.model.RootFactory");
+    Interface factory =
+        new Interface("RootFactory", "de.test.domain.root.model.RootFactory");
     factory.setType(DDDType.FACTORY);
     model.addContains(factory);
     refactorData.getNewStructure().addInterface(factory);
 
-    Class factoryImpl = new Class("RootFactoryImpl", "de.test.domain.root.model.impl.RootFactoryImpl");
+    Class factoryImpl =
+        new Class("RootFactoryImpl", "de.test.domain.root.model.impl.RootFactoryImpl");
     factoryImpl.setType(DDDType.FACTORY);
     impl.addContains(factoryImpl);
     refactorData.getNewStructure().addClass(factoryImpl);
@@ -119,22 +123,26 @@ public class AggregateRootRefactorServiceTest {
 
   @Test
   void testRefactorAggregateRootWithOtherInterfaces() {
-    Interface repository = new Interface("OtherRepository", "de.test.domain.root.model.OtherRepository");
+    Interface repository =
+        new Interface("OtherRepository", "de.test.domain.root.model.OtherRepository");
     repository.setType(DDDType.REPOSITORY);
     model.addContains(repository);
     refactorData.getNewStructure().addInterface(repository);
 
-    Class repositoryImpl = new Class("OtherRepositoryImpl", "de.test.domain.root.model.impl.OtherRepositoryImpl");
+    Class repositoryImpl =
+        new Class("OtherRepositoryImpl", "de.test.domain.root.model.impl.OtherRepositoryImpl");
     repositoryImpl.setType(DDDType.REPOSITORY);
     impl.addContains(repositoryImpl);
     refactorData.getNewStructure().addClass(repositoryImpl);
 
-    Interface factory = new Interface("OtherFactory", "de.test.domain.root.model.OtherFactory");
+    Interface factory =
+        new Interface("OtherFactory", "de.test.domain.root.model.OtherFactory");
     factory.setType(DDDType.FACTORY);
     model.addContains(factory);
     refactorData.getNewStructure().addInterface(factory);
 
-    Class factoryImpl = new Class("OtherFactoryImpl", "de.test.domain.root.model.impl.OtherFactoryImpl");
+    Class factoryImpl =
+        new Class("OtherFactoryImpl", "de.test.domain.root.model.impl.OtherFactoryImpl");
     factoryImpl.setType(DDDType.FACTORY);
     impl.addContains(factoryImpl);
     refactorData.getNewStructure().addClass(factoryImpl);

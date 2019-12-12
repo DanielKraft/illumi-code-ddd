@@ -1,7 +1,13 @@
 package illumi.code.ddd.service.analyse.impl;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import illumi.code.ddd.model.DDDStructure;
+import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.service.analyse.AnalyseService;
+
 import org.json.JSONArray;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -11,19 +17,16 @@ import org.neo4j.driver.v1.GraphDatabase;
 import org.neo4j.harness.ServerControls;
 import org.neo4j.harness.TestServerBuilders;
 
-import illumi.code.ddd.model.DDDType;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AnalyseServiceImplTest {
   private ServerControls embeddedDatabaseServer;
 
   @BeforeAll
+  @SuppressWarnings("CheckStyle")
   void initializeNeo4j() {
     this.embeddedDatabaseServer = TestServerBuilders
         .newInProcessBuilder()
-        .withFixture( "CREATE(root:Java:Package{fqn: 'de.test', name: 'test'})"
+        .withFixture("CREATE(root:Java:Package{fqn: 'de.test', name: 'test'})"
 
             + "CREATE(domain:Java:Package{fqn: 'de.test.domain', name: 'domain'})"
             + "CREATE(root)-[:CONTAINS]->(domain)"
@@ -159,10 +162,14 @@ class AnalyseServiceImplTest {
       System.out.println(result);
       JSONArray infrastructure = result.getJSONObject(1).getJSONArray("contains");
       assertAll("Should return DDD-Types of infrastructure",
-          () -> assertEquals(DDDType.INFRASTRUCTURE, infrastructure.getJSONObject(0).get("DDD"), 	" 0: " + infrastructure.getJSONObject(0).get("name")),
-          () -> assertEquals(DDDType.INFRASTRUCTURE, infrastructure.getJSONObject(1).get("DDD"), 	" 1: " + infrastructure.getJSONObject(0).get("name")),
-          () -> assertEquals(DDDType.INFRASTRUCTURE, infrastructure.getJSONObject(2).get("DDD"),	" 2: " + infrastructure.getJSONObject(0).get("name")),
-          () -> assertEquals(DDDType.INFRASTRUCTURE, infrastructure.getJSONObject(3).get("DDD"), 	" 3: " + infrastructure.getJSONObject(0).get("name")));
+          () -> assertEquals(DDDType.INFRASTRUCTURE, infrastructure.getJSONObject(0).get("DDD"),
+              " 0: " + infrastructure.getJSONObject(0).get("name")),
+          () -> assertEquals(DDDType.INFRASTRUCTURE, infrastructure.getJSONObject(1).get("DDD"),
+              " 1: " + infrastructure.getJSONObject(0).get("name")),
+          () -> assertEquals(DDDType.INFRASTRUCTURE, infrastructure.getJSONObject(2).get("DDD"),
+              " 2: " + infrastructure.getJSONObject(0).get("name")),
+          () -> assertEquals(DDDType.INFRASTRUCTURE, infrastructure.getJSONObject(3).get("DDD"),
+              " 3: " + infrastructure.getJSONObject(0).get("name")));
 
 
       JSONArray application = result.getJSONObject(0).getJSONArray("contains");
@@ -178,22 +185,38 @@ class AnalyseServiceImplTest {
       JSONArray personDomain = domain.getJSONObject(1).getJSONArray("contains");
 
       assertAll("Should return DDD-Types of domain",
-          () -> assertEquals(DDDType.DOMAIN_EVENT, personDomain.getJSONObject(0).get("DDD"), 	" 0: " + personDomain.getJSONObject(0).getString("name")),
-          () -> assertEquals(DDDType.DOMAIN_EVENT, personDomain.getJSONObject(1).get("DDD"), 	" 1: " + personDomain.getJSONObject(1).getString("name")),
-          () -> assertEquals(DDDType.VALUE_OBJECT, personDomain.getJSONObject(2).get("DDD"), 	" 2: " + personDomain.getJSONObject(2).getString("name")),
-          () -> assertEquals(DDDType.SERVICE, personDomain.getJSONObject(3).get("DDD"), 	" 3: " + personDomain.getJSONObject(3).getString("name")),
-          () -> assertEquals(DDDType.SERVICE, personDomain.getJSONObject(4).get("DDD"), 	" 4: " + personDomain.getJSONObject(4).getString("name")),
-          () -> assertEquals(DDDType.SERVICE, personDomain.getJSONObject(5).get("DDD"), 	" 5: " + personDomain.getJSONObject(5).getString("name")),
-          () -> assertEquals(DDDType.INFRASTRUCTURE, personDomain.getJSONObject(6).get("DDD"), 	" 6: " + personDomain.getJSONObject(6).getString("name")),
-          () -> assertEquals(DDDType.REPOSITORY, personDomain.getJSONObject(7).get("DDD"), 	" 7: " + personDomain.getJSONObject(7).getString("name")),
-          () -> assertEquals(DDDType.REPOSITORY, personDomain.getJSONObject(8).get("DDD"), 	" 8: " + personDomain.getJSONObject(8).getString("name")),
-          () -> assertEquals(DDDType.FACTORY, personDomain.getJSONObject(9).get("DDD"), 	" 9: " + personDomain.getJSONObject(9).getString("name")),
-          () -> assertEquals(DDDType.FACTORY, personDomain.getJSONObject(10).get("DDD"), 	"10: " + personDomain.getJSONObject(10).getString("name")),
-          () -> assertEquals(DDDType.ENTITY, personDomain.getJSONObject(11).get("DDD"), 	"11: " + personDomain.getJSONObject(11).getString("name")),
-          () -> assertEquals(DDDType.VALUE_OBJECT, personDomain.getJSONObject(12).get("DDD"), 	"12: " + personDomain.getJSONObject(12).getString("name")),
-          () -> assertEquals(DDDType.VALUE_OBJECT, personDomain.getJSONObject(13).get("DDD"), 	"13: " + personDomain.getJSONObject(13).getString("name")),
-          () -> assertEquals(DDDType.ENTITY, personDomain.getJSONObject(14).get("DDD"), 	"14: " + personDomain.getJSONObject(14).getString("name")),
-          () -> assertEquals(DDDType.AGGREGATE_ROOT, personDomain.getJSONObject(15).get("DDD"),	"15: " + personDomain.getJSONObject(15).getString("name")));
+          () -> assertEquals(DDDType.DOMAIN_EVENT, personDomain.getJSONObject(0).get("DDD"),
+              " 0: " + personDomain.getJSONObject(0).getString("name")),
+          () -> assertEquals(DDDType.DOMAIN_EVENT, personDomain.getJSONObject(1).get("DDD"),
+              " 1: " + personDomain.getJSONObject(1).getString("name")),
+          () -> assertEquals(DDDType.VALUE_OBJECT, personDomain.getJSONObject(2).get("DDD"),
+              " 2: " + personDomain.getJSONObject(2).getString("name")),
+          () -> assertEquals(DDDType.SERVICE, personDomain.getJSONObject(3).get("DDD"),
+              " 3: " + personDomain.getJSONObject(3).getString("name")),
+          () -> assertEquals(DDDType.SERVICE, personDomain.getJSONObject(4).get("DDD"),
+              " 4: " + personDomain.getJSONObject(4).getString("name")),
+          () -> assertEquals(DDDType.SERVICE, personDomain.getJSONObject(5).get("DDD"),
+              " 5: " + personDomain.getJSONObject(5).getString("name")),
+          () -> assertEquals(DDDType.INFRASTRUCTURE, personDomain.getJSONObject(6).get("DDD"),
+              " 6: " + personDomain.getJSONObject(6).getString("name")),
+          () -> assertEquals(DDDType.REPOSITORY, personDomain.getJSONObject(7).get("DDD"),
+              " 7: " + personDomain.getJSONObject(7).getString("name")),
+          () -> assertEquals(DDDType.REPOSITORY, personDomain.getJSONObject(8).get("DDD"),
+              " 8: " + personDomain.getJSONObject(8).getString("name")),
+          () -> assertEquals(DDDType.FACTORY, personDomain.getJSONObject(9).get("DDD"),
+              " 9: " + personDomain.getJSONObject(9).getString("name")),
+          () -> assertEquals(DDDType.FACTORY, personDomain.getJSONObject(10).get("DDD"),
+              "10: " + personDomain.getJSONObject(10).getString("name")),
+          () -> assertEquals(DDDType.ENTITY, personDomain.getJSONObject(11).get("DDD"),
+              "11: " + personDomain.getJSONObject(11).getString("name")),
+          () -> assertEquals(DDDType.VALUE_OBJECT, personDomain.getJSONObject(12).get("DDD"),
+              "12: " + personDomain.getJSONObject(12).getString("name")),
+          () -> assertEquals(DDDType.VALUE_OBJECT, personDomain.getJSONObject(13).get("DDD"),
+              "13: " + personDomain.getJSONObject(13).getString("name")),
+          () -> assertEquals(DDDType.ENTITY, personDomain.getJSONObject(14).get("DDD"),
+              "14: " + personDomain.getJSONObject(14).getString("name")),
+          () -> assertEquals(DDDType.AGGREGATE_ROOT, personDomain.getJSONObject(15).get("DDD"),
+              "15: " + personDomain.getJSONObject(15).getString("name")));
 
     }
   }
