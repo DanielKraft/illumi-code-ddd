@@ -178,7 +178,6 @@ public class ClassAnalyseService {
   public void setInfrastructure() {
     switch (this.artifact.getType()) {
       case ENTITY:
-      case AGGREGATE_ROOT:
       case VALUE_OBJECT:
         if (onlyUsedByInfrastructure()) {
           this.artifact.setType(DDDType.INFRASTRUCTURE);
