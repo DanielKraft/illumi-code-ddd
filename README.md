@@ -9,7 +9,7 @@
 </h1>
 
 <h4 align="center">
-  Analysis of a Java system using jQAssistant and development of an algorithm to generate a change proposal based on Domian-Driven Design
+  Analysis of a Java system using jQAssistant and generating a change proposal based on Domian-Driven Design
 </h4>
 
 <p align="center">
