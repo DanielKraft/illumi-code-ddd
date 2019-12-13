@@ -69,7 +69,6 @@ public class PackageAnalyseService {
   private int getWightOfDependency(Class artifact, Class candidate) {
     int ctr = 0;
     for (Field field : artifact.getFields()) {
-      System.out.println(artifact.getName() + " " + field.getName() + " " + field.getType());
       if (field.getType().endsWith(candidate.getName())) {
         ctr++;
       } else if (field.getType().startsWith("java.util.")
@@ -78,7 +77,6 @@ public class PackageAnalyseService {
         ctr += 2;
       }
     }
-    System.out.println(artifact.getName() + " " + ctr);
     return ctr;
   }
 
