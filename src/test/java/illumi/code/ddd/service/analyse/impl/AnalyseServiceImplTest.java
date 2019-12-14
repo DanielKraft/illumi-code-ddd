@@ -65,7 +65,7 @@ class AnalyseServiceImplTest {
 
             + "CREATE(entity:Java:Class{fqn: 'de.test.domain.person.Entity', name: 'Entity'})"
             + "CREATE(person)-[:CONTAINS]->(entity)"
-            + "CREATE(f1:Java:Field{name: 'other', signature: 'org.other.Other other', visibility: 'private'})"
+            + "CREATE(f1:Java:Field{name: 'id', signature: 'org.other.Id id', visibility: 'private'})"
             + "CREATE(entity)-[:DECLARES]->(f1)"
             + "CREATE(f2:Java:Field{name: 'value', signature: 'org.other.Value other', visibility: 'private'})"
             + "CREATE(entity)-[:DECLARES]->(f2)"
@@ -91,7 +91,7 @@ class AnalyseServiceImplTest {
             + "CREATE(infService:Java:Class{fqn: 'de.test.domain.person.CacheWorker', name: 'CacheWorker'})"
             + "CREATE(person)-[:CONTAINS]->(infService)"
 
-            + "CREATE(service:Java:Class{fqn: 'de.test.domain.person.CustomerFormator', name: 'CustomerFormator'})"
+            + "CREATE(service:Java:Class{fqn: 'de.test.domain.person.CustomerFormatter', name: 'CustomerFormatter'})"
             + "CREATE(person)-[:CONTAINS]->(service)"
             + "CREATE(const:Java:Field{name: 'CONST', signature: 'java.lang.String CONST', visibility: 'private'})"
             + "CREATE(service)-[:DECLARES]->(const)"

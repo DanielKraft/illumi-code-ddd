@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class ClassAnalyseService {
   private static final String REPOSITORY = "Repository";
+  private static final String FACTORY = "Factory";
 
   private Class artifact;
   private DDDStructure structure;
@@ -29,13 +30,13 @@ public class ClassAnalyseService {
     if (isInfrastructure()) {
       this.artifact.setType(DDDType.INFRASTRUCTURE);
     } else if (this.artifact.getType() == null) {
-      if (isValueObject(structure)) {
+      if (isValueObject()) {
         this.artifact.setType(DDDType.VALUE_OBJECT);
-      } else if (isEntity(structure)) {
+      } else if (isEntity()) {
         this.artifact.setType(DDDType.ENTITY);
       } else if (isApplicationService()) {
         this.artifact.setType(DDDType.APPLICATION_SERVICE);
-      } else if (isService(structure)) {
+      } else if (isService()) {
         this.artifact.setType(DDDType.SERVICE);
       } else {
         this.artifact.setType(DDDType.INFRASTRUCTURE);
@@ -48,13 +49,10 @@ public class ClassAnalyseService {
         || this.artifact.getName().toUpperCase().contains("CRUD");
   }
 
-  private boolean isValueObject(DDDStructure structure) {
+  private boolean isValueObject() {
     int ctr = 0;
-    for (Field field : this.artifact.getFields()) {
-      if (isConstant(field)) {
-        return false;
-      } else if (Field.isId(field)
-          && !(this.artifact.getName().toLowerCase().endsWith("id"))) {
+    for (Field field : artifact.getFields()) {
+      if (isInvalidValueObjectField(field)) {
         return false;
       } else if (field.getType().startsWith("java.")
           || field.getType().contains(structure.getPath())) {
@@ -62,46 +60,30 @@ public class ClassAnalyseService {
       }
     }
     return !this.artifact.getFields().isEmpty()
-        && ctr == this.artifact.getFields().size()
-        && containsModelMethods();
+        && (ctr == this.artifact.getFields().size()
+        || containsModelMethods());
   }
 
-  private boolean isEntity(DDDStructure structure) {
-
-    for (Field field : this.artifact.getFields()) {
-      if (isConstant(field)) {
-        return false;
-      } else if (Field.isId(field)) {
-        return true;
-      }
-    }
-    return !this.artifact.getFields().isEmpty()
-        && !containsEntityName(structure)
-        && containsModelMethods();
+  private boolean isInvalidValueObjectField(Field field) {
+    return isId(field)
+        || isConstant(field)
+        || isRepositoryOrFactory(field);
   }
 
-  private boolean isService(DDDStructure structure) {
-    for (Field field : this.artifact.getFields()) {
-      if (field.getType().contains(REPOSITORY)) {
-        return true;
-      }
-    }
-    return containsEntityName(structure);
+  private boolean isId(Field field) {
+    return Field.isId(field)
+        && !(this.artifact.getName().toLowerCase().endsWith("id"));
   }
 
-  private boolean isApplicationService() {
-    for (Method method : this.artifact.getMethods()) {
-      if (method.getName().equalsIgnoreCase("main")) {
-        return true;
-      }
-    }
-    return false;
-  }
+  private boolean isRepositoryOrFactory(Field field) {
+    String[] split = field.getType().split("[.]");
+    String type = split[split.length - 1];
 
-  private boolean isConstant(Field field) {
-    return StringUtils.isAllUpperCase(field.getName());
+    return type.contains(REPOSITORY)
+        || field.getName().contains(REPOSITORY.toLowerCase())
+        || type.contains(FACTORY)
+        || field.getName().contains(FACTORY.toLowerCase());
   }
-
 
   private boolean containsModelMethods() {
     long constructors = artifact.getMethods().stream()
@@ -144,7 +126,43 @@ public class ClassAnalyseService {
     return false;
   }
 
-  private boolean containsEntityName(DDDStructure structure) {
+  private boolean isEntity() {
+
+    for (Field field : this.artifact.getFields()) {
+      if (isConstant(field)) {
+        return false;
+      } else if (Field.isId(field)) {
+        return true;
+      }
+    }
+    return !this.artifact.getFields().isEmpty()
+        && containsModelMethods()
+        && !containsEntityName();
+  }
+
+  private boolean isService() {
+    for (Field field : this.artifact.getFields()) {
+      if (field.getType().contains(REPOSITORY)) {
+        return true;
+      }
+    }
+    return containsEntityName();
+  }
+
+  private boolean isApplicationService() {
+    for (Method method : this.artifact.getMethods()) {
+      if (method.getName().equalsIgnoreCase("main")) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean isConstant(Field field) {
+    return StringUtils.isAllUpperCase(field.getName());
+  }
+
+  private boolean containsEntityName() {
     for (Class item : structure.getClasses()) {
       if (this.artifact != item
           && this.artifact.getName().contains(item.getName())
