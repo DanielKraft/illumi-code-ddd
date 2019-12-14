@@ -2,8 +2,8 @@ package illumi.code.ddd.model.artifacts;
 
 import illumi.code.ddd.model.DDDStructure;
 import illumi.code.ddd.model.DDDType;
-import illumi.code.ddd.service.JavaArtifactService;
 import illumi.code.ddd.service.analyse.impl.ClassAnalyseService;
+import illumi.code.ddd.service.analyse.impl.JavaArtifactService;
 import illumi.code.ddd.service.fitness.impl.ClassFitnessService;
 
 import java.util.ArrayList;

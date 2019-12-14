@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import illumi.code.ddd.model.DDDStructure;
 import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.artifacts.Class;
+import illumi.code.ddd.model.artifacts.Field;
 import illumi.code.ddd.model.artifacts.Package;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -70,7 +71,7 @@ class PackageAnalyseServiceTest {
   }
 
   @Test
-  void testSetAggravateRootWithMultipleCandidates() {
+  void testSetAggregateRootWithMultipleCandidates() {
     Package module = new Package("domain", "de.test.domain");
 
     Class entity = new Class("Entity", "de.test.domain.Entity");
@@ -90,7 +91,7 @@ class PackageAnalyseServiceTest {
   }
 
   @Test
-  void testSetAggragateRootWithOneCandidate() {
+  void testSetAggregateRootWithOneCandidate() {
     Package module = new Package("domain", "de.test.domain");
 
     Class root = new Class("Root", "de.test.domain.Root");
@@ -107,7 +108,7 @@ class PackageAnalyseServiceTest {
   }
 
   @Test
-  void testSetAggragateRootWithNoEntities() {
+  void testSetAggregateRootWithNoEntities() {
     Package module = new Package("domain", "de.test.domain");
 
     PackageAnalyseService service = new PackageAnalyseService(module, structure);
@@ -118,7 +119,7 @@ class PackageAnalyseServiceTest {
   }
 
   @Test
-  void testSetAggragateRootOfNoDomain() {
+  void testSetAggregateRootOfNoDomain() {
     Package module = new Package("infra", "de.test.infra");
 
     Class root = new Class("Root", "de.test.infra.Root");
@@ -131,4 +132,95 @@ class PackageAnalyseServiceTest {
     assertAll("Should find no aggregate root",
         () -> assertEquals(DDDType.ENTITY, root.getType()));
   }
+
+  @Test
+  void testSetAggregateRootByDependencies1() {
+    Package module = new Package("domain", "de.test.domain");
+
+    Class entity = new Class("Entity", "de.test.domain.Entity");
+    entity.addField(new Field("private", "root", "de.test.domain.Root"));
+    entity.setType(DDDType.ENTITY);
+    module.addContains(entity);
+
+    Class root = new Class("Root", "de.test.domain.Root");
+    root.setType(DDDType.ENTITY);
+    root.addField(new Field("private", "entitys", "java.util.List"));
+    module.addContains(root);
+
+    PackageAnalyseService service = new PackageAnalyseService(module, structure);
+    service.setAggregateRoot();
+
+    assertAll("Should find an aggregate root",
+        () -> assertEquals(DDDType.ENTITY, entity.getType(), "Entity"),
+        () -> assertEquals(DDDType.AGGREGATE_ROOT, root.getType(), "Aggregate Root"));
+  }
+
+  @Test
+  void testSetAggregateRootByDependencies2() {
+    Package module = new Package("domain", "de.test.domain");
+
+    Class root = new Class("Root", "de.test.domain.Root");
+    root.setType(DDDType.ENTITY);
+    root.addField(new Field("private", "entities", "java.util."));
+    module.addContains(root);
+
+    Class entity = new Class("Entity", "de.test.domain.Entity");
+    entity.addField(new Field("private", "root", "de.test.domain.Root"));
+    entity.setType(DDDType.ENTITY);
+    module.addContains(entity);
+
+    PackageAnalyseService service = new PackageAnalyseService(module, structure);
+    service.setAggregateRoot();
+
+    assertAll("Should find an aggregate root",
+        () -> assertEquals(DDDType.ENTITY, entity.getType(), "Entity"),
+        () -> assertEquals(DDDType.AGGREGATE_ROOT, root.getType(), "Aggregate Root"));
+  }
+
+  @Test
+  void testSetNoAggregateRootByDependencies() {
+    Package module = new Package("domain", "de.test.domain");
+
+    Class root = new Class("Root", "de.test.domain.Root");
+    root.setType(DDDType.ENTITY);
+    root.addField(new Field("private", "entity", "de.test.domain.Entity"));
+    module.addContains(root);
+
+    Class entity = new Class("Entity", "de.test.domain.Entity");
+    entity.addField(new Field("private", "root", "de.test.domain.Root"));
+    entity.addField(new Field("private", "name", "java.lang.String"));
+    entity.addField(new Field("private", "desc", "java.util.List"));
+    entity.setType(DDDType.ENTITY);
+    module.addContains(entity);
+
+    PackageAnalyseService service = new PackageAnalyseService(module, structure);
+    service.setAggregateRoot();
+
+    assertAll("Should find an aggregate root",
+        () -> assertEquals(DDDType.ENTITY, entity.getType(), "Entity"),
+        () -> assertEquals(DDDType.ENTITY, root.getType(), "Entity"));
+  }
+
+  @Test
+  void testSetAggregateRootByDependencies() {
+    Package module = new Package("domain", "de.test.domain");
+
+    Class root = new Class("RootEntity", "de.test.domain.RootEntity");
+    root.setType(DDDType.ENTITY);
+    root.addField(new Field("private", "entity", "de.test.domain.Entity"));
+    module.addContains(root);
+
+    Class entity = new Class("Entity", "de.test.domain.Entity");
+    entity.addField(new Field("private", "roots", "java.util.List"));
+    entity.setType(DDDType.ENTITY);
+    module.addContains(entity);
+
+    PackageAnalyseService service = new PackageAnalyseService(module, structure);
+    service.setAggregateRoot();
+
+    assertAll("Should find an aggregate root",
+        () -> assertEquals(DDDType.AGGREGATE_ROOT, entity.getType(), "Aggregate Root"),
+        () -> assertEquals(DDDType.ENTITY, root.getType(), "Entity"));
+  }
+
 }

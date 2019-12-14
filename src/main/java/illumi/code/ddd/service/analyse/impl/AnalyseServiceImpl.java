@@ -138,7 +138,7 @@ public class AnalyseServiceImpl implements AnalyseService {
 
     structure.getClasses().stream()
         .parallel()
-        .forEachOrdered(item -> item.setType(structure));
+        .forEach(item -> item.setType(structure));
   }
 
   private void analyzeInterfaces() {
@@ -215,7 +215,7 @@ public class AnalyseServiceImpl implements AnalyseService {
   private void findInfrastructure() {
     structure.getClasses().stream()
         .parallel()
-        .forEach(artifact -> artifact.setInfrastructure(structure));
+        .forEachOrdered(artifact -> artifact.setInfrastructure(structure));
   }
 
   private void findEvents() {

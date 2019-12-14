@@ -4,6 +4,7 @@ import illumi.code.ddd.model.DDDStructure;
 import illumi.code.ddd.model.DDDType;
 import illumi.code.ddd.model.artifacts.Artifact;
 import illumi.code.ddd.model.artifacts.Class;
+import illumi.code.ddd.model.artifacts.Field;
 import illumi.code.ddd.model.artifacts.Package;
 
 import java.util.ArrayList;
@@ -25,14 +26,67 @@ public class PackageAnalyseService {
       ArrayList<Class> candidates = getAggregateRootCandidates();
       if (candidates.size() == 1) {
         candidates.get(0).setType(DDDType.AGGREGATE_ROOT);
-      } else {
+      } else if (!candidates.isEmpty()) {
         for (Class artifact : candidates) {
           if (structure.getDomains().contains(artifact.getName().toLowerCase())) {
             artifact.setType(DDDType.AGGREGATE_ROOT);
+            return;
           }
         }
+        setAggregateRootByDependency(candidates);
       }
     }
+  }
+
+  private void setAggregateRootByDependency(ArrayList<Class> candidates) {
+    int highscore = 0;
+    ArrayList<Class> result = new ArrayList<>();
+    for (Class artifact : candidates) {
+      int score = countDependsOnOtherCandidates(artifact, candidates);
+      if (score == highscore) {
+        result.add(artifact);
+      } else if (score > highscore) {
+        result = new ArrayList<>();
+        result.add(artifact);
+        highscore = score;
+      }
+    }
+    if (result.size() == 1) {
+      result.get(0).setType(DDDType.AGGREGATE_ROOT);
+    }
+  }
+
+  private int countDependsOnOtherCandidates(Class artifact, ArrayList<Class> candidates) {
+    int ctr = 0;
+    for (Class candidate : candidates) {
+      if (candidate != artifact) {
+        ctr += getWightOfDependency(artifact, candidate);
+      }
+    }
+    return ctr;
+  }
+
+  private int getWightOfDependency(Class artifact, Class candidate) {
+    int ctr = 0;
+    for (Field field : artifact.getFields()) {
+      if (field.getType().endsWith(candidate.getName())) {
+        ctr++;
+      } else if (field.getType().startsWith("java.util.")
+          && (convertNameToSingular(field.getName()).startsWith(candidate.getName().toLowerCase())
+          || candidate.getName().toLowerCase().contains(convertNameToSingular(field.getName())))) {
+        ctr += 2;
+      }
+    }
+    return ctr;
+  }
+
+  private String convertNameToSingular(String name) {
+    if (name.endsWith("ies")) {
+      return name.substring(0, name.length() - 3) + "y";
+    } else if (name.endsWith("s")) {
+      return name.substring(0, name.length() - 1);
+    }
+    return name.toLowerCase();
   }
 
   private boolean isDomain() {
