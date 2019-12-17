@@ -117,6 +117,7 @@ class RepositoryRefactorServiceTest {
 
     Class repoImpl = new Class("EntityRepositoryImpl", "de.test.domain0.impl.EntityRepositoryImpl");
     repoImpl.setType(DDDType.REPOSITORY);
+    repoImpl.addImplInterface(repo);
     repoImpl.addMethod(new Method("public", "nextIdentity",
         "de.test.EntityId nextIdentity()"));
     repoImpl.addMethod(new Method("public", "findById",
@@ -143,7 +144,7 @@ class RepositoryRefactorServiceTest {
   }
 
   @Test
-  void testrefactorRepositoryWithoutImpl() {
+  void testRefactorRepositoryWithoutImpl() {
     Interface factory = new Interface("EntityFactory", "de.test.domain0.impl.EntityFactory");
     factory.setType(DDDType.FACTORY);
     refactorData.getNewStructure().addInterface(factory);
@@ -151,6 +152,7 @@ class RepositoryRefactorServiceTest {
 
     Class factoryImpl = new Class("EntityFactoryImpl", "de.test.domain0.impl.EntityFactoryImpl");
     factoryImpl.setType(DDDType.FACTORY);
+    factoryImpl.addImplInterface(factory);
     refactorData.getNewStructure().addClass(factoryImpl);
     ((Package) refactorData.getModelModule().getContains().get(0)).addContains(factoryImpl);
 
@@ -273,6 +275,7 @@ class RepositoryRefactorServiceTest {
 
     Class factoryImpl = new Class("EntityFactoryImpl", "de.test.domain0.impl.EntityFactoryImpl");
     factoryImpl.setType(DDDType.FACTORY);
+    factoryImpl.addImplInterface(factory);
     refactorData.getNewStructure().addClass(factoryImpl);
     ((Package) refactorData.getModelModule().getContains().get(0)).addContains(factoryImpl);
 

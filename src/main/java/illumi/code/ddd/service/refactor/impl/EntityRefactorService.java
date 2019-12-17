@@ -79,20 +79,29 @@ public class EntityRefactorService extends DefaultRefactorService {
         if (type != null) {
           field.setType(type.getPath());
         } else {
-          Class newValueObject = createNewValueObject(artifact.getDomain(),
-              model.getPath(),
-              artifact.getName(),
-              field);
-          getRefactorData().getNewStructure().addClass(newValueObject);
-          model.addContains(newValueObject);
-          String oldType = field.getType();
-          String newType = newValueObject.getPath();
-          field.setType(newType);
-          refactorGetterAndSetter(artifact, field, oldType, newType);
-          artifact.addDependencies(newValueObject.getName());
+          Class newValueObject = createValueObjectByField(model, artifact, field);
+          refactorField(artifact, field, newValueObject);
         }
       }
     }
+  }
+
+  private Class createValueObjectByField(Package model, Class artifact, Field field) {
+    Class newValueObject = createNewValueObject(artifact.getDomain(),
+        model.getPath(),
+        artifact.getName(),
+        field);
+    getRefactorData().getNewStructure().addClass(newValueObject);
+    model.addContains(newValueObject);
+    artifact.addDependencies(newValueObject.getName());
+    return newValueObject;
+  }
+
+  private void refactorField(Class artifact, Field field, Class newValueObject) {
+    String oldType = field.getType();
+    String newType = newValueObject.getPath();
+    field.setType(newType);
+    refactorGetterAndSetter(artifact, field, oldType, newType);
   }
 
   private File getTypeOfField(Package model, Field field) {

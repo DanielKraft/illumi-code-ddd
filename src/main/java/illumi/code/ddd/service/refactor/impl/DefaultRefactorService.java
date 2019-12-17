@@ -89,7 +89,7 @@ public abstract class DefaultRefactorService implements ArtifactRefactorService 
     for (Artifact item : impl.getContains()) {
       if (item instanceof Class
           && item.isTypeOf(dddType)
-          && item.getName().toLowerCase().contains(anInterface.getName().toLowerCase())) {
+          && ((Class) item).getImplInterfaces().contains(anInterface)) {
         return (Class) item;
       }
     }
