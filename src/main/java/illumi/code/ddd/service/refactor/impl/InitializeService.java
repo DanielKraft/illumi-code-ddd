@@ -54,7 +54,7 @@ class InitializeService {
       if (artifact.isTypeOf(DDDType.AGGREGATE_ROOT)) {
         refactorData.addRoots(artifact);
 
-        String domain = artifact.getName().toLowerCase();
+        String domain = artifact.getLowerName();
         refactorData.getNewStructure().addDomain(domain);
 
         Package module = addDomainModules(refactorData.getDomainModule(), domain);

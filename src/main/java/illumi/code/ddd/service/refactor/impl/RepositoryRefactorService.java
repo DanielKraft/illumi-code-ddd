@@ -44,7 +44,7 @@ public class RepositoryRefactorService extends DefaultRefactorService {
   }
 
   private void refactorRepository(Package model, Package impl, Interface repository) {
-    if (!repository.getName().toLowerCase().contains(REPOSITORY.toLowerCase())) {
+    if (!repository.getLowerName().contains(REPOSITORY.toLowerCase())) {
       repository.setName(repository.getName() + REPOSITORY);
       repository.setPath(repository.getPath() + REPOSITORY);
     }
@@ -63,7 +63,7 @@ public class RepositoryRefactorService extends DefaultRefactorService {
   }
 
   private void refactorRepository(Package model, Class repositoryImpl) {
-    if (!repositoryImpl.getName().toLowerCase().contains(REPOSITORY_IMPL.toLowerCase())) {
+    if (!repositoryImpl.getLowerName().contains(REPOSITORY_IMPL.toLowerCase())) {
       repositoryImpl.setName(repositoryImpl.getName() + REPOSITORY_IMPL);
       repositoryImpl.setPath(repositoryImpl.getPath() + REPOSITORY_IMPL);
     }

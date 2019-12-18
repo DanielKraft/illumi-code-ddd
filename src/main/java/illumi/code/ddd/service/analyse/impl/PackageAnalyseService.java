@@ -28,7 +28,7 @@ public class PackageAnalyseService {
         candidates.get(0).setType(DDDType.AGGREGATE_ROOT);
       } else if (!candidates.isEmpty()) {
         for (Class artifact : candidates) {
-          if (structure.getDomains().contains(artifact.getName().toLowerCase())) {
+          if (structure.getDomains().contains(artifact.getLowerName())) {
             artifact.setType(DDDType.AGGREGATE_ROOT);
             return;
           }
@@ -72,8 +72,8 @@ public class PackageAnalyseService {
       if (field.getType().endsWith(candidate.getName())) {
         ctr++;
       } else if (field.getType().startsWith("java.util.")
-          && (convertNameToSingular(field.getName()).startsWith(candidate.getName().toLowerCase())
-          || candidate.getName().toLowerCase().contains(convertNameToSingular(field.getName())))) {
+          && (convertNameToSingular(field.getName()).startsWith(candidate.getLowerName())
+          || candidate.getLowerName().contains(convertNameToSingular(field.getName())))) {
         ctr += 2;
       }
     }

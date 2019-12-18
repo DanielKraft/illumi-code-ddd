@@ -43,7 +43,7 @@ public class EntityRefactorService extends DefaultRefactorService {
   private boolean isValueObject(Class artifact) {
     if (artifact.getSuperClass() == null) {
       for (Field field : artifact.getFields()) {
-        if (artifact.getName().toLowerCase().contains(field.getName())
+        if (artifact.getLowerName().contains(field.getName())
             && field.getType().startsWith("java.lang.")) {
           return true;
         }
@@ -61,7 +61,7 @@ public class EntityRefactorService extends DefaultRefactorService {
 
   private boolean needsId(Class artifact) {
     for (Field field : artifact.getFields()) {
-      if (field.getName().toLowerCase().endsWith("id")) {
+      if (field.getLowerName().endsWith("id")) {
         return false;
       }
     }
@@ -79,20 +79,29 @@ public class EntityRefactorService extends DefaultRefactorService {
         if (type != null) {
           field.setType(type.getPath());
         } else {
-          Class newValueObject = createNewValueObject(artifact.getDomain(),
-              model.getPath(),
-              artifact.getName(),
-              field);
-          getRefactorData().getNewStructure().addClass(newValueObject);
-          model.addContains(newValueObject);
-          String oldType = field.getType();
-          String newType = newValueObject.getPath();
-          field.setType(newType);
-          refactorGetterAndSetter(artifact, field, oldType, newType);
-          artifact.addDependencies(newValueObject.getName());
+          Class newValueObject = createValueObjectByField(model, artifact, field);
+          refactorField(artifact, field, newValueObject);
         }
       }
     }
+  }
+
+  private Class createValueObjectByField(Package model, Class artifact, Field field) {
+    Class newValueObject = createNewValueObject(artifact.getDomain(),
+        model.getPath(),
+        artifact.getName(),
+        field);
+    getRefactorData().getNewStructure().addClass(newValueObject);
+    model.addContains(newValueObject);
+    artifact.addDependencies(newValueObject.getName());
+    return newValueObject;
+  }
+
+  private void refactorField(Class artifact, Field field, Class newValueObject) {
+    String oldType = field.getType();
+    String newType = newValueObject.getPath();
+    field.setType(newType);
+    refactorGetterAndSetter(artifact, field, oldType, newType);
   }
 
   private File getTypeOfField(Package model, Field field) {
@@ -136,7 +145,7 @@ public class EntityRefactorService extends DefaultRefactorService {
     artifact.getMethods().stream()
         .parallel()
         .forEachOrdered(method -> {
-          if (method.getName().toLowerCase().endsWith(field.getName().toLowerCase())) {
+          if (method.getLowerName().endsWith(field.getLowerName())) {
             method.setSignature(method.getSignature().replace(oldType, newType));
           }
         });
@@ -161,7 +170,7 @@ public class EntityRefactorService extends DefaultRefactorService {
       }
 
       if (needsSetter(artifact, field)) {
-        if (!field.getName().toLowerCase().endsWith("id")) {
+        if (!field.getLowerName().endsWith("id")) {
           artifact.addMethod(createSetter(field));
         } else {
           artifact.addMethod(createSideEffectFreeSetter(field));

@@ -39,6 +39,10 @@ public abstract class Artifact {
     return this.name;
   }
 
+  public String getLowerName() {
+    return this.name.toLowerCase();
+  }
+
   public void setName(String name) {
     this.name = name;
   }

@@ -60,6 +60,10 @@ public class Method {
     return name;
   }
 
+  public String getLowerName() {
+    return name.toLowerCase();
+  }
+
   public void setName(String name) {
     this.name = name;
   }

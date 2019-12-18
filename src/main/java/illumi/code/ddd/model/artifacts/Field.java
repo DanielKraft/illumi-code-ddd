@@ -46,6 +46,10 @@ public class Field {
     return name;
   }
 
+  public String getLowerName() {
+    return name.toLowerCase();
+  }
+
   public String getType() {
     return type;
   }

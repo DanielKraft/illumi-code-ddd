@@ -89,7 +89,7 @@ public abstract class DefaultRefactorService implements ArtifactRefactorService 
     for (Artifact item : impl.getContains()) {
       if (item instanceof Class
           && item.isTypeOf(dddType)
-          && item.getName().toLowerCase().contains(anInterface.getName().toLowerCase())) {
+          && ((Class) item).getImplInterfaces().contains(anInterface)) {
         return (Class) item;
       }
     }
@@ -99,7 +99,7 @@ public abstract class DefaultRefactorService implements ArtifactRefactorService 
   Class getEntity(Package model, File file) {
     for (Artifact artifact : model.getContains()) {
       if (artifact instanceof Class
-          && file.getName().toLowerCase().contains(artifact.getName().toLowerCase())) {
+          && file.getLowerName().contains(artifact.getLowerName())) {
         return (Class) artifact;
       }
     }

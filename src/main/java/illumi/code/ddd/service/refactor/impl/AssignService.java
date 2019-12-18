@@ -61,13 +61,13 @@ class AssignService {
     }
   }
 
-  private void addArtifact(Class artifact, String s) {
-    Package module = getModule(String.format(s, getDomainOf(artifact)));
+  private void addArtifact(Class artifact, String path) {
+    Package module = getModule(String.format(path, getDomainOf(artifact)));
 
     if (module != null) {
       module.addContains(artifact);
     } else {
-      module = getModule(String.format(s, dependsOn(artifact)));
+      module = getModule(String.format(path, dependsOn(artifact)));
       if (module != null) {
         module.addContains(artifact);
       } else {
@@ -113,15 +113,15 @@ class AssignService {
   private String getDomainOf(Artifact artifact) {
     for (Class root : refactorData.getRoots()) {
       if (isRootOf(root, artifact)) {
-        return root.getName().toLowerCase();
+        return root.getLowerName();
       }
     }
     return null;
   }
 
   private boolean isRootOf(Class root, Artifact artifact) {
-    return artifact.getName().toLowerCase().contains(root.getName().toLowerCase())
-        || artifact.getName().toLowerCase().contains(root.getDomain().toLowerCase())
+    return artifact.getLowerName().contains(root.getLowerName())
+        || artifact.getLowerName().contains(root.getDomain())
         || artifact.getPath().contains("." + root.getDomain() + ".")
         || (artifact.getDomain() != null
         && artifact.getDomain().equalsIgnoreCase(root.getDomain()));
@@ -142,7 +142,7 @@ class AssignService {
     for (Package module : refactorData.getNewStructure().getPackages()) {
       for (Artifact item : module.getContains()) {
         if (!(item instanceof Package)
-            && artifact.getName().toLowerCase().contains(item.getName().toLowerCase())) {
+            && artifact.getLowerName().contains(item.getLowerName())) {
           return module;
         }
       }
@@ -169,7 +169,7 @@ class AssignService {
     for (Field field : artifact.getFields()) {
       for (Class item : refactorData.getOldStructure().getClasses()) {
         if (item != artifact
-            && field.getName().toLowerCase().contains(item.getName().toLowerCase())) {
+            && field.getLowerName().contains(item.getLowerName())) {
           String domain = getDomainOf(item);
           if (domain != null) {
             return domain;
