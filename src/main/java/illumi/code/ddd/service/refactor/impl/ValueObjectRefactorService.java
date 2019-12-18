@@ -36,7 +36,7 @@ public class ValueObjectRefactorService extends DefaultRefactorService {
     }
 
     for (Field field : new ArrayList<>(artifact.getFields())) {
-      if (Field.isId(field) && !artifact.getName().toLowerCase().endsWith("id")) {
+      if (Field.isId(field) && !artifact.getLowerName().endsWith("id")) {
         deleteMethodsOfField(artifact, field);
         artifact.getFields().remove(field);
       } else {

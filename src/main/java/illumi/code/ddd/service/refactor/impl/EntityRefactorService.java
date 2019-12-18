@@ -43,7 +43,7 @@ public class EntityRefactorService extends DefaultRefactorService {
   private boolean isValueObject(Class artifact) {
     if (artifact.getSuperClass() == null) {
       for (Field field : artifact.getFields()) {
-        if (artifact.getName().toLowerCase().contains(field.getName())
+        if (artifact.getLowerName().contains(field.getName())
             && field.getType().startsWith("java.lang.")) {
           return true;
         }
@@ -61,7 +61,7 @@ public class EntityRefactorService extends DefaultRefactorService {
 
   private boolean needsId(Class artifact) {
     for (Field field : artifact.getFields()) {
-      if (field.getName().toLowerCase().endsWith("id")) {
+      if (field.getLowerName().endsWith("id")) {
         return false;
       }
     }
@@ -145,7 +145,7 @@ public class EntityRefactorService extends DefaultRefactorService {
     artifact.getMethods().stream()
         .parallel()
         .forEachOrdered(method -> {
-          if (method.getName().toLowerCase().endsWith(field.getName().toLowerCase())) {
+          if (method.getLowerName().endsWith(field.getLowerName())) {
             method.setSignature(method.getSignature().replace(oldType, newType));
           }
         });
@@ -170,7 +170,7 @@ public class EntityRefactorService extends DefaultRefactorService {
       }
 
       if (needsSetter(artifact, field)) {
-        if (!field.getName().toLowerCase().endsWith("id")) {
+        if (!field.getLowerName().endsWith("id")) {
           artifact.addMethod(createSetter(field));
         } else {
           artifact.addMethod(createSideEffectFreeSetter(field));

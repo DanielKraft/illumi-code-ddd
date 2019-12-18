@@ -167,17 +167,17 @@ public class ClassFitnessService {
 
   private boolean isAggregateRootRepository(Artifact artifact) {
     return artifact.isTypeOf(DDDType.REPOSITORY)
-        && artifact.getName().toLowerCase().contains(this.artifact.getName().toLowerCase());
+        && artifact.getLowerName().contains(this.artifact.getLowerName());
   }
 
   private boolean isAggregateRootFactory(Artifact artifact) {
     return artifact.isTypeOf(DDDType.FACTORY)
-        && artifact.getName().toLowerCase().contains(this.artifact.getName().toLowerCase());
+        && artifact.getLowerName().contains(this.artifact.getLowerName());
   }
 
   private boolean isAggregateRootService(Artifact artifact) {
     return artifact.isTypeOf(DDDType.SERVICE)
-        && artifact.getName().toLowerCase().contains(this.artifact.getName().toLowerCase());
+        && artifact.getLowerName().contains(this.artifact.getLowerName());
   }
 
   private void evaluateDomainEvent() {

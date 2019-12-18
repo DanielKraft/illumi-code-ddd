@@ -99,7 +99,7 @@ public abstract class DefaultRefactorService implements ArtifactRefactorService 
   Class getEntity(Package model, File file) {
     for (Artifact artifact : model.getContains()) {
       if (artifact instanceof Class
-          && file.getName().toLowerCase().contains(artifact.getName().toLowerCase())) {
+          && file.getLowerName().contains(artifact.getLowerName())) {
         return (Class) artifact;
       }
     }

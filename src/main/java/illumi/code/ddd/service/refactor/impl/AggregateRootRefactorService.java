@@ -59,7 +59,7 @@ public class AggregateRootRefactorService extends DefaultRefactorService {
   private Interface getInterface(DDDType dddType, Package model, Class root) {
     for (Artifact artifact : model.getContains()) {
       if (artifact.isTypeOf(dddType)
-          && artifact.getName().toLowerCase().contains(root.getName().toLowerCase())) {
+          && artifact.getLowerName().contains(root.getLowerName())) {
         return (Interface) artifact;
       }
     }

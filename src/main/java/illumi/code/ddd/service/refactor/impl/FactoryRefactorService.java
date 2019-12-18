@@ -44,7 +44,7 @@ public class FactoryRefactorService extends DefaultRefactorService {
   }
 
   private void refactorFactory(Package model, Package impl, Interface factory) {
-    if (!factory.getName().toLowerCase().contains(FACTORY.toLowerCase())) {
+    if (!factory.getLowerName().contains(FACTORY.toLowerCase())) {
       factory.setName(factory.getName() + FACTORY);
       factory.setPath(factory.getPath() + FACTORY);
     }
@@ -63,7 +63,7 @@ public class FactoryRefactorService extends DefaultRefactorService {
   }
 
   private void refactorFactory(Package model, Class factoryImpl) {
-    if (!factoryImpl.getName().toLowerCase().contains(FACTORY_IMPL.toLowerCase())) {
+    if (!factoryImpl.getLowerName().contains(FACTORY_IMPL.toLowerCase())) {
       factoryImpl.setName(factoryImpl.getName() + FACTORY_IMPL);
       factoryImpl.setPath(factoryImpl.getPath() + FACTORY_IMPL);
     }

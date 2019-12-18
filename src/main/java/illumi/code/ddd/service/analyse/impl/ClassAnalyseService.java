@@ -72,7 +72,7 @@ public class ClassAnalyseService {
 
   private boolean isId(Field field) {
     return Field.isId(field)
-        && !(this.artifact.getName().toLowerCase().endsWith("id"));
+        && !(this.artifact.getLowerName().endsWith("id"));
   }
 
   private boolean isRepositoryOrFactory(Field field) {
