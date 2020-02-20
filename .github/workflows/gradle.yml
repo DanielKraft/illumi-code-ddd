@@ -44,7 +44,7 @@ jobs:
       run: ./gradlew test 
     - name: Jacoco with Gradle
       run: ./gradlew jacocoTestReport
-    - name: Execute sonarqube
+    - name: Pushing to sonarqube
       run: ./gradlew sonarqube
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
