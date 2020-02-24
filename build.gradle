@@ -18,13 +18,10 @@ checkstyle {
 }
 
 sonarqube {
-  properties {
-    property 'sonar.projectName', "illumi-code-ddd"
-    property "sonar.projectKey", "DanielKraft_illumi-code-ddd" + ':sonar-jacoco'
-    property "sonar.organization", "danielkraft"
-    property "sonar.host.url", "https://sonarcloud.io"
-    property "sonar.login", "d9b98f5dd5bc24fab2356209e61700e7f14460bd"
-  }
+    properties {
+        property 'sonar.projectName', projectTitle
+        property 'sonar.projectKey', project.group + ':sonar-jacoco'
+    }
 }
 
 jacocoTestReport {
@@ -67,6 +64,8 @@ dependencies {
 	compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
     compile group: 'org.json', name: 'json', version: '20180813'
     runtime "ch.qos.logback:logback-classic:1.2.3"
+    compileOnly 'org.sonarsource.sonarqube:sonar-plugin-api:7.7'
+    testCompile 'org.sonarsource.sonarqube:sonar-plugin-api:7.7'
     testAnnotationProcessor "io.micronaut:micronaut-inject-java"
     testCompile "io.micronaut.test:micronaut-test-junit5"
     testCompile "org.mockito:mockito-junit-jupiter:2.22.0"
