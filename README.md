@@ -40,14 +40,6 @@
          alt="Trevis CI Status">
   </a>
   <a href="https://sonarcloud.io/dashboard?id=DanielKraft_illumi-code-ddd">
-    <img src="https://sonarcloud.io/api/project_badges/measure?project=DanielKraft_illumi-code-ddd&metric=alert_status"
-         alt="Sonarcloud Status">
-  </a>
-  <a href="https://sonarcloud.io/component_measures?id=DanielKraft_illumi-code-ddd&metric=coverage&view=list">
-    <img src="https://sonarcloud.io/api/project_badges/measure?project=DanielKraft_illumi-code-ddd&metric=coverage"
-         alt="Coverage">
-  </a>
-  <a href="https://sonarcloud.io/dashboard?id=DanielKraft_illumi-code-ddd">
     <img src="https://sonarcloud.io/api/project_badges/measure?project=DanielKraft_illumi-code-ddd&metric=ncloc"
          alt="Lines of Code">
   </a>
