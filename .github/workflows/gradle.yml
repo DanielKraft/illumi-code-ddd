@@ -30,7 +30,7 @@ jobs:
         run: ./gradlew checkstyleMain
       - name: CheckStyleTest with Gradle
         run: ./gradlew checkstyleTest
-      
+
   test:
     needs: build
     runs-on: ubuntu-latest
@@ -44,7 +44,5 @@ jobs:
       run: ./gradlew test 
     - name: Jacoco with Gradle
       run: ./gradlew jacocoTestReport
-    - name: Pushing to sonarqube
-      run: ./gradlew sonarqube
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@v1.1s
