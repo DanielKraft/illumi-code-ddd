@@ -1,7 +1,6 @@
 <h1 align="center">
   <br>
-  <img src="/gfx/illumi-code-ddd-logo.png" 
-       alt="illumi-code-ddd"
+  <img src="./gfx/illumi-code-ddd-logo.png" 
        width="400">
   <br>
     illumi-code-ddd
@@ -55,7 +54,7 @@
 </p>
 
 ## Workflow
-![Workflow of illumi-code-ddd](/gfx/illumi-code-ddd-workflow-English.png "Workflow")
+<img src="./gfx/illumi-code-ddd-workflow-English.png">
 
 ## Setup
 ### Needed software
