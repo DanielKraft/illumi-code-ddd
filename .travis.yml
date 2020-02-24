@@ -12,6 +12,8 @@ jdk:
   - openjdk8
 
 script:
+  - SONAR_SKIP=$(if [ "$TRAVIS_PULL_REQUEST" = "false" -a $TRAVIS_REPO_SLUG = 'DanielKraft/illumi-code-ddd' ]; then echo "false"; else echo "true"; fi)
+  - if [ $SONAR_SKIP = "false" ]; then git fetch --unshallow --quiet; fi
   - ./gradlew sonarqube
 
 cache:
