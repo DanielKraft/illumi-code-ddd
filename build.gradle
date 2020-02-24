@@ -16,11 +16,11 @@ checkstyle {
     config = rootProject.resources.text.fromFile('buildConfig/checkstyle/google.xml')
     toolVersion '8.26'
 }
-
 sonarqube {
-    properties {
-        property 'sonar.projectName', projectTitle
-        property 'sonar.projectKey', project.group + ':sonar-jacoco'
+  properties {
+    property 'sonar.projectName', 'illumi-code-ddd'
+    property "sonar.projectKey", 'DanielKraft_illumi-code-ddd:sonar-jacoco'
+
     }
 }
 
