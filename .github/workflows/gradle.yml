@@ -44,8 +44,7 @@ jobs:
       run: ./gradlew test 
     - name: Jacoco with Gradle
       run: ./gradlew jacocoTestReport
-    - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-github-action@v1.1s
+    - name: Pushing to sonarqube
+      run: ./gradlew sonarqube
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
