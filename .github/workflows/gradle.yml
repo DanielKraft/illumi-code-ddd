@@ -42,9 +42,3 @@ jobs:
         java-version: 1.8
     - name: Test with Gradle
       run: ./gradlew test 
-    - name: Jacoco with Gradle
-      run: ./gradlew jacocoTestReport
-    - name: Pushing to sonarqube
-      run: ./gradlew sonarqube
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
