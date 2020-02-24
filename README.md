@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <img src="/gfx/illumi-code-ddd-logo.png?raw=true" 
+  <img src="/gfx/illumi-code-ddd-logo.png" 
        alt="illumi-code-ddd"
        width="400">
   <br>
@@ -36,6 +36,10 @@
     <img src="https://github.com/DanielKraft/illumi-code-ddd/workflows/Java%20CI/badge.svg"
          alt="Actions Status">
   </a>
+  <a href="https://travis-ci.org/DanielKraft/illumi-code-ddd">
+    <img src="https://travis-ci.org/DanielKraft/illumi-code-ddd.svg?branch=master"
+         alt="Trevis CI Status">
+  </a>
   <a href="https://sonarcloud.io/dashboard?id=DanielKraft_illumi-code-ddd">
     <img src="https://sonarcloud.io/api/project_badges/measure?project=DanielKraft_illumi-code-ddd&metric=alert_status"
          alt="Sonarcloud Status">
@@ -51,7 +55,7 @@
 </p>
 
 ## Workflow
-![Workflow of illumi-code-ddd](/gfx/illumi-code-ddd-workflow-English.png?raw=true "Workflow")
+![Workflow of illumi-code-ddd](/gfx/illumi-code-ddd-workflow-English.png "Workflow")
 
 ## Setup
 ### Needed software
